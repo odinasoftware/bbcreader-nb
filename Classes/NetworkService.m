@@ -316,6 +316,7 @@ static NetworkService *sharedNetworkService = nil;
 		//pthread_mutex_unlock(&network_mutex);
 		// TODO: check network accessability here
 		TRACE("Number of article available: %d\n", theArticleStorage.numberOfArticles);
+		
 		if (theArticleStorage.numberOfArticles == 0) {
 			if (offlineMode == YES) {
 				[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(showOfflineModeWarning:) withObject:nil waitUntilDone:YES];
@@ -328,8 +329,8 @@ static NetworkService *sharedNetworkService = nil;
 			numberOfDownloadedObjects = 1;
 		
 			// Now we want to get individual page. 
-			//[self getArticlePage];
-			[self getArticlePageInParallel];
+			[self getArticlePage];
+			//[self getArticlePageInParallel];
 		}
 		
 	}

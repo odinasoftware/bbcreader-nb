@@ -32,7 +32,7 @@
 - (void)dealloc
 {
 	//[indexForFeed release];
-	//[receivedData release];
+	[receivedData release];
 	//[localFile release];
 	
 	[super dealloc];

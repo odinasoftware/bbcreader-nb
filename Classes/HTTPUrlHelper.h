@@ -39,13 +39,13 @@
 	NSString			*cacheFileName;
 	BOOL				shouldIgnoreCache;
 	BOOL				shouldNotifyReloadXML;
+	BOOL				done;
 }
 
 - (BOOL)parseReceivedData:(NSData*)data withIndex:(NSIndexPath*)indexPath fromCache:(BOOL)usingCache;
 - (BOOL)requestWithURL:(NSURL*)url fileToSave:(NSString*)file parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait;
 - (BOOL)requestWithURLUseCache:(NSURL*)url delegate:(id)delegate parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait;
 - (void)saveToFile:(NSString*)fileName withData:(NSData*)data;
-- (BOOL)connectionDidFinishLoading:(HTTPConnection *)connection;
 - (BOOL)constructResponseWithHeader:(NSData**)header withBody:(NSData**)body toReleaseHeader:(BOOL*)release;
 - (void)finishConnection;
 - (NSString*)getCachedName;
@@ -55,10 +55,10 @@
 
 //- (NSInteger)findIndexWithConnection:(NSURLConnection*)connection;
 //@property (nonatomic, retain) NSMutableData* receivedData;
-
-//-(void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response;
-//- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
-//-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
-//- (void)connectionDidFinishLoading:(NSURLConnection *)connection;
-
+/*
+- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response;
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection;
+*/
 @end
