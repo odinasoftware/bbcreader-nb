@@ -124,6 +124,9 @@ static NetworkService *sharedNetworkService = nil;
 		continueRefreshArticles = YES;
 		feedReplaced = NO;
 		activeThreadCount = NUMBER_OF_THREAD;
+		
+		//cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+		//[cookieStorage setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyNever];
 	}
 	
 	return self;
@@ -390,7 +393,7 @@ clean:
 		
 		feed.localFileName = [helper getCachedName];
 		[helper release];
-		
+		//[mainURL release];
 	}
 	
 	return ret;
@@ -418,6 +421,7 @@ clean:
 	}
 	[helper release];
 	link.isAvailable = YES;
+	//[url release];
 	return YES;
 }
 
@@ -554,6 +558,7 @@ clean:
 	[cacheService.cssDictionary removeObjectForKey:key];
 	
 	[helper release];
+	[url release];
 	if ([cacheService.cssDictionary count] == 0) 
 		return NO;
 	
@@ -609,6 +614,31 @@ clean:
 	NSAutoreleasePool *pool = nil;
 	int articleCount = 0;
 	//BOOL thumbNailGarbageCleaned = NO;
+	
+	/*
+	NSLog(@"----- Start getting article pages ------");
+	@try {
+		do {
+			//link = [storage getNextArticleOfActiveFeed];
+			if (((cont = [self getNextActiveFeed]) == NO) &&
+				((cont = [self getThumbnail]) == NO) &&
+				((cont = [self getNextArticleOfActiveFeed]) == NO)) {
+				cont = [self getEmbeddedObjects];
+			}
+			// TODO: what is the best way of sleep and wakeup in this case.
+			//       just looping here may not be such a good idea because 
+			//       CPU utilization goes up 100%
+			//if (i++ > 20) {
+			//	sleep(5);
+			//	break;
+			//}
+			
+		} while (cont);
+	}
+	@catch (NSException *exception) {
+		NSLog(@"getArticlePage: main: %@: %@", [exception name], [exception reason]);
+	}
+	*/
 	
 	do {
 		TRACE("----- Start getting article pages ------\n");
@@ -760,7 +790,7 @@ clean:
 				
 			waitLoop:
 				[pool release];
-				
+
 				// TODO: predownload CSSs
 				if (cont == NO) {
 					TRACE("~~~~~~~~ Waiting to do something.\n");
@@ -795,11 +825,11 @@ clean:
 		thumbNailCacheLoaded = YES;
 	}
 	
-	[NSThread detachNewThreadSelector:@selector(articleTask2) toTarget:self withObject:nil];
-	[NSThread detachNewThreadSelector:@selector(articleTask3) toTarget:self withObject:nil];
-	[NSThread detachNewThreadSelector:@selector(articleTask4) toTarget:self withObject:nil];
-	[NSThread detachNewThreadSelector:@selector(articleTask5) toTarget:self withObject:nil];
-	[NSThread detachNewThreadSelector:@selector(articleTask6) toTarget:self withObject:nil];
+	//[NSThread detachNewThreadSelector:@selector(articleTask2) toTarget:self withObject:nil];
+	//[NSThread detachNewThreadSelector:@selector(articleTask3) toTarget:self withObject:nil];
+	//[NSThread detachNewThreadSelector:@selector(articleTask4) toTarget:self withObject:nil];
+	//[NSThread detachNewThreadSelector:@selector(articleTask5) toTarget:self withObject:nil];
+	//[NSThread detachNewThreadSelector:@selector(articleTask6) toTarget:self withObject:nil];
 	
 	for (;;) {
 		[self checkDownloadStatus];
@@ -1310,8 +1340,8 @@ clean:
 	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
 	[storage showArticle:indexPath];
 	[doSomething broadcast];
-	//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(addNewArticle:) withObject:nil	waitUntilDone:YES];
-	//[self getArticlePage];
+	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(addNewArticle:) withObject:nil	waitUntilDone:YES];
+	[self getArticlePage];
 	
 	return ret;
 }

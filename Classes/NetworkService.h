@@ -62,6 +62,7 @@ typedef struct indexpath_holder_t {
 	BOOL			refreshCheck;
 	BOOL			feedReplaced;
 	NSInteger		activeThreadCount;
+	//NSHTTPCookieStorage *cookieStorage;
 }
 
 @property (nonatomic, assign) NSCondition *doSomething;

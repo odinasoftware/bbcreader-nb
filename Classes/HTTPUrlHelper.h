@@ -40,6 +40,7 @@
 	BOOL				shouldIgnoreCache;
 	BOOL				shouldNotifyReloadXML;
 	BOOL				done;
+	BOOL				isFailed;
 }
 
 - (BOOL)parseReceivedData:(NSData*)data withIndex:(NSIndexPath*)indexPath fromCache:(BOOL)usingCache;

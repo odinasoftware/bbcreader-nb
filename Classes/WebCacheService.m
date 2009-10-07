@@ -134,8 +134,9 @@ NSString *getCategoryComponent(cache_category_t category)
 	return @"default";
 }
 
-void copyToNewCategory(NSString *file, NSString* currentCategoryString, cache_category_t category)
+BOOL copyToNewCategory(NSString *file, NSString* currentCategoryString, cache_category_t category)
 {
+	BOOL exists = NO;
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSError *error = nil;
 	
@@ -148,7 +149,10 @@ void copyToNewCategory(NSString *file, NSString* currentCategoryString, cache_ca
 		if (error != nil) {
 			NSLog(@"%s, %@", __func__, error);
 		}	
+		exists = YES;
 	}
+	
+	return exists;
 }
 
 void replaceToNewCategory(NSString** index, NSString **cache, NSString *currentCategoryString, cache_category_t category)
@@ -586,6 +590,7 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 						NSLog(@"###### Detect duplicated cache entry: %@", cachedFile);
 						if (collision != nil) *collision = YES; 
 					}
+					*available = YES;
 					
 					// If the category in cache differs from the one requesting, consider the following:
 					//  - This may be the case some duplicate objects are existing in different place. 
@@ -594,11 +599,16 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 					//     --> Update the current category to the requesting one.
 					if (anEntry.category < category) {
 						NSLog(@"##### Detect potential duplicate item: %@ for category: %d", cachedFile, category);
-						copyToNewCategory(cachedFile, indexComponent, category);
-						anEntry.category = category;
-						replaceToNewCategory(&indexFile, &cachedFile, indexComponent, category);
+						if (copyToNewCategory(cachedFile, indexComponent, category) == NO) {
+							*available = NO;
+						}
+						else {
+							anEntry.category = category;
+							replaceToNewCategory(&indexFile, &cachedFile, indexComponent, category);
+							*available = YES;
+						}
 					}
-					*available = YES;
+
 					break;
 				}
 			}
