@@ -41,7 +41,11 @@
 	BOOL				shouldNotifyReloadXML;
 	BOOL				done;
 	BOOL				isFailed;
+	BOOL				isLocalRequest;
+	NSData				*cachedData;
 }
+
+@property (nonatomic, retain) NSData *cachedData;
 
 - (BOOL)parseReceivedData:(NSData*)data withIndex:(NSIndexPath*)indexPath fromCache:(BOOL)usingCache;
 - (BOOL)requestWithURL:(NSURL*)url fileToSave:(NSString*)file parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait;
