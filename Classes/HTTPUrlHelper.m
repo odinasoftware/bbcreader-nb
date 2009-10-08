@@ -71,6 +71,7 @@ NSMutableURLRequest *getRequest()
 @implementation HTTPUrlHelper
 
 //@synthesize receivedData;
+@synthesize cachedData;
 
 -(id) init {
 	if ((self = [super init])) {
@@ -91,7 +92,6 @@ NSMutableURLRequest *getRequest()
 
 -(BOOL) requestWithURL:(NSURL*) url fileToSave:(NSString*)file parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait
 {
-	NSError* theError = nil;
 	BOOL isDataAvailable = NO;
 	
 	useiPhoneSDK = NO;
@@ -112,15 +112,15 @@ NSMutableURLRequest *getRequest()
 	}
 	
 	if (networkService.requireConnection == YES) {
-		//theRequest = [[NSMutableURLRequest alloc] initWithURL:url
-		//										  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-		//									  timeoutInterval:20.0];
-		theRequest = [[NSMutableURLRequest alloc] init];
+		theRequest = [[NSMutableURLRequest alloc] initWithURL:url
+												  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+											  timeoutInterval:5.0];
+		//theRequest = [[NSMutableURLRequest alloc] init];
 		//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
 		//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
 		//Mozilla/5.0 (iPhone Simulator; U; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20
-		[theRequest setHTTPMethod:@"GET"];
-		[theRequest setURL:url];
+		//[theRequest setHTTPMethod:@"GET"];
+		//[theRequest setURL:url];
 		[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
 		[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
 		[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
@@ -164,7 +164,7 @@ NSMutableURLRequest *getRequest()
 repeat:
 	isFailed = NO;
 	done = NO;
-	theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:NO];
+	theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:YES];
 	
 	if (theConnection) {
 		theConnection.indexForFeed = indexPath;
@@ -178,8 +178,8 @@ repeat:
 		TRACE("%s", [r currentMode]);
 		if (wait == YES) {
 			
-			[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
-			[theConnection start];
+			//[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
+			//[theConnection start];
 			
 			do {
 				[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
@@ -198,8 +198,11 @@ repeat:
 			//if (useiPhoneSDK == YES) {
 			//	[theRequest release];
 			//}
+			isLocalRequest = NO;
 		}
 		else {
+			isLocalRequest = YES;
+			/*
 			if (useiPhoneSDK == YES) {
 				theConnection.receivedData = (NSMutableData*)
 					[NSURLConnection sendSynchronousRequest:(NSURLRequest*)theRequest returningResponse:&theResponse error:&theError];
@@ -211,6 +214,18 @@ repeat:
 			else {
 				theConnection.receivedData = (NSData*) [socket sendRequest];
 			}
+			 */
+			
+			[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
+			[theConnection start];
+			
+			do {
+				[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+			} while (!done);
+			
+			if (isFailed == YES)
+				goto repeat;
+			
 			
 			if (theConnection.receivedData && [theConnection.receivedData length] > 0)
 				isDataAvailable = YES;
@@ -292,168 +307,183 @@ repeat:
 		//[(HTMLParser*)delegate setBaseUrl:url];
 	}
 	
-	//do {
-		if (networkService.offlineMode == YES && isCached == NO && theCacheEntry.cacheFile != nil) {
-			// In offline moe, we will use from cache even it is stale.
-			isCached = YES;
-			NSLog(@"%s, offline mode, will use cache.", __func__);
+	
+	if (networkService.offlineMode == YES && isCached == NO && theCacheEntry.cacheFile != nil) {
+		// In offline moe, we will use from cache even it is stale.
+		isCached = YES;
+		NSLog(@"%s, offline mode, will use cache.", __func__);
+	}
+	TRACE("%s, shouldIgnorCache: %d, isCached: %d\n", __func__, shouldIgnoreCache, isCached);
+	if (shouldIgnoreCache == YES || isCached == NO) {
+		// add custom header
+		isCached = NO;
+		if (networkService.offlineMode == YES) {
+			// don't look at Internet in offline mode
+			[theCacheEntry release];
+			return NO;
 		}
 		
-		if (shouldIgnoreCache == YES || isCached == NO) {
-			// add custom header
-			isCached = NO;
-			if (networkService.offlineMode == YES) {
-				// don't look at Internet in offline mode
-				[theCacheEntry release];
-				return NO;
-			}
+		if (networkService.requireConnection == YES) {
+			theRequest = [[NSMutableURLRequest alloc] initWithURL:url
+													cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+													timeoutInterval:5.0];
+			//theRequest = [[NSMutableURLRequest alloc] init];
+			//[theRequest setHTTPMethod:@"GET"];
+			//[theRequest setURL:url];
+			//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
+			//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+			[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
+			[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
+			[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+			//[theRequest setHTTPShouldHandleCookies:NO];
 			
-			if (networkService.requireConnection == YES) {
-				//theRequest = [[NSMutableURLRequest alloc] initWithURL:url
-				//										cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-				//										timeoutInterval:60.0];
-				theRequest = [[NSMutableURLRequest alloc] init];
-				[theRequest setHTTPMethod:@"GET"];
-				[theRequest setURL:url];
-				//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
-				//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-				[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
-				[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
-				[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-				//[theRequest setHTTPShouldHandleCookies:NO];
-				
-				useiPhoneSDK = YES;
-				TRACE("%s, use NSURLRequest:\n", __func__);
-			}
-			else {
-				[socket createSocketWithHostName:[url host] keepAlive:YES];
-				[socket createRequestWithURL:url];
-				[socket addRequestHeader:@"User-Agent" withValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20"];
-				//[socket addRequestHeader:@"Accept-Encoding" withValue:@"gzip, deflate"];
-				[socket addRequestHeader:@"Accept" withValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"];
-			}
-#ifdef USE_COOKIE
-			NSString *cookie = [socket getCookie:url];
-			if (cookie) {
-				[socket addRequestHeader:@"Cookie" withValue:cookie];
-				[cookie release];
-			}
-#endif
-			TRACE("%s: request: %p\n", __func__, theRequest);
-		repeat:
-			isFailed = NO;
-			done = NO;
-			theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:NO];
-
-			if (theConnection) {
-				theConnection.indexForFeed = indexPath;
-				//[connectionArray insertObject:(id)theConnection	atIndex:indexPath.row];
-				TRACE("%s, add connection: %x to section: %d, row: %d\n", __func__, (id)theConnection, indexPath.section, indexPath.row);
-				
-				
-				if (wait == YES) {
-					
-					[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
-					[theConnection start];
-					do {
-						[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-					
-					} while (!done);
-					
-					if (isFailed == YES) {
-						goto repeat;
-					}
-									
-					if ([theConnection.receivedData length] > 0) 
-						updateDate = YES;
-
-					if (theConnection.receivedData != nil) {
-						
-						if ([theConnection.receivedData length] > 0)
-							isDataAvailable = YES;
-						//BOOL success = [self connectionDidFinishLoading:theConnection];
-						//if (success == NO)
-						//	isDataAvailable = NO;
-					}
-					
-					//if (useiPhoneSDK == YES) {
-					//	[theRequest release];
-					//}
-				}
-				else {
-					// construct response header and body
-					if (useiPhoneSDK == YES) {
-						theConnection.receivedData = (NSMutableData*)
-							[NSURLConnection sendSynchronousRequest:(NSURLRequest*)theRequest returningResponse:&theResponse error:&theError];
-						// will be released by auto pool, so will retain here. 
-						//[theConnection.receivedData retain];
-						//if (theConnection.receivedData && [theConnection.receivedData length] > 0)
-						//	networkService.requireConnection = NO;
-					}
-					else {
-						theConnection.receivedData = (NSData*) [socket sendRequest];
-					}
-					if (theConnection.receivedData) {
-						isDataAvailable = YES;
-					}
-					if ([theConnection.receivedData length] > 0) 
-						updateDate = YES;
-				}
-								
-				if (NO && wait == YES && theConnection.receivedData == nil && theCacheEntry.cacheFile != nil) {
-					// TODO: Use cache even though it is stale.
-					TRACE("%s, connection problem, use cache instead.\n", __func__);
-					if (theError) {
-						NSLog(@"%s: %@", __func__, theError);
-					}
-					NSData *data = [cacheService readFromFile:theCacheEntry.cacheFile];
-					
-					if (data) {
-						[self parseReceivedData:data withIndex:indexPath fromCache:YES];
-						[theCacheEntry release];	
-						[data release];
-						isDataAvailable = YES;
-					}
-					
-				}
-			}
-			else {
-			}
-			cont = NO;
-			
-			if ((getCategory(type) == CACHE_FEED) && updateDate == YES){
-				Configuration *config = [Configuration sharedConfigurationInstance];
-				
-				config.lastUpdatedDate = [NSDate date]; //time(nil);
-				[config saveSettings];
-			}
-			[socket close];
+			useiPhoneSDK = YES;
+			TRACE("%s, use NSURLRequest:\n", __func__);
 		}
 		else {
-			//NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:theCacheEntry.cacheFile];
-			NSData* data = [cacheService readFromFile:theCacheEntry.cacheFile]; //[handle readDataToEndOfFile];
-			if (data == nil) {
-				TRACE("%s, cache data should be available, but is not there: %d\n", __func__, count);
-				isCached = NO;
-				cont = YES;
+			[socket createSocketWithHostName:[url host] keepAlive:YES];
+			[socket createRequestWithURL:url];
+			[socket addRequestHeader:@"User-Agent" withValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20"];
+			//[socket addRequestHeader:@"Accept-Encoding" withValue:@"gzip, deflate"];
+			[socket addRequestHeader:@"Accept" withValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"];
+		}
+#ifdef USE_COOKIE
+		NSString *cookie = [socket getCookie:url];
+		if (cookie) {
+			[socket addRequestHeader:@"Cookie" withValue:cookie];
+			[cookie release];
+		}
+#endif
+		TRACE("%s: request: %p\n", __func__, theRequest);
+	repeat:
+		isFailed = NO;
+		done = NO;
+		theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:YES];
+		
+		if (theConnection) {
+			theConnection.indexForFeed = indexPath;
+			//[connectionArray insertObject:(id)theConnection	atIndex:indexPath.row];
+			TRACE("%s, add connection: %x to section: %d, row: %d\n", __func__, (id)theConnection, indexPath.section, indexPath.row);
+			
+			
+			if (wait == YES) {
+				
+				//[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
+				//[theConnection start];
+				do {
+					[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+					
+				} while (!done);
+				
+				if (isFailed == YES) {
+					goto repeat;
+				}
+				
+				if ([theConnection.receivedData length] > 0) 
+					updateDate = YES;
+				
+				if (theConnection.receivedData != nil) {
+					
+					if ([theConnection.receivedData length] > 0)
+						isDataAvailable = YES;
+					//BOOL success = [self connectionDidFinishLoading:theConnection];
+					//if (success == NO)
+					//	isDataAvailable = NO;
+				}
+				
+				//if (useiPhoneSDK == YES) {
+				//	[theRequest release];
+				//}
+				isLocalRequest = NO;
 			}
 			else {
-				if (wait == YES) {
-					[self parseReceivedData:data withIndex:indexPath fromCache:YES];
-				    [theCacheEntry release];	
-					[data release];
-				}
-				else {
-					theConnection.receivedData = data;
+				isLocalRequest = YES;
+				// construct response header and body
+				/*
+				 if (useiPhoneSDK == YES) {
+				 theConnection.receivedData = (NSMutableData*)
+				 [NSURLConnection sendSynchronousRequest:(NSURLRequest*)theRequest returningResponse:&theResponse error:&theError];
+				 // will be released by auto pool, so will retain here. 
+				 //[theConnection.receivedData retain];
+				 //if (theConnection.receivedData && [theConnection.receivedData length] > 0)
+				 //	networkService.requireConnection = NO;
+				 }
+				 else {
+				 theConnection.receivedData = (NSData*) [socket sendRequest];
+				 }
+				 */
+				
+				[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
+				[theConnection start];
+				do {
+					[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+					
+				} while (!done);
+				
+				if (isFailed == YES) {
+					goto repeat;
 				}
 				
-				isDataAvailable = YES;
-				
+				if (theConnection.receivedData) {
+					isDataAvailable = YES;
+				}
+				if ([theConnection.receivedData length] > 0) 
+					updateDate = YES;
 			}
 			
+			if (NO && wait == YES && theConnection.receivedData == nil && theCacheEntry.cacheFile != nil) {
+				// TODO: Use cache even though it is stale.
+				TRACE("%s, connection problem, use cache instead.\n", __func__);
+				if (theError) {
+					NSLog(@"%s: %@", __func__, theError);
+				}
+				NSData *data = [cacheService readFromFile:theCacheEntry.cacheFile];
+				
+				if (data) {
+					[self parseReceivedData:data withIndex:indexPath fromCache:YES];
+					[theCacheEntry release];	
+					[data release];
+					isDataAvailable = YES;
+				}
+				
+			}
 		}
-		count++;
-	//} while ((count < REPEAT_COUNT) && (cont));
+		else {
+		}
+		cont = NO;
+		
+		if ((getCategory(type) == CACHE_FEED) && updateDate == YES){
+			Configuration *config = [Configuration sharedConfigurationInstance];
+			
+			config.lastUpdatedDate = [NSDate date]; //time(nil);
+			[config saveSettings];
+		}
+		[socket close];
+	}
+	else {
+		//NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:theCacheEntry.cacheFile];
+		NSData* data = [cacheService readFromFile:theCacheEntry.cacheFile]; //[handle readDataToEndOfFile];
+		if (data == nil) {
+			TRACE("%s, cache data should be available, but is not there: %d\n", __func__, count);
+			isCached = NO;
+			cont = YES;
+		}
+		else {
+			if (wait == YES) {
+				[self parseReceivedData:data withIndex:indexPath fromCache:YES];
+				[theCacheEntry release];	
+				[data release];
+			}
+			else {
+				cachedData = data;
+			}
+			
+			isDataAvailable = YES;
+			
+		}
+		
+	}
+	count++;
 	TRACE("%s, done\n", __func__);
 	return isDataAvailable;
 }
@@ -599,7 +629,7 @@ repeat:
 	TRACE("Succeeded! %p, Received %d bytes of data\n", connection, [theConnection.receivedData length]); 
 	// release the connection, and the data object 
 
-	if ([theConnection.receivedData length] > 0) {
+	if (isLocalRequest == NO && [theConnection.receivedData length] > 0) {
 		//NSInteger index = theConnection.indexForFeed.row; // better way. [self findIndexWithConnection:connection];
 		//if (index < 0) {
 		//	NSLog(@"%s, feed index error: %d", __func__, index);
@@ -652,8 +682,7 @@ repeat:
 {
 	*release = NO;
 	
-	if ((useiPhoneSDK == NO && socket == nil) || theConnection == nil || 
-		(useiPhoneSDK == NO && isCached == NO && [socket isSocketActive] == NO)) {
+	if (isCached == NO && theConnection == nil) {
 		NSLog(@"%s, invalid connection.", __func__);
 		*header = nil;
 		*body = nil;
@@ -682,7 +711,7 @@ repeat:
 		*header = [cacheService readFromFile:name]; //[handle readDataToEndOfFile];
 		*release = YES;
 
-		*body = theConnection.receivedData;
+		*body = self.cachedData;
 		if (*header == nil || *body == nil) {
 			NSLog(@">>>>> %s: error in data. %p, %p", __func__, *header, *body);
 		}
@@ -766,6 +795,7 @@ repeat:
 	[theConnection release];
 	[theRequest release];
 	[socket release];
+	[cachedData	release];
 	[super dealloc];
 }
 
