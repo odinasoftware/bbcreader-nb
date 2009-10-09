@@ -167,7 +167,7 @@
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad 
 {
-	self.navigationItem.title = @"Pictures";
+	self.navigationItem.title = @"Slideshow";
 	playBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(playSlideShow:)];
 	stopBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause target:self action:@selector(stopSlideShow:)];
 	
@@ -349,6 +349,7 @@
 - (void)stopSlideShow:(id)sender
 {
 	self.navigationItem.rightBarButtonItem = playBarButton;
+	[UIApplication sharedApplication].idleTimerDisabled = YES;
 	isSlideShowRunning = NO;
 	if (slideShowTimer != nil) {
 		[slideShowTimer invalidate];
@@ -360,7 +361,7 @@
 - (void)playSlideShow:(id)sender
 {
 	self.navigationItem.rightBarButtonItem = stopBarButton;
-	
+	[UIApplication sharedApplication].idleTimerDisabled = YES;
 	currentSlideImageController = [self getImageControllerWithPage:currentSelectedPage];
 	if (currentSlideImageController == nil) {
 		NSLog(@"%s, target is null: %d", __func__, currentSelectedPage);
