@@ -61,6 +61,8 @@ typedef struct indexpath_holder_t {
 	BOOL			continueRefreshArticles;
 	BOOL			refreshCheck;
 	BOOL			feedReplaced;
+	BOOL			showedSlowWarning;
+	BOOL			shouldReloadArticles;
 	NSInteger		activeThreadCount;
 	//NSHTTPCookieStorage *cookieStorage;
 }
@@ -106,5 +108,6 @@ typedef struct indexpath_holder_t {
 - (HTMLParser*)getHtmlParser;
 - (void)refreshFeed:(FeedInformation*)feedInfo withIndex:(int)index;
 - (void)cleanFeeds;
+- (void)reloadArticles;
 
 @end

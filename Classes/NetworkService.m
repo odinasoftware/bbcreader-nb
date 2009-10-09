@@ -30,7 +30,7 @@
 
 #define MIN_SPACE_FOR_MREADER 26214400
 #define NUMBER_OF_ARTICLE_IN_TABLE 4
-#define SLOW_NETWORK_INTERVAL 5
+#define SLOW_NETWORK_INTERVAL 10
 #define NUMBER_OF_THREAD 6
 
 //NSString *rssfeedFilename = @"main_rss.xml";
@@ -280,6 +280,8 @@ static NetworkService *sharedNetworkService = nil;
 			refreshCheck = YES;
 		}
 		
+		shouldReloadArticles = NO;
+		
 #ifndef RUN_REACHABILITY
 		// run with apple sdk first always
 		requireConnection = YES;
@@ -332,8 +334,8 @@ static NetworkService *sharedNetworkService = nil;
 			numberOfDownloadedObjects = 1;
 		
 			// Now we want to get individual page. 
-			[self getArticlePage];
-			//[self getArticlePageInParallel];
+			//[self getArticlePage];
+			[self getArticlePageInParallel];
 		}
 		
 	}
@@ -547,7 +549,7 @@ clean:
 	
 	origURL = (NSString*) [cacheService.cssDictionary objectForKey:key];
 	localName = (NSString*) key;
-	NSURL* url = [NSURL URLWithString:origURL];
+	NSURL* url = [[NSURL alloc] initWithString:origURL]; 
 	TRACE("++++++ Download css: %s, %d\n", [origURL UTF8String], [cacheService.cssDictionary count]);
 	helper = [[HTTPUrlHelper alloc] init];
 	if ([helper requestWithURL:url fileToSave:localName parserKind:MREADER_FILE_TYPE feedIndex:nil shouldWait:YES] == YES) {
@@ -614,32 +616,7 @@ clean:
 	NSAutoreleasePool *pool = nil;
 	int articleCount = 0;
 	//BOOL thumbNailGarbageCleaned = NO;
-	
-	/*
-	NSLog(@"----- Start getting article pages ------");
-	@try {
-		do {
-			//link = [storage getNextArticleOfActiveFeed];
-			if (((cont = [self getNextActiveFeed]) == NO) &&
-				((cont = [self getThumbnail]) == NO) &&
-				((cont = [self getNextArticleOfActiveFeed]) == NO)) {
-				cont = [self getEmbeddedObjects];
-			}
-			// TODO: what is the best way of sleep and wakeup in this case.
-			//       just looping here may not be such a good idea because 
-			//       CPU utilization goes up 100%
-			//if (i++ > 20) {
-			//	sleep(5);
-			//	break;
-			//}
-			
-		} while (cont);
-	}
-	@catch (NSException *exception) {
-		NSLog(@"getArticlePage: main: %@: %@", [exception name], [exception reason]);
-	}
-	*/
-	
+		
 	do {
 		TRACE("----- Start getting article pages ------\n");
 		@try {
@@ -682,7 +659,6 @@ clean:
 						cont = NO;
 						goto waitLoop;
 					}
-					
 					
 					if (thumbNailCacheLoaded == NO) {
 						[cacheService loadCacheObjectsFromCategory:CACHE_THUMB_NAIL];
@@ -825,11 +801,12 @@ clean:
 		thumbNailCacheLoaded = YES;
 	}
 	
-	//[NSThread detachNewThreadSelector:@selector(articleTask2) toTarget:self withObject:nil];
-	//[NSThread detachNewThreadSelector:@selector(articleTask3) toTarget:self withObject:nil];
-	//[NSThread detachNewThreadSelector:@selector(articleTask4) toTarget:self withObject:nil];
+	[NSThread detachNewThreadSelector:@selector(articleTask2) toTarget:self withObject:nil];
+	[NSThread detachNewThreadSelector:@selector(articleTask3) toTarget:self withObject:nil];
+	[NSThread detachNewThreadSelector:@selector(articleTask4) toTarget:self withObject:nil];
 	//[NSThread detachNewThreadSelector:@selector(articleTask5) toTarget:self withObject:nil];
 	//[NSThread detachNewThreadSelector:@selector(articleTask6) toTarget:self withObject:nil];
+	
 	
 	for (;;) {
 		[self checkDownloadStatus];
@@ -902,11 +879,16 @@ clean:
 		// 2. If user wants to continue, lock it up during the update.
 		if (continueRefreshArticles == YES && offlineMode == NO && refreshCheck == YES && shouldCheckExpiration == YES) {
 			// check expiration date of RSS feed and fetch them if necessrary.
+			showedSlowWarning = NO;
 			[self cleanFeeds];
 
 			for (int i=0; i<3; ++i) {
 				FeedInformation *feedInfo = [theArticleStorage getActiveFeed:i];
-				if ([cacheService checkExpiration:feedInfo.localFileName] == NO) {
+				if (shouldReloadArticles == YES) {
+					TRACE(">>>>> %s, reload feed, %s\n", __func__, [feedInfo.origURL UTF8String]);
+					[self refreshFeed:feedInfo withIndex:i];
+				}
+				else if ([cacheService checkExpiration:feedInfo.localFileName] == NO) {
 					// feed is expired.
 					TRACE(">>>>> %s, refresh feed, %s\n", __func__, [feedInfo.origURL UTF8String]);
 					[self refreshFeed:feedInfo withIndex:i];
@@ -914,6 +896,7 @@ clean:
 				if (continueRefreshArticles == NO) break;
 			}
 			refreshCheck = NO;
+			shouldReloadArticles = NO;
 			[doSomething broadcast];
 			continue;
 		}
@@ -926,6 +909,15 @@ clean:
 		activeThreadCount++;
 	}
 	
+}
+
+- (void)reloadArticles
+{
+	shouldReloadArticles = YES;
+	continueRefreshArticles = YES;
+	refreshCheck = YES;
+	shouldCheckExpiration = YES;
+	[doSomething broadcast];
 }
 
 - (void)articleTask2
@@ -1326,10 +1318,10 @@ clean:
 		shouldCheckExpiration = YES;
 	}
 	
-	if (shouldNotify == YES) {
-		TRACE("Status: a: %d t: %d c: %d\n", numberOfArticleDownload, numberOfThumbDownload, numberOfCSSDownload);
-		[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(updateDownloadStatus:) withObject:nil waitUntilDone:YES];
-	}
+	//if (shouldNotify == YES) {
+	//	TRACE("Status: a: %d t: %d c: %d\n", numberOfArticleDownload, numberOfThumbDownload, numberOfCSSDownload);
+	//	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(updateDownloadStatus:) withObject:nil waitUntilDone:YES];
+	//}
 }
 
 - (BOOL)selectArticleAtIndexPath:(NSIndexPath*)indexPath
@@ -1341,7 +1333,6 @@ clean:
 	[storage showArticle:indexPath];
 	[doSomething broadcast];
 	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(addNewArticle:) withObject:nil	waitUntilDone:YES];
-	[self getArticlePage];
 	
 	return ret;
 }
@@ -1409,12 +1400,13 @@ clean:
 		time_t after = time(nil);
 		
 		TRACE("%s, before: %d, after: %d\n", __func__, before, after);
-		if ((after - before) >= SLOW_NETWORK_INTERVAL) {
+		if (showedSlowWarning == NO && ((after - before) >= SLOW_NETWORK_INTERVAL)) {
 			// show slow network warning
 			[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(displaySlowNetworkWarning:) withObject:self	waitUntilDone:YES];	
 			[waitForUI lock];
 			[waitForUI wait];
 			[waitForUI unlock];
+			showedSlowWarning = YES;
 		}
 		
 		NetworkService *networkService = [NetworkService sharedNetworkServiceInstance];
@@ -1436,6 +1428,8 @@ clean:
 			[theArticleStorage cleanActiveFeedStorage:index];
 			
 			// TODO: Potential issue that the parser can only kick in for newly downloaded object.
+			// Hack: for parser to work later.
+			helper.isLocalRequest = NO;
 			shouldCleanLater = [helper constructResponseWithHeader:&header withBody:&body toReleaseHeader:&release];
 			
 			[protectFeed unlock];
