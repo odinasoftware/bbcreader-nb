@@ -881,6 +881,7 @@ clean:
 	NSMutableData *data = nil;
 	int fd = -1;
 	
+	
 	@synchronized (self) {
 		fd = open([file UTF8String], O_RDONLY);
 		if (fd == -1) {
@@ -910,6 +911,10 @@ clean:
 		
 		close(fd);
 	}
+	
+	
+	//NSData *data = [[NSFileManager defaultManager] contentsAtPath:file];
+	//[data retain];
 	return data;
 }
 
