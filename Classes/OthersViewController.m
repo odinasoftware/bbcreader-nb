@@ -47,7 +47,7 @@
 	}
 	
 	FeedInformation *feed = [storage feedByIndexPath:indexPath]; //[storage.feedInformationStorage objectAtIndex:indexPath.row];
-	cell.text = feed.title;
+	cell.textLabel.text = feed.title;
 	if ([storage isAvailableOffline:indexPath] == YES) {
 		cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 	}
@@ -64,10 +64,11 @@
 	return 2;
 }
 
-- (void)tableView:(UITableView*)theTableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
 { 
 	[[NetworkService sharedNetworkServiceInstance] performSelectorOnMainThread:@selector(selectArticleAtIndexPath:) withObject:(id)newIndexPath waitUntilDone:YES];
 	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(selectArticleAtIndexPath:) withObject:(id)newIndexPath	waitUntilDone:YES];
+	[tableView deselectRowAtIndexPath:newIndexPath animated:YES];
 }
 
 /*
