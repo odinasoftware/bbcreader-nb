@@ -23,6 +23,7 @@
 
 @synthesize theTableView;
 @synthesize viewMode;
+@synthesize timer;
 //@synthesize theNavigationBar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -106,7 +107,6 @@
 	statusUpdate.font = [UIFont fontWithName:@"Arial-BoldMT" size:12];
 	statusUpdate.textColor = [UIColor whiteColor]; 
 	statusUpdate.lineBreakMode = UILineBreakModeWordWrap; 
-	[self updateDownloadStatus];
 	//statusUpdate.text = @"Downloading ...";
 	activityIndicator.hidesWhenStopped = YES;
 	//[activityIndicator startAnimating];
@@ -126,12 +126,13 @@
 	}
 	
 	[infoButton addTarget:self action:@selector(openSectionSetting:) forControlEvents:UIControlEventTouchUpInside];
-	
+	reloadButton.enabled = NO;
 	//[progressView release];
 	//[message release];
+	self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateDownloadStatus:) userInfo:nil repeats:YES];
 }
 
-- (void)updateDownloadStatus
+- (void)updateDownloadStatus:(id)object 
 {
 	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
 	WebCacheService *cacheService = [WebCacheService sharedWebCacheServiceInstance];
@@ -145,7 +146,7 @@
 		NSInteger nDownload = networkService.numberOfDownloadedObjects;
 		
 		
-		TRACE("Status update: channel: %d, Article: %d, image: %d, CSS: %d, Download: %d\n", nChannel, nArticle, nImage, nCSS, nDownload);
+		//TRACE("Status update: channel: %d, Article: %d, image: %d, CSS: %d, Download: %d\n", nChannel, nArticle, nImage, nCSS, nDownload);
 		
 		if (nDownload > (nArticle+nImage+nChannel+nCSS)) {
 			nDownload = (nArticle+nImage+nChannel+nCSS);
@@ -159,7 +160,7 @@
 		
 		NSString *update = nil; 
 		if (networkService.offlineMode == YES) {
-			update = [[NSString alloc] initWithFormat:@"Offline: %d articles available.", nArticle];
+			update = [[NSString alloc] initWithFormat:@"Offline: %d articles.", nArticle];
 			statusUpdate.text = update;
 			[update release];
 			
@@ -169,9 +170,12 @@
 				 (networkService.activeThreadCount <= 0)) {
 			if ([activityIndicator isAnimating] == YES) 
 				[activityIndicator stopAnimating];
-			update = [[NSString alloc] initWithFormat:@"Updated: %d articles available.", nArticle];
+			update = [[NSString alloc] initWithFormat:@"Updated: %d articles.", nArticle];
 			statusUpdate.text = update;
 			[update release];
+			
+			if (reloadButton.enabled != YES)
+				reloadButton.enabled = YES;
 			
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 		}
@@ -183,6 +187,8 @@
 			statusUpdate.text = update;
 			[update release];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
+			if (reloadButton.enabled != NO)
+				reloadButton.enabled = NO;
 		}
 		
 		Configuration *config = [Configuration sharedConfigurationInstance];
@@ -356,7 +362,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-	[self updateDownloadStatus];
+	
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
@@ -473,7 +479,7 @@
 	return [storage getTitleInSection:section useOther:(viewMode==MAIN_ARTICLE_MODE?NO:YES)];
 }
 
-- (void)tableView:(UITableView*)theTableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
 { 
 	NetworkService *service = [NetworkService sharedNetworkServiceInstance];
 	
@@ -485,6 +491,12 @@
 		TRACE("%s, can't get lock.\n", __func__);
 	}
 	[service.protectFeed unlock];
+	[tableView deselectRowAtIndexPath:newIndexPath animated:YES];
+}
+
+- (IBAction)reloadArticles:(id)sender
+{
+	[[NetworkService sharedNetworkServiceInstance] reloadArticles];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -504,6 +516,8 @@
 - (void)dealloc {
 	[progressView release];
 	[message release];
+	[timer invalidate];
+	[timer release];
 	[super dealloc];
 }
 
