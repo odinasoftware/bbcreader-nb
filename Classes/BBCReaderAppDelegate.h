@@ -36,7 +36,6 @@
 - (void)openWebViewWithLink:(WebLink*)link;
 - (void)updateImageLink:(id)object;
 - (void)displayDiskWarning:(id)object;
-- (void)updateDownloadStatus:(id)object;
 - (void)updateSegmentTitles:(id)object;
 - (void)showNetworkError:(id)object;
 - (void)removeSplashView:(id)object;

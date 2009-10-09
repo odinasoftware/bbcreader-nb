@@ -281,20 +281,6 @@
 	}
 }
 
-- (void)updateDownloadStatus:(id)object
-{
-	UIViewController *controller = [self.tabBarController selectedViewController];
-	
-	if ([controller isKindOfClass:[ArticleNavigation class]] ||
-		[controller isKindOfClass:[OthersNavigation class]]) {
-		//[((SettingsView*)controller).myTableView reloadData];
-		UIViewController *c = [(ArticleNavigation*)controller topViewController];
-		if ([c isKindOfClass:[ArticleViewController class]]) {
-			[(ArticleViewController*)c updateDownloadStatus];
-		}
-	}
-}
-
 - (void)openWebViewWithLink:(WebLink*)link
 {
 	NSUInteger selectedIndex = [self.tabBarController selectedIndex];
