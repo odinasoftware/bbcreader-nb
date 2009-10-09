@@ -76,6 +76,7 @@
 		198D22570F2255AD004116A5 /* InternationalFeeds.plist in Resources */ = {isa = PBXBuildFile; fileRef = 198D22560F2255AD004116A5 /* InternationalFeeds.plist */; };
 		198D225C0F225933004116A5 /* Sports.plist in Resources */ = {isa = PBXBuildFile; fileRef = 198D225B0F225933004116A5 /* Sports.plist */; };
 		1999368D0F09B138002F577F /* LocalServerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1999368C0F09B138002F577F /* LocalServerManager.m */; };
+		19AE14CF107D23E000D5FB3F /* reload4.png in Resources */ = {isa = PBXBuildFile; fileRef = 19AE14CE107D23E000D5FB3F /* reload4.png */; };
 		19B3A9AD0EE719AB00501B7F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19B3A9AC0EE719AB00501B7F /* SystemConfiguration.framework */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -203,6 +204,7 @@
 		198D225B0F225933004116A5 /* Sports.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Sports.plist; sourceTree = "<group>"; };
 		1999368B0F09B138002F577F /* LocalServerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalServerManager.h; sourceTree = "<group>"; };
 		1999368C0F09B138002F577F /* LocalServerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalServerManager.m; sourceTree = "<group>"; };
+		19AE14CE107D23E000D5FB3F /* reload4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload4.png; sourceTree = "<group>"; };
 		19B3A9AC0EE719AB00501B7F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* BBCReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BBCReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -447,6 +449,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				19AE14CE107D23E000D5FB3F /* reload4.png */,
 				191DF2AE0ED20A5B00C712E7 /* Info.plist */,
 				191DF22E0ED2072800C712E7 /* Feeds.plist */,
 				191DF2230ED206E100C712E7 /* Default.png */,
@@ -537,6 +540,7 @@
 				198D21F60F217113004116A5 /* SectionSetting.xib in Resources */,
 				198D22570F2255AD004116A5 /* InternationalFeeds.plist in Resources */,
 				198D225C0F225933004116A5 /* Sports.plist in Resources */,
+				19AE14CF107D23E000D5FB3F /* reload4.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,7 +674,7 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_IDENTITY = "iPhone Developer: Jae Han";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jae Han";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jae Han (WEEA473VPB)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = _DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -678,7 +682,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				PROVISIONING_PROFILE = DefaultProfileUuid;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "78A18D95-7B3D-4ABB-BD3A-844182691C15";
 				SDKROOT = iphonesimulator2.0;
 			};
 			name = Debug;
