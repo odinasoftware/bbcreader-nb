@@ -31,7 +31,7 @@
 	NSIndexPath			*theCurrentFeedIndexPath;
 	NSMutableURLRequest *theRequest;
 	HTTPConnection		*theConnection;
-	SocketHelper		*socket;
+	//SocketHelper		*socket;
 	BOOL				isCached;
 	BOOL				useiPhoneSDK;
 	NetworkService		*networkService;
@@ -46,6 +46,7 @@
 }
 
 @property (nonatomic, retain) NSData *cachedData;
+@property (nonatomic) BOOL isLocalRequest;
 
 - (BOOL)parseReceivedData:(NSData*)data withIndex:(NSIndexPath*)indexPath fromCache:(BOOL)usingCache;
 - (BOOL)requestWithURL:(NSURL*)url fileToSave:(NSString*)file parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait;

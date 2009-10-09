@@ -72,6 +72,7 @@ NSMutableURLRequest *getRequest()
 
 //@synthesize receivedData;
 @synthesize cachedData;
+@synthesize isLocalRequest;
 
 -(id) init {
 	if ((self = [super init])) {
@@ -80,7 +81,6 @@ NSMutableURLRequest *getRequest()
 		//connectionArray = [[NSMutableArray alloc] init];
 		cacheService = [WebCacheService sharedWebCacheServiceInstance];
 		theConnection = nil;
-		socket = [[SocketHelper alloc] init];
 		isCached = NO;
 		networkService = [NetworkService sharedNetworkServiceInstance];
 		cacheFileName = nil;
@@ -93,6 +93,7 @@ NSMutableURLRequest *getRequest()
 -(BOOL) requestWithURL:(NSURL*) url fileToSave:(NSString*)file parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait
 {
 	BOOL isDataAvailable = NO;
+	int i = 0;
 	
 	useiPhoneSDK = NO;
 	
@@ -111,57 +112,27 @@ NSMutableURLRequest *getRequest()
 		return NO;
 	}
 	
-	if (networkService.requireConnection == YES) {
-		theRequest = [[NSMutableURLRequest alloc] initWithURL:url
-												  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-											  timeoutInterval:5.0];
-		//theRequest = [[NSMutableURLRequest alloc] init];
-		//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
-		//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-		//Mozilla/5.0 (iPhone Simulator; U; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20
-		//[theRequest setHTTPMethod:@"GET"];
-		//[theRequest setURL:url];
-		[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
-		[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
-		[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-		//[theRequest setHTTPShouldHandleCookies:NO];
-		
-		useiPhoneSDK = YES;
-		TRACE("%s, use NSURLRequest:\n", __func__);
-	}
-	else {	
-		// add custom header
-		//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
-		//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-		if ([socket createSocketWithHostName:[url host] keepAlive:YES] == NO) 
-			return NO;
-		[socket createRequestWithURL:url];
-		//[socket addRequestHeader:@"User-Agent" withValue:@"CFNetwork/330"];
-		[socket addRequestHeader:@"User-Agent" withValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20"];
-		//[socket addRequestHeader:@"Accept-Encoding" withValue:@"gzip, deflate"];
-#ifdef USE_COOKIE
-		NSString *cookie = [socket getCookie:url];
-		if (cookie) {
-			[socket addRequestHeader:@"Cookie" withValue:cookie];
-			[cookie release];
-		}
-#endif
-		
-	}
-	//if (thisConnection == nil) {
-	//	thisConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:NO];
-	//}
 	
-	//HTTPConnection* theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:NO];
-	//if ([theConnection retainCount] > 1) {
-		// TODO: don't know why it is two here.
-		// To prevent from leaking, we will release here.
-	//	[theConnection release];
-	//}
-	//NSURLResponse* theResponse = nil;
-	//NSError* theError = nil;
+	theRequest = [[NSMutableURLRequest alloc] initWithURL:url
+											  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+										  timeoutInterval:5.0];
+	//theRequest = [[NSMutableURLRequest alloc] init];
+	//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
+	//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+	//Mozilla/5.0 (iPhone Simulator; U; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20
+	//[theRequest setHTTPMethod:@"GET"];
+	//[theRequest setURL:url];
+	[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
+	[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
+	[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+	//[theRequest setHTTPShouldHandleCookies:NO];
+	
+	useiPhoneSDK = YES;
+	TRACE("%s, use NSURLRequest:\n", __func__);
+	
 	TRACE("%s: request: %p\n", __func__, theRequest);
 repeat:
+	++i;
 	isFailed = NO;
 	done = NO;
 	theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:YES];
@@ -185,7 +156,7 @@ repeat:
 				[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
 			} while (!done);
 						
-			if (isFailed == YES)
+			if (isFailed == YES && i<3)
 				goto repeat;
 			
 			if (theConnection.receivedData && [theConnection.receivedData length] > 0)
@@ -287,6 +258,7 @@ repeat:
 	// TODO: need to modify
 	parserType = type;
 	parserDelegate = delegate;
+	int i = 0;
 	
 	isCached = NO;
 	BOOL cont = NO;
@@ -323,39 +295,26 @@ repeat:
 			return NO;
 		}
 		
-		if (networkService.requireConnection == YES) {
-			theRequest = [[NSMutableURLRequest alloc] initWithURL:url
-													cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-													timeoutInterval:5.0];
-			//theRequest = [[NSMutableURLRequest alloc] init];
-			//[theRequest setHTTPMethod:@"GET"];
-			//[theRequest setURL:url];
-			//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
-			//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-			[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
-			[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
-			[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
-			//[theRequest setHTTPShouldHandleCookies:NO];
-			
-			useiPhoneSDK = YES;
-			TRACE("%s, use NSURLRequest:\n", __func__);
-		}
-		else {
-			[socket createSocketWithHostName:[url host] keepAlive:YES];
-			[socket createRequestWithURL:url];
-			[socket addRequestHeader:@"User-Agent" withValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_1 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20"];
-			//[socket addRequestHeader:@"Accept-Encoding" withValue:@"gzip, deflate"];
-			[socket addRequestHeader:@"Accept" withValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5"];
-		}
-#ifdef USE_COOKIE
-		NSString *cookie = [socket getCookie:url];
-		if (cookie) {
-			[socket addRequestHeader:@"Cookie" withValue:cookie];
-			[cookie release];
-		}
-#endif
+	
+		theRequest = [[NSMutableURLRequest alloc] initWithURL:url
+												  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
+											  timeoutInterval:5.0];
+		//theRequest = [[NSMutableURLRequest alloc] init];
+		//[theRequest setHTTPMethod:@"GET"];
+		//[theRequest setURL:url];
+		//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
+		//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+		[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
+		[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
+		[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
+		//[theRequest setHTTPShouldHandleCookies:NO];
+		
+		useiPhoneSDK = YES;
+		TRACE("%s, use NSURLRequest:\n", __func__);
+		
 		TRACE("%s: request: %p\n", __func__, theRequest);
 	repeat:
+		++i;
 		isFailed = NO;
 		done = NO;
 		theConnection = [[HTTPConnection alloc] initWithRequest:theRequest delegate:self startImmediately:YES];
@@ -375,7 +334,7 @@ repeat:
 					
 				} while (!done);
 				
-				if (isFailed == YES) {
+				if (isFailed == YES && i<3) {
 					goto repeat;
 				}
 				
@@ -458,7 +417,7 @@ repeat:
 			config.lastUpdatedDate = [NSDate date]; //time(nil);
 			[config saveSettings];
 		}
-		[socket close];
+	
 	}
 	else {
 		//NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:theCacheEntry.cacheFile];
@@ -724,39 +683,35 @@ repeat:
 {
 	NSData *response = nil;
 	
-	if (theResponse == nil) {
-		response = [socket getResponseHeader];
-	}
-	else {
-		NSDictionary *responseDict = [theResponse allHeaderFields];
-		
-		NSEnumerator *enumerator = [responseDict keyEnumerator];
-		
-		id key;
-		NSString *field;
-		NSMutableData *buffer = [[NSMutableData alloc] initWithLength:200];
-		NSString *line;
-		[buffer setLength:0];
-		[buffer appendBytes:HTTP_OK length:strlen(HTTP_OK)];
-		while (key = [enumerator nextObject]) {
-			if ([(NSString*)key caseInsensitiveCompare:@"Connection"] == NSOrderedSame) {
-				line = [[NSString alloc] initWithString:@"Connection: close\r\n"];
-				[buffer appendBytes:[line UTF8String] length:[line length]];
-				[line release];
-				continue;
-			}
-			else if ([(NSString*)key caseInsensitiveCompare:@"Keep-Alive"] == NSOrderedSame) {
-				continue;
-			}
-			
-			field = [responseDict objectForKey:key];
-			line = [[NSString alloc] initWithFormat:@"%@: %@\r\n", (NSString*)key, field];
+	NSDictionary *responseDict = [theResponse allHeaderFields];
+	
+	NSEnumerator *enumerator = [responseDict keyEnumerator];
+	
+	id key;
+	NSString *field;
+	NSMutableData *buffer = [[NSMutableData alloc] initWithLength:200];
+	NSString *line;
+	[buffer setLength:0];
+	[buffer appendBytes:HTTP_OK length:strlen(HTTP_OK)];
+	while (key = [enumerator nextObject]) {
+		if ([(NSString*)key caseInsensitiveCompare:@"Connection"] == NSOrderedSame) {
+			line = [[NSString alloc] initWithString:@"Connection: close\r\n"];
 			[buffer appendBytes:[line UTF8String] length:[line length]];
 			[line release];
+			continue;
 		}
-		[buffer appendBytes:"\r\n" length:2];
-		response = buffer;	
+		else if ([(NSString*)key caseInsensitiveCompare:@"Keep-Alive"] == NSOrderedSame) {
+			continue;
+		}
+		
+		field = [responseDict objectForKey:key];
+		line = [[NSString alloc] initWithFormat:@"%@: %@\r\n", (NSString*)key, field];
+		[buffer appendBytes:[line UTF8String] length:[line length]];
+		[line release];
 	}
+	[buffer appendBytes:"\r\n" length:2];
+	response = buffer;	
+	
 	
 	return response;
 }
@@ -794,7 +749,6 @@ repeat:
 	//[theConnection unscheduleFromRunLoop:[NSRunLoop mainRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
 	[theConnection release];
 	[theRequest release];
-	[socket release];
 	[cachedData	release];
 	[super dealloc];
 }
