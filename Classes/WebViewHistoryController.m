@@ -6,6 +6,7 @@
 #import "NetworkService.h"
 #import "Configuration.h"
 #import "WebLink.h"
+#import "WebViewController.h"
 
 #define NO_IMAGE_AVAIABLE	@"none"
 #define DEFAULT_IMAGE		@"default"
@@ -146,6 +147,7 @@
 		if (imageRect.image != nil)
 			[imageRect.image release];
 		imageRect.image = defaultBBCLogo;
+		[imageRect.image retain];
 		[imageRect setImageLink:DEFAULT_IMAGE];
 		[cell.contentView addSubview:imageRect];
 	}
@@ -190,10 +192,20 @@
 	return nil;
 }
 
-- (void)tableView:(UITableView*)theTableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
 { 
 	// Open web view
-	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewAtIndex:) withObject:(id)newIndexPath waitUntilDone:YES];
+	//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewAtIndex:) withObject:(id)newIndexPath waitUntilDone:YES];
+	Configuration *config = [Configuration sharedConfigurationInstance];
+	
+	WebViewController *myWebViewController = [[WebViewController alloc] init];
+	//WebViewController *myWebViewController = [WebViewControllerHolder getWebViewController:&needLoad];
+	myWebViewController.webLink = [config.history objectAtIndex:newIndexPath.row];
+	myWebViewController.hidesBottomBarWhenPushed = YES;
+	
+	[self.navigationController pushViewController:myWebViewController animated:YES];
+	[tableView deselectRowAtIndexPath:newIndexPath animated:YES];
+	
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
