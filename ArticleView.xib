@@ -100,7 +100,7 @@
 							<object class="IBUILabel" id="647958454">
 								<reference key="NSNextResponder" ref="655823426"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{22, 2}, {140, 15}}</string>
+								<string key="NSFrame">{{6, 2}, {140, 15}}</string>
 								<reference key="NSSuperview" ref="655823426"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -119,8 +119,8 @@
 							</object>
 							<object class="IBUIButton" id="409174770">
 								<reference key="NSNextResponder" ref="655823426"/>
-								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{-8, -9}, {40, 40}}</string>
+								<int key="NSvFlags">-2147483356</int>
+								<string key="NSFrame">{{273, -19}, {60, 60}}</string>
 								<reference key="NSSuperview" ref="655823426"/>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
@@ -131,7 +131,6 @@
 									<double key="NSSize">1.500000e+01</double>
 									<int key="NSfFlags">16</int>
 								</object>
-								<string key="IBUINormalTitle">reload</string>
 								<reference key="IBUIHighlightedTitleColor" ref="69608246"/>
 								<object class="NSColor" key="IBUINormalTitleColor">
 									<int key="NSColorSpace">1</int>
@@ -386,7 +385,7 @@
 					<string>ArticleTableView</string>
 					<string>{{453, 364}, {320, 418}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-					<string>{{466, 350}, {320, 480}}</string>
+					<string>{{837, 318}, {320, 480}}</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 					<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
