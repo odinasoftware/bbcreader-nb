@@ -15,6 +15,4 @@
 
 @property (nonatomic, assign) BOOL didWebViewShown;
 
-- (void)showWebView:(NSIndexPath*)indexPath;
-
 @end

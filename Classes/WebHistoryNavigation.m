@@ -41,6 +41,7 @@
 	WebViewHistoryController *historyView = [[WebViewHistoryController alloc] initWithNibName:@"WebHistory" bundle:nil];
 	[self pushViewController:historyView animated:NO];
 	
+	/*
 	Configuration *config = [Configuration sharedConfigurationInstance];
 	NSString *last_url_hash = [config getLastUsedURLHash];
 	if (last_url_hash != nil) {
@@ -53,35 +54,8 @@
 			[self pushViewController:myWebViewController animated:YES];
 		}
 	}
+	 */
     //[super viewDidLoad];
-}
-
-- (void)showWebView:(NSIndexPath*)indexPath
-{
-	//BOOL needLoad = NO;
-	Configuration *config = [Configuration sharedConfigurationInstance];
-	
-	WebViewController *myWebViewController = [[WebViewController alloc] init];
-	//WebViewController *myWebViewController = [WebViewControllerHolder getWebViewController:&needLoad];
-	myWebViewController.webLink = [config.history objectAtIndex:indexPath.row];
-	myWebViewController.hidesBottomBarWhenPushed = YES;
-	
-	// TODO: Decide start a thread or use the network thread for local server.
-	// Using local server thread:
-	//    achieve responsivness, however be careful to finish the current one ASAP. 
-	// 
-	// Use network thread:
-	//    easy to sync, but may have some problem in responsivness.
-	//[theSegmentedControl removeFromSuperview];
-	pool = [[NSAutoreleasePool alloc] init];
-	//if (needLoad == NO)
-		[self pushViewController:myWebViewController animated:YES];
-	//[myWebViewController release];
-	//else {
-	//	[self pushViewController:myWebViewController animated:YES];
-	//	[myWebViewController loadWeb];
-	//}
-	didWebViewShown = YES;
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
