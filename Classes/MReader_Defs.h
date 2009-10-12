@@ -40,3 +40,5 @@ typedef enum {CACHE_NONE, CACHE_THUMB_NAIL, CACHE_HTML, CACHE_FEED} cache_catego
 #else
 #define TRACE(fmt, args...)
 #endif
+
+#define	TRACE_HERE		TRACE("%s\n", __func__)
