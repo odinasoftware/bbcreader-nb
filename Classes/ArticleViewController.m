@@ -14,6 +14,7 @@
 #import "SectionSetting.h"
 #import "WebCacheService.h"
 #import "Configuration.h"
+#import "WebViewController.h"
 
 
 #define NO_IMAGE_AVAIABLE	@"none"
@@ -126,7 +127,7 @@
 	}
 	
 	[infoButton addTarget:self action:@selector(openSectionSetting:) forControlEvents:UIControlEventTouchUpInside];
-	reloadButton.enabled = NO;
+	reloadButton.hidden = YES;
 	//[progressView release];
 	//[message release];
 	self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateDownloadStatus:) userInfo:nil repeats:YES];
@@ -174,8 +175,8 @@
 			statusUpdate.text = update;
 			[update release];
 			
-			if (reloadButton.enabled != YES)
-				reloadButton.enabled = YES;
+			if (reloadButton.hidden == YES)
+				reloadButton.hidden = NO;
 			
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 		}
@@ -187,8 +188,8 @@
 			statusUpdate.text = update;
 			[update release];
 			[UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-			if (reloadButton.enabled != NO)
-				reloadButton.enabled = NO;
+			if (reloadButton.hidden == NO)
+				reloadButton.hidden = YES;
 		}
 		
 		Configuration *config = [Configuration sharedConfigurationInstance];
@@ -319,6 +320,7 @@
 		if (imageRect.image != nil)
 			[imageRect.image release];
 		imageRect.image = defaultBBCLogo;
+		[imageRect.image retain];
 		[imageRect setImageLink:DEFAULT_IMAGE];
 		if (reusableCell == NO)
 			[cell.contentView addSubview:imageRect];
@@ -484,8 +486,16 @@
 	NetworkService *service = [NetworkService sharedNetworkServiceInstance];
 	
 	if ([service.protectFeed tryLock] == YES) {
+		[service setCurrentWebIndex:newIndexPath];
 		// Open web view
-		[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewAtIndex:) withObject:(id)newIndexPath waitUntilDone:YES];
+		//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewAtIndex:) withObject:(id)newIndexPath waitUntilDone:YES];
+		WebViewController *myWebViewController = [[WebViewController alloc] init];
+		
+		myWebViewController.theIndexPath = newIndexPath;
+		myWebViewController.hidesBottomBarWhenPushed = YES;
+		
+		[self.navigationController pushViewController:myWebViewController animated:YES];
+
 	}
 	else {
 		TRACE("%s, can't get lock.\n", __func__);
