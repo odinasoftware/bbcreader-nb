@@ -12,7 +12,7 @@
 @class WebCacheService;
 @class NetworkService;
 
-@interface SettingsView : UIViewController <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate> {
+@interface SettingsView : UIViewController <UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate> {
 	IBOutlet UITableView	*myTableView;
 	UIProgressView			*progressBar;
 	UISwitch				*switchCtl;

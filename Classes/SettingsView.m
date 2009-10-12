@@ -32,8 +32,6 @@ extern int networkError;
 enum ControlTableSections
 {
 	kUISwitch_Section = 0,
-	kUIProgress_Section,
-	kUILastUpdate_Section,
 	kUITotalArticle_Section,
 	kUITotalObject_Section,
 	kUIDownloadedObject_Section,
@@ -86,7 +84,7 @@ enum ControlTableSections
 	storage = [ArticleStorage sharedArticleStorageInstance];
 	cacheService = [WebCacheService sharedWebCacheServiceInstance];
 	networkService = [NetworkService sharedNetworkServiceInstance];
-	[self create_UIProgressView];
+	//[self create_UIProgressView];
 	[self create_UISwitch];
 	//formatter = [[NSDateFormatter alloc] init];
 	//[formatter setDateFormat:@"%Y-%m-%d %H:%M:%S %Z"];
@@ -101,7 +99,7 @@ enum ControlTableSections
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-	return 7;
+	return 5;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
@@ -112,16 +110,6 @@ enum ControlTableSections
 		case kUISwitch_Section:
 		{
 			title = nil;
-			break;
-		}
-		case kUIProgress_Section:
-		{
-			title = nil; //@"Progress";
-			break;
-		}
-		case kUILastUpdate_Section:
-		{
-			title = @"Last Update";
 			break;
 		}
 		case kUITotalArticle_Section:
@@ -141,20 +129,52 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"Message:";
+			title = @"Message (v.1.7.0):";
 			break;
 		}
 	}
 	return title;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+	NSString *title;
+	switch (section)
+	{
+		case kUISwitch_Section:
+		{
+			title = @"In the offline mode, BBCReader will not fetch articles from Internet. It will serve articles only from the cache.";;
+			break;
+		}
+		case kUITotalArticle_Section:
+		{
+			title = @"The total number of articles available in offline.";
+			break;
+		}
+		case kUITotalObject_Section:
+		{
+			title = @"Total objects include articles, pictures, and stylesheets.";
+			break;
+		}
+		case kUIDownloadedObject_Section:
+		{
+			title = @"The objects that are already downloaded and available in offline.";
+			break;
+		}
+		case kUIInformation_Section:
+		{
+			title = @"2009 Odina software.\n Maker of iGeoJournal.\n Map, camera, journal, and recorder,\n all in one place!\nVisit the app store for more information.";
+			break;
+		}
+	}
+	return title;
+	
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	if (section == kUIInformation_Section) {
-		return 1;
-	}
 	
-	return 2;
+	return 1;
 }
 
 // to determine specific row height for each cell, override this.  In this example, each row is determined
@@ -212,36 +232,6 @@ enum ControlTableSections
 		if (cell == nil) 
 			cell = [[[SourceCell alloc] initWithFrame:CGRectZero reuseIdentifier:kSourceCell_ID] autorelease];
 	} 
-	else if (indexPath.section == kUIProgress_Section) {
-		if (row == 0)
-			cell = [myTableView dequeueReusableCellWithIdentifier:kDisplayProgressCell_ID];
-		else if (row == 1)
-			cell = [myTableView dequeueReusableCellWithIdentifier:kSourceCell_ID];
-		
-		
-		if (cell == nil)
-		{
-			if (row == 0)
-				cell = [[[DisplayCell alloc] initWithFrame:CGRectZero reuseIdentifier:kDisplayProgressCell_ID] autorelease];
-			else if (row == 1)
-				cell = [[[SourceCell alloc] initWithFrame:CGRectZero reuseIdentifier:kSourceCell_ID] autorelease];
-		}
-	}
-	else if (indexPath.section == kUILastUpdate_Section) {
-		if (row == 0)
-			cell = [myTableView dequeueReusableCellWithIdentifier:kDisplayDateCell_ID];
-		else if (row == 1)
-			cell = [myTableView dequeueReusableCellWithIdentifier:kSourceCell_ID];
-		
-		
-		if (cell == nil)
-		{
-			if (row == 0)
-				cell = [[[DisplayCell alloc] initWithFrame:CGRectZero reuseIdentifier:kDisplayDateCell_ID] autorelease];
-			else if (row == 1)
-				cell = [[[SourceCell alloc] initWithFrame:CGRectZero reuseIdentifier:kSourceCell_ID] autorelease];
-		}
-	}
 	else {
 		if (row == 0)
 			cell = [myTableView dequeueReusableCellWithIdentifier:kDisplayCell_ID];
@@ -296,55 +286,6 @@ enum ControlTableSections
 			}
 			break;
 		}			
-		case kUIProgress_Section:
-		{
-			if (row == 0)
-			{
-				// this cell hosts the UISwitch control
-				((DisplayCell *)cell).nameLabel.text = @"Progress:";
-				((DisplayCell *)cell).view = progressBar;
-				progressBar.progress = downloadProgress; 
-			}
-			else
-			{
-				// this cell hosts the info on where to find the code
-				((SourceCell*)cell).sourceLabel.textColor = [UIColor grayColor];
-				((SourceCell *)cell).sourceLabel.text = @"Shows download progress";
-			}
-			break;
-		}
-		case kUILastUpdate_Section:
-		{
-			if (row == 0)
-			{
-				Configuration *config = [Configuration sharedConfigurationInstance];
-				
-				// this cell hosts the UISwitch control
-				((DisplayCell *)cell).nameLabel.text = @"";
-				
-				if (config.lastUpdatedDate == nil)
-					((DisplayCell *)cell).valueLabel.text = @"Undetermined";
-				else {
-					//NSDateFormatter *format = [[NSDateFormatter alloc] init];
-					NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-					[formatter setDateFormat:@"EEE, MMM d hh:mm aaa"];
-					NSString *formattedDate = [[NSString alloc] initWithFormat:[formatter stringFromDate:config.lastUpdatedDate]];
-					
-					((DisplayCell *)cell).valueLabel.text = formattedDate;
-					[formattedDate release];
-					[formatter release];
-					
-				}
-				//((DisplayCell *)cell).view = switchCtl;
-			}
-			else
-			{
-				// this cell hosts the info on where to find the code
-				((SourceCell*)cell).sourceLabel.textColor = [UIColor grayColor];
-				((SourceCell *)cell).sourceLabel.text = @"Date and time articles were last updated.";
-			}
-			break;
-		}
 		case kUITotalArticle_Section:
 		{
 			if (row == 0)
@@ -430,13 +371,13 @@ enum ControlTableSections
 
 - (IBAction)cleanCache:(id)sender
 {
-	/*
+	
 	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Clean Cache" message:@"You are about to clean cache contents. You will need to restart BBCReader to resync articles."
 												   delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
 	[alert show];
 	[alert release];
-	*/
 	
+	/*
 	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Empty Cache: You are about to clear cache contents! You will need to restart BBCReader to sync articles."
 													delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil
 													otherButtonTitles:@"Cancel", @"Empty Cache", nil];
@@ -444,11 +385,12 @@ enum ControlTableSections
 	actionSheet.destructiveButtonIndex = 0;	// make the second button red (destructive)
 	[actionSheet showInView:self.view];
 	[actionSheet release];
-	
+	*/
 	
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+//- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
 	TRACE("%s, %d\n", __func__, buttonIndex);
 	if (buttonIndex == 1) {
@@ -505,7 +447,7 @@ enum ControlTableSections
 
 
 - (void)dealloc {
-	[progressBar release];
+	//[progressBar release];
 	[switchCtl release];
 	[super dealloc];
 }
