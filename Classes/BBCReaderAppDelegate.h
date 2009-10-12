@@ -25,21 +25,20 @@
 
 - (void)addNewArticle:(WebLink*)article;
 - (void)setTitle:(NSString*)title;
-- (void)showNextFeed:(id)object;
 - (void)showPreviousFeed:(id)object;
 - (void)selectArticleAtIndexPath:(NSIndexPath*)indexPath;
 - (void)showPrevArticleImage:(WebLink*)article;
 - (void)showNextArticleImage:(WebLink*)article;
-- (void)openWebViewAtIndex:(NSIndexPath*)indexPath;
+//- (void)openWebViewAtIndex:(NSIndexPath*)indexPath;
 - (void)reloadArticleWithIndex:(id)index;
 - (void)showImageControls:(id)object;
-- (void)openWebViewWithLink:(WebLink*)link;
+//- (void)openWebViewWithLink:(WebLink*)link;
 - (void)updateImageLink:(id)object;
 - (void)displayDiskWarning:(id)object;
 - (void)updateSegmentTitles:(id)object;
 - (void)showNetworkError:(id)object;
 - (void)removeSplashView:(id)object;
-- (void)openWebViewWithRequest:(NSURLRequest*)request;
+//- (void)openWebViewWithRequest:(NSURLRequest*)request;
 - (void)updateHistory:(id)object;
 - (void)reachabilityChanged:(NSNotification *)note;
 - (void)showOfflineModeWarning:(id)object;

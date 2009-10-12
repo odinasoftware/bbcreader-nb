@@ -216,11 +216,6 @@
 	[(ArticleNavigation*)[[self.tabBarController viewControllers] objectAtIndex:0] setTitle:title];
 }
 
-- (void)showNextFeed:(id)object 
-{
-	[(ArticleNavigation*)[[self.tabBarController viewControllers] objectAtIndex:0] showNextFeed];
-}
-
 - (void)showPreviousFeed:(id)object
 {
 	[(ArticleNavigation*)[[self.tabBarController viewControllers] objectAtIndex:0] showPreviousFeed];
@@ -249,6 +244,7 @@
 	
 }
 
+/*
 - (void)openWebViewAtIndex:(NSIndexPath*)indexPath
 {
 	NSUInteger selectedIndex = [self.tabBarController selectedIndex];
@@ -269,6 +265,7 @@
 	
 }
 
+
 - (void)openWebViewWithRequest:(NSURLRequest*)request
 {
 	NSUInteger selectedIndex = [self.tabBarController selectedIndex];
@@ -288,6 +285,7 @@
 		[(ImageNavigation*)[self.tabBarController selectedViewController] showWebView:link];
 	}
 }
+*/
 
 - (void)showImageControls:(id)object
 {
