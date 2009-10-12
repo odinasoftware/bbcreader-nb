@@ -115,7 +115,7 @@ NSMutableURLRequest *getRequest()
 	
 	theRequest = [[NSMutableURLRequest alloc] initWithURL:url
 											  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-										  timeoutInterval:5.0];
+										  timeoutInterval:60.0];
 	//theRequest = [[NSMutableURLRequest alloc] init];
 	//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
 	//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
@@ -209,8 +209,6 @@ repeat:
 			 */
 		}
 	}
-	else {
-	}
 	
 		
 	//[socket close];
@@ -298,7 +296,7 @@ repeat:
 	
 		theRequest = [[NSMutableURLRequest alloc] initWithURL:url
 												  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-											  timeoutInterval:5.0];
+											  timeoutInterval:60.0];
 		//theRequest = [[NSMutableURLRequest alloc] init];
 		//[theRequest setHTTPMethod:@"GET"];
 		//[theRequest setURL:url];
@@ -562,8 +560,7 @@ repeat:
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
 {
 	
-	NSLog(@"%s, req: %p, res: %p, %@:\n", __func__, request, redirectResponse, [request URL]);
-	NSLog(@"URL: :%@:", [request URL]);
+	TRACE("%s, req: %p, res: %p, %s:\n", __func__, request, redirectResponse, [[request URL] UTF8String]);
 
 	NSDictionary *responseDict = [request allHTTPHeaderFields];
 	
@@ -572,7 +569,7 @@ repeat:
 	NSString *object;
 	
 	while (object = [enumerator nextObject]) {
-		NSLog(@"o: %@:", object);
+		TRACE("o: %s:", [object UTF8String]);
 	}
 	
 	return request;
