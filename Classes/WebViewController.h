@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
 @class WebLink;
 
-@interface WebViewController : UIViewController <UIWebViewDelegate> {
+@interface WebViewController : UIViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate> {
 	//IBOutlet UIWebView	*theWebView;
 	//IBOutlet UIImageView *splashView;
 	UIWebView	*theWebView;
@@ -39,6 +41,7 @@
 - (BOOL)isLoadingPage;
 - (void)stopLoading;
 - (void)resetLink;
+- (IBAction)segmentAction:(id)sender;
 
 //- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigatonType:(UIWebViewNavigationType)navigationType;
 

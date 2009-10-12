@@ -14,8 +14,12 @@
 #import "WebLink.h"
 #import "NetworkService.h"
 #import "Configuration.h"
+#import "GeoSession.h"
+#import "FacebookConnect.h"
 
+#define IMAGE_ATTACHMENT_FILENAME		@"BBCReader_picture_attachment.jpg"
 #define WEB_VIEW_TAG 10
+#define kCustomButtonHeight		30.0
 
 static const NSString *local_host_prefix = @"http://localhost:9000/";
 extern BOOL localServerStarted;
@@ -68,7 +72,7 @@ extern BOOL localServerStarted;
 	if (theIndexPath != nil) {
 		storage = [ArticleStorage sharedArticleStorageInstance];
 		link = [storage getSelectedLink:theIndexPath];
-		
+		self.webLink = link;
 	}
 	else if (webLink != nil) {
 		link = webLink;
@@ -177,6 +181,7 @@ extern BOOL localServerStarted;
 	if (theIndexPath != nil) {
 		storage = [ArticleStorage sharedArticleStorageInstance];
 		link = [storage getSelectedLink:theIndexPath];
+		self.webLink = link;
 	}
 	else if (webLink != nil) {
 		link = webLink;
@@ -236,7 +241,7 @@ extern BOOL localServerStarted;
 	//	[theWebView loadRequest:request];	
 	//}
 	[theIndexPath release];
-	[webLink release];
+	
 }
 
 - (void)resetLink
@@ -271,12 +276,129 @@ extern BOOL localServerStarted;
 	return image;
 }
 
+#pragma mark MAIL CONTROLLER delegate
+
+- (void)syncWithMail
+{
+	
+	if ([MFMailComposeViewController canSendMail] == NO) {
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Mail is not configured" message:@"Please check your Mail setting." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+		[alert show];
+		[alert release];
+	}
+	else {
+		
+		MFMailComposeViewController *mailController = [[MFMailComposeViewController alloc] init];
+		mailController.mailComposeDelegate = self;
+				
+		
+		if (self.webLink.text)
+			[mailController setSubject:self.webLink.text];
+		
+		if (self.webLink.description) {
+			// When only text is available.
+			
+			[mailController setMessageBody:self.webLink.description isHTML:NO];
+		}
+		
+		NSString *body = [[NSString alloc] initWithFormat:@"<HTML><BODY><p>%@</p><h6><p><a href='%@'>%@</a></p></h6></BODY></HTML>", 
+						  self.webLink.description, self.webLink.url, @"Go to BBC to read the original article."];
+		[mailController setMessageBody:body isHTML:YES];
+		[body release];
+		
+		
+		NSString *pictureLink = self.webLink.imageLink;
+		if (pictureLink) {
+			NSData *data = [[NSData alloc] initWithContentsOfFile:pictureLink];
+			[mailController addAttachmentData:data mimeType:@"image/jpeg" fileName:IMAGE_ATTACHMENT_FILENAME];
+			TRACE("%s, attachment: %s, size: %d\n", __func__, [pictureLink UTF8String], [data length]);
+			[data release];
+		}
+				
+		[self presentModalViewController:mailController animated:YES];
+		[mailController release];
+	}
+}
+
+- (void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+	switch (result)
+	{
+		case MFMailComposeResultCancelled:
+			
+			break;
+		case MFMailComposeResultSaved:
+			
+			break;
+		case MFMailComposeResultSent:
+			
+			break;
+		case MFMailComposeResultFailed:
+			
+			break;
+		default:
+			
+			break;
+	}
+	TRACE("%s, result: %d\n", __func__, result);
+	[self dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark Facebook Publish and Sync 
+
+- (void)syncWithFacebook
+{
+	[[GeoSession getFBAgent] publishToFacebookForWebLink:self.webLink];
+}
+
+#pragma mark -
+#pragma mark SEGMENT CONTROLLER
+- (IBAction)segmentAction:(id)sender
+{
+	// The segmented control was clicked, handle it here 
+	UISegmentedControl *segmentedControl = (UISegmentedControl *)sender;
+	TRACE("Segment clicked: %d\n", segmentedControl.selectedSegmentIndex);
+	
+	switch (segmentedControl.selectedSegmentIndex) {
+		case 0:
+			[self syncWithFacebook];
+			break;
+		case 1:
+			[self syncWithMail];
+			break;
+		case 2:
+		default:
+			NSLog(@"%s, index error: %d", __func__, segmentedControl.selectedSegmentIndex);
+	}
+	
+}
+#pragma mark -
+
 - (void)stopProgressIndicator
 {
 	UINavigationItem *navItem = self.navigationItem;
 	UIActivityIndicatorView *progView = (UIActivityIndicatorView *)navItem.rightBarButtonItem.customView;
 	[progView stopAnimating];
 	progView.hidden = YES;
+	
+	UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:
+											[NSArray arrayWithObjects:
+											 [UIImage imageNamed:@"facebook.png"],
+											 [UIImage imageNamed:@"mail1.png"],
+											 nil]];
+	[segmentedControl addTarget:self action:@selector(segmentAction:) forControlEvents:UIControlEventValueChanged];
+	segmentedControl.frame = CGRectMake(0, 0, 90, kCustomButtonHeight);
+	segmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+	segmentedControl.momentary = YES;
+	
+	//defaultTintColor = [segmentedControl.tintColor retain];	// keep track of this for later
+	
+	UIBarButtonItem *segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:segmentedControl];
+    [segmentedControl release];
+    
+	self.navigationItem.rightBarButtonItem = segmentBarItem;
+    [segmentBarItem release];
+	
 
 	TRACE("%s\n", __func__);
 }
@@ -407,6 +529,7 @@ extern BOOL localServerStarted;
 
 
 - (void)dealloc {
+	[webLink release];
 	[realURL release];
     [super dealloc];
 }
