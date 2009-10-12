@@ -10,6 +10,8 @@
 #import "FeedInformation.h"
 #import "ArticleStorage.h"
 #import	"NetworkService.h"
+#import "WebViewController.h"
+#import "ArticleViewController.h"
 
 @implementation OthersViewController
 
@@ -66,8 +68,16 @@
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
 { 
-	[[NetworkService sharedNetworkServiceInstance] performSelectorOnMainThread:@selector(selectArticleAtIndexPath:) withObject:(id)newIndexPath waitUntilDone:YES];
-	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(selectArticleAtIndexPath:) withObject:(id)newIndexPath	waitUntilDone:YES];
+	NetworkService *service = [NetworkService sharedNetworkServiceInstance];
+	[service setCurrentWebIndex:newIndexPath];
+	
+	[service performSelectorOnMainThread:@selector(selectArticleAtIndexPath:) withObject:(id)newIndexPath waitUntilDone:YES];
+
+	ArticleViewController* articleView = [[ArticleViewController alloc] initWithNibName:@"ArticleView" bundle:nil];
+	articleView.viewMode = OTHER_ARTICLE_MODE;
+	[self.navigationController pushViewController:articleView animated:YES];
+	
+		
 	[tableView deselectRowAtIndexPath:newIndexPath animated:YES];
 }
 
