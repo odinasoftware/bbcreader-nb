@@ -17,6 +17,5 @@
 
 @property (assign) BOOL didWebViewShown;
 
-- (void)showWebView:(WebLink*)link;
 
 @end

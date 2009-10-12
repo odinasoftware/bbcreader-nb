@@ -44,27 +44,6 @@
 	didWebViewShown = NO;
 }
 
-- (void)showWebView:(WebLink*)link
-{
-	//BOOL needLoad = NO;
-	
-	WebViewController *myWebViewController = [[WebViewController alloc] init];
-	//WebViewController *myWebViewController = [WebViewControllerHolder getWebViewController:&needLoad];
-	myWebViewController.webLink = link;
-	myWebViewController.hidesBottomBarWhenPushed = YES;
-	
-	pool = [[NSAutoreleasePool alloc] init];
-	//if (needLoad == NO)
-		[self pushViewController:myWebViewController animated:YES];
-	//[myWebViewController release];
-	//else {
-	//	[self pushViewController:myWebViewController animated:YES];
-	//	[myWebViewController loadWeb];
-	//}
-	didWebViewShown = YES;
-	
-}
-
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
 	if ([viewController isKindOfClass:[ScrollViewController class]]) {
