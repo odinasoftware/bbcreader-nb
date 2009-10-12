@@ -247,7 +247,7 @@ static NetworkService *sharedNetworkService = nil;
 		 *      4. If everything above is done, download embedded objects. 
 		 *      5. Whild doing any of above, xml feed is avaiable, then get that first. 
 		 */
-		NSString *tmpDir = (NSString*) NSTemporaryDirectory();
+		NSString *tmpDir = (NSString*) NSHomeDirectory();
 		//NSError *parseError = nil;
 		if (tmpDir == nil) {
 			NSLog(@"%s, can't get the temporary directory.");
