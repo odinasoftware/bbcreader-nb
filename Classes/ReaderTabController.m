@@ -12,6 +12,7 @@
 #import "Configuration.h"
 #import "OthersNavigation.h"
 #import "WebHistoryNavigation.h"
+#import "MReader_Defs.h"
 
 @implementation ReaderTabController
 
@@ -101,12 +102,13 @@
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
 	if (fromInterfaceOrientation == UIDeviceOrientationPortrait) {
-		UINavigationController *nav = (UINavigationController*)self.tabBarController.selectedViewController;
+		UINavigationController *nav = (UINavigationController*)self.selectedViewController;
+		
 		nav.navigationBarHidden = YES;
 	}
 	else
 	if (fromInterfaceOrientation == UIDeviceOrientationLandscapeLeft || fromInterfaceOrientation == UIDeviceOrientationLandscapeRight) {
-		UINavigationController *nav = (UINavigationController*)self.tabBarController.selectedViewController;
+		UINavigationController *nav = (UINavigationController*)self.selectedViewController;
 		nav.navigationBarHidden = NO;
 	}
 }
