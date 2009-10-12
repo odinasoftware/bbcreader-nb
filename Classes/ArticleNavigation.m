@@ -41,37 +41,40 @@
 - (void)viewDidLoad {
 	self.delegate = self;
 	// TODO: need to modify to get it from user.
-	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
-	[storage setActiveFeed:0];
-	didWebViewShown = NO;
-	
-	ArticleViewController *articleView = [[ArticleViewController alloc] initWithNibName:@"ArticleView" bundle:nil];
-	//secondView = [[ArticleViewController alloc] initWithNibName:@"ArticleView" bundle:nil];
-	/* TODO: this bar button item does not work.
-	articleView.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-																						   target:nil
-																						   action:nil] autorelease];
-	articleView.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-																							target:nil
-																							action:nil] autorelease];
-	*/
-	[self pushViewController:articleView animated:NO];
-	NSArray *titles = [storage getMostRecentTitles];
-	theSegmentedControl = [[UISegmentedControl alloc] initWithItems:titles];
-	[theSegmentedControl addTarget:self action:@selector(toggleSection:) forControlEvents:UIControlEventValueChanged];
-	theSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
-    theSegmentedControl.backgroundColor = [UIColor clearColor];
-	[theSegmentedControl sizeToFit];
-	theSegmentedControl.selectedSegmentIndex = 0;
-	CGRect parentFrame = [self.navigationBar frame];
-	CGRect segmentedControlFrame = CGRectMake(parentFrame.size.width/2 - kSegmentCtrlBoxSize/2,
-											  parentFrame.size.height/2 - kSegmentCtrlBoxHeight/2,
-											  kSegmentCtrlBoxSize,
-											  kSegmentCtrlBoxHeight);
-    theSegmentedControl.frame = segmentedControlFrame;
-	//[self.navigationBar addSubview:theSegmentedControl];
-	//[segmentedControl release];	
-	[titles release];
+	if (self.topViewController == nil) {
+		ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
+		[storage setActiveFeed:0];
+		didWebViewShown = NO;
+		
+		ArticleViewController *articleView = [[ArticleViewController alloc] initWithNibName:@"ArticleView" bundle:nil];
+		//secondView = [[ArticleViewController alloc] initWithNibName:@"ArticleView" bundle:nil];
+		/* TODO: this bar button item does not work.
+		 articleView.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+		 target:nil
+		 action:nil] autorelease];
+		 articleView.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+		 target:nil
+		 action:nil] autorelease];
+		 */
+		
+		[self pushViewController:articleView animated:NO];
+		NSArray *titles = [storage getMostRecentTitles];
+		theSegmentedControl = [[UISegmentedControl alloc] initWithItems:titles];
+		[theSegmentedControl addTarget:self action:@selector(toggleSection:) forControlEvents:UIControlEventValueChanged];
+		theSegmentedControl.segmentedControlStyle = UISegmentedControlStyleBar;
+		theSegmentedControl.backgroundColor = [UIColor clearColor];
+		[theSegmentedControl sizeToFit];
+		theSegmentedControl.selectedSegmentIndex = 0;
+		CGRect parentFrame = [self.navigationBar frame];
+		CGRect segmentedControlFrame = CGRectMake(parentFrame.size.width/2 - kSegmentCtrlBoxSize/2,
+												  parentFrame.size.height/2 - kSegmentCtrlBoxHeight/2,
+												  kSegmentCtrlBoxSize,
+												  kSegmentCtrlBoxHeight);
+		theSegmentedControl.frame = segmentedControlFrame;
+		//[self.navigationBar addSubview:theSegmentedControl];
+		//[segmentedControl release];	
+		[titles release];
+	}
 }
 
 - (void)updateSegmentText:(int)index
@@ -90,61 +93,6 @@
 		[theSegmentedControl setTitle:[titles objectAtIndex:i] forSegmentAtIndex:i];
 	}
 	[titles release];
-}
-
-- (void)showNextFeed
-{
-	//NSLog(@"showNextFeed, %d", useSecondView);
-	ArticleViewController* articleView = [[ArticleViewController alloc] initWithNibName:@"ArticleView" bundle:nil];
-	[self pushViewController:articleView animated:YES];
-	/* TODO: this bar button item does not work.
-	 articleView.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-	 target:nil
-	 action:nil] autorelease];
-	 articleView.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-	 target:nil
-	 action:nil] autorelease];
-	 */
-	
-	/*
-	[UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:0.75];
-    [UIView setAnimationDelegate:self];
-    [UIView setAnimationDidStopSelector:nil];
-	
-	//if (frontViewIsVisible==YES)
-	//{
-	UIView *view = nil;
-	
-	if (useSecondView == YES) {
-		view = secondView;
-		useSecondView = NO;
-	}
-	else {
-		view = articleView;
-		useSecondView = YES;
-	}
-		[UIView setAnimationTransition:UIViewAnimationTransitionNone forView:articleView.theTableView cache:YES];
-		//[flipIndicatorButton setBackgroundImage:element.flipperImageForAtomicElementNavigationItem forState:UIControlStateNormal];
-	//}
-	//else
-	//{
-		//[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:flipIndicatorButton cache:YES];
-		//[flipIndicatorButton setBackgroundImage:[UIImage imageNamed:@"flipper_list_blue.png"] forState:UIControlStateNormal];
-		
-	//}
-	[UIView commitAnimations];
-*/
-	/*
-	if (useSecondView == YES) {
-		[self pushViewController:secondView animated:YES];
-		useSecondView = NO;
-	}
-	else {
-		[self pushViewController:articleView animated:YES];
-		useSecondView = YES;
-	}
-	*/
 }
 
 - (void)toggleSection:(id)sender

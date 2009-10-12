@@ -26,7 +26,6 @@
 
 @property (nonatomic, assign) BOOL didWebViewShown;
 
-- (void)showNextFeed;
 - (void)showPreviousFeed;
 - (void)showWebView:(NSIndexPath*)indexPath;
 - (void)updateSegmentText:(int)index;
