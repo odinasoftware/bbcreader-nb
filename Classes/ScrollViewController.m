@@ -257,7 +257,15 @@
 	NSNumber *tapCount = (NSNumber*)object;
 	
 	if (isSlideShowRunning == NO && [tapCount intValue] == 2) {
-		[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewWithLink:) withObject:(id)currentWebLink waitUntilDone:YES];
+		//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewWithLink:) withObject:(id)currentWebLink waitUntilDone:YES];
+		WebViewController *myWebViewController = [[WebViewController alloc] init];
+		//WebViewController *myWebViewController = [WebViewControllerHolder getWebViewController:&needLoad];
+		myWebViewController.webLink = currentWebLink;
+		myWebViewController.hidesBottomBarWhenPushed = YES;
+		
+
+		[self.navigationController pushViewController:myWebViewController animated:YES];
+		
 	}
 	else if (isSlideShowRunning == YES && [tapCount intValue] > 0) {
 		[self stopSlideShow:nil];
@@ -372,7 +380,7 @@
 	// Create and schedule the first timer. 
 	NSDate* futureDate = [NSDate dateWithTimeIntervalSinceNow:1.0]; 
 	slideShowTimer = [[NSTimer alloc] initWithFireDate:futureDate 
-												interval:3
+												interval:5
 												target:currentSlideImageController
 												selector:@selector(showNextImage:) 
 												userInfo:nil 
