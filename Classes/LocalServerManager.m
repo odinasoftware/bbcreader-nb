@@ -19,7 +19,7 @@
 #import "LocalServer.h"
 #import "LocalServerManager.h"
 
-#define MAX_LOCAL_SERVER_THREAD	4
+#define MAX_LOCAL_SERVER_THREAD	6
 #define LOCAL_PORT				9000
 #define LISTENQ					32
 

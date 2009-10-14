@@ -24,6 +24,8 @@
 #define LINE_FEED			0x0a
 #define CHUNKED_SIZE		1500
 
+static NSTimeInterval LOCAL_SERVER_CONNECTION_TIMEOUT = 5.0;
+
 static const char *notFoundResponse = "HTTP/1.1 404 Not Found\r\nContent-length: 56\r\nConnection: close\r\n\r\n";
 							     //          11        21        31        41        51 
 								 //012345678901234567890123456789012345678901234567890123456789
@@ -94,113 +96,6 @@ void sigpipe_handler(int sig)
 	sa.sa_handler = sigpipe_handler;
 	sigaction(SIGPIPE, &sa, nil);
 }
-
-/*
-- (void)startLocalServer
-{
-	int listenfd=-1, connfd=-1;
-	struct sockaddr_in cliaddr, servaddr;
-	unsigned int clilen = 0;
-	int optval = 1;
-	//int l_onoff = 0;
-	struct timeval timeout;
-	int ttl = 1;
-	int sendBuf = 61440;
-	int rcvBuf = 61440;
-	//int len=sizeof(ttl);
-	
-	timeout.tv_sec = 2;
-	timeout.tv_usec = 0;
-	
-	if (localRequest != nil) {
-		[localRequest release];
-		localRequest = nil;
-	}
-	isRequestValid = NO;
-	
-	TRACE("%s, ttl: %d\n", __func__, ttl);
-	
-	listenfd = socket(AF_INET, SOCK_STREAM, 0);
-	
-	if (setsockopt(listenfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) < 0) {
-		TRACE("error in getsockopt: %s\n", strerror(errno));
-	}
-	if (setsockopt(listenfd, SOL_SOCKET, SO_RCVBUF, &rcvBuf, sizeof(int)) < 0) {
-		NSLog(@"error in setsockopt: %s\n", strerror(errno));
-	}
-	if (setsockopt(listenfd, SOL_SOCKET, SO_SNDBUF, &sendBuf, sizeof(int)) < 0) {
-		NSLog(@"error in setsockopt: %s\n", strerror(errno));
-	}
-	//if (pipe(signal_pipe) < 0) {
-	//	NSLog(@"%s: %s", __func__, strerror(errno));
-	//	return;
-	//}
-	
-	bzero(&servaddr, sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(LOCAL_PORT);
-	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
-	if (bind(listenfd, (const struct sockaddr*)&servaddr, sizeof(servaddr)) < 0) {
-		NSLog(@"%s: %s", __func__, strerror(errno));
-		return;
-	}
-	
-	if (listen(listenfd, LISTENQ) < 0) {
-		NSLog(@"%s: %s", __func__, strerror(errno));
-		return;
-	}
-	
-	for (;;) {
-		@try {
-			if (stopIt == YES) {
-				NSLog(@"Stop request has been detected.");
-				return;
-			}
-			//TRACE("~~~~ before accept ~~~~~~\n");
-			if ((connfd = accept(listenfd, (struct sockaddr*)&cliaddr, &clilen)) < 0) {
-				if (errno == EINTR)
-					continue;
-				else {
-					NSLog(@"%s, accept error: %s", __func__, strerror(errno));
-					continue;
-				}
-			}
-			
-			TRACE("LocalServer, accepting connection: %d\n", connfd);
-			//setsockopt(connfd, SOL_SOCKET, SO_LINGER, &l_onoff, sizeof(l_onoff));
-			if (setsockopt(connfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) < 0) {
-				TRACE("error in getsockopt: %s\n", strerror(errno));
-			}
-			if (setsockopt(connfd, SOL_SOCKET, SO_RCVTIMEO, (const void*)&timeout, sizeof(timeout)) < 0) {
-				NSLog(@"%s, failed to set timeout. %s", __func__, strerror(errno));
-			}
-			if (setsockopt(connfd, SOL_SOCKET, SO_SNDTIMEO, (const void*)&timeout, sizeof(timeout)) < 0) {
-				NSLog(@"%s, failed to set timeout. %s", __func__, strerror(errno));
-			}
-			if (setsockopt(connfd, SOL_SOCKET, SO_RCVBUF, &rcvBuf, sizeof(int)) < 0) {
-				NSLog(@"error in setsockopt: %s\n", strerror(errno));
-			}
-			if (setsockopt(connfd, SOL_SOCKET, SO_SNDBUF, &sendBuf, sizeof(int)) < 0) {
-				NSLog(@"error in setsockopt: %s\n", strerror(errno));
-			}
-			
-			// Will only allow one connection at a time.
-			[self resetConnection];
-			
-			if ([self readFromConnection:connfd] == YES) {
-				currentReadPtr = currentWritePtr = markIndex = 0;
-			}
-			close(connfd);
-		} @catch (NSException *exception) {
-			NSLog(@"%s: main: %@: %@", __func__, [exception name], [exception reason]);
-			pthread_mutex_trylock(&network_mutex);
-			pthread_mutex_unlock(&network_mutex);
-		}
-	}
-	
-}
-*/
 
 - (void)stopLocalServer
 {
@@ -559,6 +454,7 @@ clean:
 		return nil;
 	}
 	helper = [[HTTPUrlHelper alloc] init];
+	helper.connectionTimeout = LOCAL_SERVER_CONNECTION_TIMEOUT;
 	[helper requestWithURL:url fileToSave:file parserKind:MREADER_FILE_TYPE feedIndex:nil shouldWait:NO];
 	shouldCleanLater = [helper constructResponseWithHeader:header withBody:body toReleaseHeader:release];
 	
@@ -580,6 +476,7 @@ clean:
 	// TODO: need to get indexPath from the current WebView.
 	NSIndexPath *indexPath = [theNetworkService getIndexForURL:orig_url];
 	helper = [[HTTPUrlHelper alloc] init];
+	helper.connectionTimeout = LOCAL_SERVER_CONNECTION_TIMEOUT;
 	[helper requestWithURLUseCache:url delegate:[theNetworkService getHtmlParser] parserKind:MREADER_HTML_PARSER feedIndex:indexPath shouldWait:NO];
 	shouldCleanLater = [helper constructResponseWithHeader:header withBody:body toReleaseHeader:release];
 	//[url release];
