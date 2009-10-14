@@ -109,6 +109,13 @@
 	return title;
 }
 
+/*
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+	return @"Cached contents are available in the blue disclosure arrow buttons.";
+}
+ */
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
 	// Return YES for supported orientations
 	return (interfaceOrientation == UIInterfaceOrientationPortrait);
