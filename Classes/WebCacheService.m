@@ -485,7 +485,7 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 			ret = NO;
 		}
 		else {
-			expire_date = [expire_date addTimeInterval:3600.0];
+			expire_date = [expire_date addTimeInterval:43200.0];
 			
 			NSDate *today = [NSDate date];
 			
