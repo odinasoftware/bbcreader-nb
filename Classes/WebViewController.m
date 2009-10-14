@@ -104,6 +104,9 @@ extern BOOL localServerStarted;
 	
 	UINavigationItem *navItem = self.navigationItem;
 	buttonItem = [[UIBarButtonItem alloc] initWithCustomView:progressView];
+	buttonItem.style = UIBarButtonItemStyleBordered;
+	buttonItem.target = self;
+	buttonItem.action = @selector(stopProgress:);
 	navItem.rightBarButtonItem = buttonItem;
 	
 	//[progressView release];
@@ -155,6 +158,11 @@ extern BOOL localServerStarted;
 - (void)stopLoading
 {
 	[theWebView stopLoading];
+}
+
+- (void)stopProgress:(id)sender
+{
+	[self stopLoading];
 }
 
 - (void)loadWeb

@@ -41,6 +41,7 @@
 - (BOOL)isLoadingPage;
 - (void)stopLoading;
 - (void)resetLink;
+- (void)stopProgress:(id)sender;
 - (IBAction)segmentAction:(id)sender;
 
 //- (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigatonType:(UIWebViewNavigationType)navigationType;
