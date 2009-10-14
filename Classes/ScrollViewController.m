@@ -357,7 +357,7 @@
 - (void)stopSlideShow:(id)sender
 {
 	self.navigationItem.rightBarButtonItem = playBarButton;
-	[UIApplication sharedApplication].idleTimerDisabled = YES;
+	[UIApplication sharedApplication].idleTimerDisabled = NO;
 	isSlideShowRunning = NO;
 	if (slideShowTimer != nil) {
 		[slideShowTimer invalidate];
