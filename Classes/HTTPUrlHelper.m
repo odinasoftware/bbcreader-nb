@@ -18,8 +18,9 @@
 #import "NetworkService.h"
 #import "HTTPUrlHelper.h"
 
-#define REPEAT_COUNT	2
-#define HTTP_OK			"HTTP/1.1 200 OK\r\n"
+#define REPEAT_COUNT					2
+#define DEFAULT_CONNECTION_TIMEOUT		60.0			// 1 minute
+#define HTTP_OK							"HTTP/1.1 200 OK\r\n"
 
 /*
 HTTP/1.1 200 OK
@@ -70,9 +71,10 @@ NSMutableURLRequest *getRequest()
 
 @implementation HTTPUrlHelper
 
-//@synthesize receivedData;
+@synthesize connectionTimeout;
 @synthesize cachedData;
 @synthesize isLocalRequest;
+
 
 -(id) init {
 	if ((self = [super init])) {
@@ -86,6 +88,7 @@ NSMutableURLRequest *getRequest()
 		cacheFileName = nil;
 		shouldIgnoreCache = NO;
 		shouldNotifyReloadXML = YES;
+		connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 	}
 	return self;
 }
@@ -115,7 +118,7 @@ NSMutableURLRequest *getRequest()
 	
 	theRequest = [[NSMutableURLRequest alloc] initWithURL:url
 											  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-										  timeoutInterval:60.0];
+											  timeoutInterval:connectionTimeout];
 	//theRequest = [[NSMutableURLRequest alloc] init];
 	//[theRequest addValue:@"CFNetwork/330" forHTTPHeaderField:@"User-Agent"];
 	//[theRequest addValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
@@ -143,10 +146,7 @@ repeat:
 		//[connectionArray insertObject:(id)theConnection	atIndex:indexPath.row];
 		TRACE("%s, add connection: %x to index: (%d, %d), file: %s\n", __func__, (id)theConnection, indexPath.section, indexPath.row, [file UTF8String]);
 		
-		
-		NSRunLoop *r = [NSRunLoop currentRunLoop];
-		
-		TRACE("%s", [r currentMode]);
+			
 		if (wait == YES) {
 			
 			//[theConnection scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:(NSString*)kCFRunLoopDefaultMode];
@@ -296,7 +296,7 @@ repeat:
 	
 		theRequest = [[NSMutableURLRequest alloc] initWithURL:url
 												  cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
-											  timeoutInterval:60.0];
+											  timeoutInterval:connectionTimeout];
 		//theRequest = [[NSMutableURLRequest alloc] init];
 		//[theRequest setHTTPMethod:@"GET"];
 		//[theRequest setURL:url];
@@ -504,7 +504,10 @@ repeat:
 	NSLog(@"Connection failed! Error - %@: :%@:",
           [error localizedDescription],
           [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
-	isFailed = YES;
+	if ([[error localizedDescription] compare:@"no Internet connection"] != NSOrderedSame &&
+		[[error localizedDescription] compare:@"timed out"]) {
+		isFailed = YES;
+	}
 	done = YES;
 	
 }
@@ -560,7 +563,7 @@ repeat:
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
 {
 	
-	TRACE("%s, req: %p, res: %p, %s:\n", __func__, request, redirectResponse, [[request URL] UTF8String]);
+	TRACE("%s, req: %p, res: %p, %s:\n", __func__, request, redirectResponse, [[[request URL] absoluteString] UTF8String]);
 
 	NSDictionary *responseDict = [request allHTTPHeaderFields];
 	

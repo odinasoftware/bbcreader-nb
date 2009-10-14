@@ -18,20 +18,19 @@
 @class NetworkService;
 
 @interface HTTPUrlHelper : NSObject {
-	//NSMutableData	*receivedData;
-	//XMLReader		*xmlParser;
 	MReaderParserType	parserType;
 	id					parserDelegate;
 	CacheEntry			*theCacheEntry;
+	NSTimeInterval		connectionTimeout;
 	
 	@private
 	NSHTTPURLResponse	*theResponse;
-	//NSMutableArray		*connectionArray;
+
 	WebCacheService		*cacheService;
 	NSIndexPath			*theCurrentFeedIndexPath;
 	NSMutableURLRequest *theRequest;
 	HTTPConnection		*theConnection;
-	//SocketHelper		*socket;
+
 	BOOL				isCached;
 	BOOL				useiPhoneSDK;
 	NetworkService		*networkService;
@@ -45,8 +44,9 @@
 	NSData				*cachedData;
 }
 
-@property (nonatomic, retain) NSData *cachedData;
-@property (nonatomic) BOOL isLocalRequest;
+@property (nonatomic, retain) NSData	*cachedData;
+@property (nonatomic) BOOL				isLocalRequest;
+@property (nonatomic) NSTimeInterval	connectionTimeout;
 
 - (BOOL)parseReceivedData:(NSData*)data withIndex:(NSIndexPath*)indexPath fromCache:(BOOL)usingCache;
 - (BOOL)requestWithURL:(NSURL*)url fileToSave:(NSString*)file parserKind:(MReaderParserType)type feedIndex:(NSIndexPath*)indexPath shouldWait:(BOOL)wait;
@@ -59,12 +59,4 @@
 - (void)notifyReloadXML:(BOOL)notify;
 - (NSData*)getResponseHeader;
 
-//- (NSInteger)findIndexWithConnection:(NSURLConnection*)connection;
-//@property (nonatomic, retain) NSMutableData* receivedData;
-/*
-- (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse*)response;
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data;
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection;
-*/
 @end
