@@ -421,7 +421,7 @@ repeat:
 		//NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:theCacheEntry.cacheFile];
 		NSData* data = [cacheService readFromFile:theCacheEntry.cacheFile]; //[handle readDataToEndOfFile];
 		if (data == nil) {
-			TRACE("%s, cache data should be available, but is not there: %d\n", __func__, count);
+			NSLog(@"%s, cache data should be available, but is not there: %d\n", __func__, count);
 			isCached = NO;
 			cont = YES;
 		}
@@ -649,7 +649,7 @@ repeat:
 	}
 	
 	if (isCached == NO) {
-		//[theConnection.receivedData retain]; // will be released by localServer
+		isLocalRequest = NO; // So that cache service can save this.
 		[self connectionDidFinishLoading:theConnection];
 		TRACE(">>>>> %s, not cached.\n", __func__);
 		*header = [self getResponseHeader];
