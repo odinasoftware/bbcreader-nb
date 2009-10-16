@@ -26,7 +26,7 @@
 - (void)addNewArticle:(WebLink*)article;
 - (void)setTitle:(NSString*)title;
 - (void)showPreviousFeed:(id)object;
-- (void)selectArticleAtIndexPath:(NSIndexPath*)indexPath;
+//- (void)selectArticleAtIndexPath:(NSIndexPath*)indexPath;
 - (void)showPrevArticleImage:(WebLink*)article;
 - (void)showNextArticleImage:(WebLink*)article;
 //- (void)openWebViewAtIndex:(NSIndexPath*)indexPath;

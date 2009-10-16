@@ -134,7 +134,7 @@
 {
 	if ([viewController isKindOfClass:[ArticleNavigation class]]) {
 		// select article view controller
-		TRACE("Select article view controller\n");
+		NSLog(@"Select article view controller\n");
 		[[ArticleStorage sharedArticleStorageInstance] switchToArticleNavigation];
 		if (reloadArticleData == YES) {
 			[[(ArticleViewController*)[(UINavigationController*)viewController visibleViewController] theTableView] reloadData];
@@ -143,7 +143,7 @@
 	}
 	else if ([viewController isKindOfClass:[OthersNavigation class]]) {
 		// select others view controller
-		TRACE("Select others view controller\n");
+		NSLog(@"Select others view controller\n");
 		[[ArticleStorage sharedArticleStorageInstance] switchToOthersNavigation];
 	}
 	
@@ -221,12 +221,6 @@
 	[(ArticleNavigation*)[[self.tabBarController viewControllers] objectAtIndex:0] showPreviousFeed];
 }
 
-- (void)selectArticleAtIndexPath:(NSIndexPath*)indexPath
-{
-	[(OthersNavigation*)[[self.tabBarController viewControllers] objectAtIndex:OTHERS_VIEW_INDEX] selectArticleAtIndexPath:indexPath];
-	//[(ArticleNavigation*)[[self.tabBarController viewControllers] objectAtIndex:0] updateSegmentText];
-	//[[(ArticleViewController*)[(ArticleNavigation*)[[self.tabBarController viewControllers] objectAtIndex:0] topViewController] theTableView] reloadData];
-}
 
 - (void)reloadArticleWithIndex:(id)index
 {
