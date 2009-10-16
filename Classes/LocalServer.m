@@ -476,7 +476,7 @@ clean:
 	// TODO: need to get indexPath from the current WebView.
 	NSIndexPath *indexPath = [theNetworkService getIndexForURL:orig_url];
 	helper = [[HTTPUrlHelper alloc] init];
-	helper.connectionTimeout = LOCAL_SERVER_CONNECTION_TIMEOUT;
+	helper.connectionTimeout = LOCAL_SERVER_CONNECTION_TIMEOUT*3;
 	[helper requestWithURLUseCache:url delegate:[theNetworkService getHtmlParser] parserKind:MREADER_HTML_PARSER feedIndex:indexPath shouldWait:NO];
 	shouldCleanLater = [helper constructResponseWithHeader:header withBody:body toReleaseHeader:release];
 	//[url release];
