@@ -35,8 +35,10 @@
 
 // Implement viewDidLoad to do additional setup after loading the view.
 - (void)viewDidLoad {
-	ScrollViewController *scrollView = [[ScrollViewController alloc] initWithNibName:@"ScrollView" bundle:nil];
-	[self pushViewController:scrollView animated:NO];
+	if (self.topViewController == nil) {
+		ScrollViewController *scrollView = [[ScrollViewController alloc] initWithNibName:@"ScrollView" bundle:nil];
+		[self pushViewController:scrollView animated:NO];
+	}
 	self.navigationBar.barStyle = UIBarStyleBlackOpaque;
 	//self.navigationBarHidden = YES;
     //[super viewDidLoad];

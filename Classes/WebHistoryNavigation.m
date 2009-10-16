@@ -38,9 +38,10 @@
 - (void)viewDidLoad 
 {
 	didWebViewShown = NO;
-	WebViewHistoryController *historyView = [[WebViewHistoryController alloc] initWithNibName:@"WebHistory" bundle:nil];
-	[self pushViewController:historyView animated:NO];
-	
+	if (self.topViewController == nil) {
+		WebViewHistoryController *historyView = [[WebViewHistoryController alloc] initWithNibName:@"WebHistory" bundle:nil];
+		[self pushViewController:historyView animated:NO];
+	}
 	/*
 	Configuration *config = [Configuration sharedConfigurationInstance];
 	NSString *last_url_hash = [config getLastUsedURLHash];

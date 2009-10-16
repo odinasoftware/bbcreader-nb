@@ -37,8 +37,10 @@
 	didWebViewShown = NO;
 	self.delegate = self;
 	
-	OthersViewController *othersView = [[OthersViewController alloc] initWithNibName:@"OthersView" bundle:nil];
-	[self pushViewController:othersView animated:NO];
+	if (self.topViewController == nil) {
+		OthersViewController *othersView = [[OthersViewController alloc] initWithNibName:@"OthersView" bundle:nil];
+		[self pushViewController:othersView animated:NO];
+	}
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
