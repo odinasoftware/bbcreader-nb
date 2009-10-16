@@ -58,7 +58,6 @@ extern BOOL localServerStarted;
 	//theWebView.autoresizingMask = (UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight);
 	//theWebView.delegate = self;
 	//self.hidesBottomBarWhenPushed = YES;
-	requireToStop = NO;
 	
 	CGRect webFrame = [[UIScreen mainScreen] applicationFrame];
 	theWebView = [[UIWebView alloc] initWithFrame:webFrame];
@@ -112,7 +111,9 @@ extern BOOL localServerStarted;
 	//[progressView release];
 	//[buttonItem release];
 	
-	[(UIActivityIndicatorView *)navItem.rightBarButtonItem.customView startAnimating];	
+	if ([navItem.rightBarButtonItem.customView isKindOfClass:[UIActivityIndicatorView class]]) {
+		[(UIActivityIndicatorView *)navItem.rightBarButtonItem.customView startAnimating];	
+	}
 	
 	/*
 	UIImage *splash = [self getSlideImage];
@@ -163,93 +164,6 @@ extern BOOL localServerStarted;
 - (void)stopProgress:(id)sender
 {
 	[self stopLoading];
-}
-
-- (void)loadWeb
-{
-	ArticleStorage *storage = nil;
-	WebLink *link = nil;
-	BOOL useRequest = NO;
-	
-	if (theWebView.loading == YES) {
-		NSLog(@"%s, second request detected, will just return.", __func__);
-		return;
-	}
-	/*
-	if (theWebView.loading == YES) {
-		requireToStop = YES;
-		[theWebView stopLoading];
-		return;
-	}
-	else {
-		requireToStop = NO;
-	}
-	 */
-	
-	if (theIndexPath != nil) {
-		storage = [ArticleStorage sharedArticleStorageInstance];
-		link = [storage getSelectedLink:theIndexPath];
-		self.webLink = link;
-	}
-	else if (webLink != nil) {
-		link = webLink;
-	}
-	//else if (request != nil) {
-	//	useRequest = YES;
-	//}
-	else {
-		NSLog(@"%s, index path and weblink is null.", __func__);
-		return;
-	}
-	description = link.description;
-	
-	Configuration *config = [Configuration sharedConfigurationInstance];
-	[config addWebHitory:link];
-	
-	//NSString *url = [[WebCacheService sharedWebCacheServiceInstance] getLocalName:link.url];
-	// create our progress indicator for busy feedback while loading web pages,
-	// make it our custom right view in the navigation bar
-	//
-		
-	UINavigationItem *navItem = self.navigationItem;
-	//buttonItem = [[UIBarButtonItem alloc] initWithCustomView:progressView];
-	navItem.rightBarButtonItem = buttonItem;
-	progressView.hidden = NO;
-	
-	//[progressView release];
-	//[buttonItem release];
-	
-	[(UIActivityIndicatorView *)navItem.rightBarButtonItem.customView startAnimating];	
-	
-	/*
-	 UIImage *splash = [self getSlideImage];
-	 splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320, 480)];
-	 splashView.image = splash;
-	 splashView.backgroundColor = [UIColor blackColor];
-	 [theWebView addSubview:splashView];
-	 */
-	
-	if (useRequest == NO) {
-		//navItem.title = link.text;
-		titleLabel.text = link.text;
-		
-		// to register localhost name		
-		
-		NSString *url = [local_host_prefix stringByAppendingString:link.url];
-		if (realURL)
-			[realURL release];
-		
-		realURL = [[NSURL alloc] initWithString:link.url];
-		TRACE("%s: %s, %d\n", __func__, [url UTF8String], localServerStarted);
-		
-		[theWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];	
-		//[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"file:///var/folders/Uv/UvZ97-wrGH8OcAyNxLfLOU+++TI/-Tmp-/cache/newsrss.bbc.co.uk/1010012844.stm"]];
-	}
-	//else {
-	//	[theWebView loadRequest:request];	
-	//}
-	[theIndexPath release];
-	
 }
 
 - (void)resetLink
@@ -385,9 +299,14 @@ extern BOOL localServerStarted;
 - (void)stopProgressIndicator
 {
 	UINavigationItem *navItem = self.navigationItem;
-	UIActivityIndicatorView *progView = (UIActivityIndicatorView *)navItem.rightBarButtonItem.customView;
-	[progView stopAnimating];
-	progView.hidden = YES;
+	
+	if ([navItem.rightBarButtonItem.customView isKindOfClass:[UIActivityIndicatorView class]]) {
+		UIActivityIndicatorView *progView = (UIActivityIndicatorView *)navItem.rightBarButtonItem.customView;
+		
+	
+		[progView stopAnimating];
+		progView.hidden = YES;
+	}
 	
 	UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:
 											[NSArray arrayWithObjects:
@@ -465,9 +384,11 @@ extern BOOL localServerStarted;
 {
 	UINavigationItem *navItem = self.navigationItem;
 	
-	UIActivityIndicatorView *progView = (UIActivityIndicatorView *)navItem.rightBarButtonItem.customView;
-	[progView startAnimating];
-	progView.hidden = NO;
+	if ([navItem.rightBarButtonItem.customView isKindOfClass:[UIActivityIndicatorView class]]) {
+		UIActivityIndicatorView *progView = (UIActivityIndicatorView *)navItem.rightBarButtonItem.customView;
+		[progView startAnimating];
+		progView.hidden = NO;
+	}
 	TRACE("%s\n", __func__);
 }
 
@@ -493,32 +414,16 @@ extern BOOL localServerStarted;
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-	if (requireToStop == YES) {
-		requireToStop = NO;
-		[self release];
-		return;
-	}
-
 	[self stopProgressIndicator];
 	
 	//TRACE("%s, %s\n", __func__, [host UTF8String]);
-	
+	NSLog(@"%s, %@", __func__, [error localizedDescription]);
 	// report the error inside the webview
 	NSString* errorString = [NSString stringWithFormat:
 							 @"<html><center><font size=+5 color='black'>%@<br></font></center></html>",
 							 description];
 	[theWebView loadHTMLString:errorString baseURL:nil];
-	[self release];
-}
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-	// TODO: Is this really good thing to do???
-	if (theWebView.loading == YES) {
-		requireToStop = YES;
-
-		[theWebView stopLoading];
-	}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

@@ -24,7 +24,6 @@
 	@private
 	//UIImageView *splashView;
 	NSURL	    *realURL;
-	BOOL		requireToStop;
 	UILabel		*titleLabel;
 	UIActivityIndicatorView *progressView;
 	UIBarButtonItem *buttonItem;
@@ -37,7 +36,6 @@
 
 - (void)removeSplashView;
 - (UIImage*)getSlideImage;
-- (void)loadWeb;
 - (BOOL)isLoadingPage;
 - (void)stopLoading;
 - (void)resetLink;
