@@ -717,13 +717,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Jae Han";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Jae Han";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos3.0]" = "iPhone Distribution: Jae Han";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../GeoJournal/FBConnect;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5AFA3B1F-3831-4525-B269-4BB8B3088A04";
 				SDKROOT = iphoneos2.0;
 			};
 			name = Distribution;
@@ -800,7 +801,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jae Han (WEEA473VPB)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Jae Han";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jae Han (WEEA473VPB)";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
 				GCC_C_LANGUAGE_STANDARD = c99;
