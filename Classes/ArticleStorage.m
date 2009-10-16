@@ -925,6 +925,7 @@ NSString *getTitle(NSString *str)
 		return nil;
 	}
 
+	NSLog(@"%s, theActiveFeed: %d, feed: %d, row: %d\n", __func__, theActiveFeed, activeFeed[theActiveFeed], indexPath.row);
 	FeedStorage *feed = [self getFeedStorageRefAtIndex:activeFeed[theActiveFeed]];
 	
 	if ([feed count] > indexPath.row) {
