@@ -31,7 +31,7 @@
 #define MIN_SPACE_FOR_MREADER 26214400
 #define NUMBER_OF_ARTICLE_IN_TABLE 4
 #define SLOW_NETWORK_INTERVAL 10
-#define NUMBER_OF_THREAD 6
+#define NUMBER_OF_THREAD 4
 
 //NSString *rssfeedFilename = @"main_rss.xml";
 //NSString *mainURLString = @"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml";
