@@ -415,7 +415,7 @@ enum ControlTableSections
 		networkService.offlineMode = NO;
 		[[Configuration sharedConfigurationInstance] setOfflineMode:NO];
 		
-		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Offline mode has been disabled." message:@"You will need to restart BBCReader to resync articles."
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Offline mode has been disabled." message:@"You may need to press reload button to resync articles."
 													   delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
 		[alert show];
 		[alert release];
