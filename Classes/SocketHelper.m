@@ -376,6 +376,7 @@ int findRelativeIndex(const char* url)
 			[data release];
 			data = nil;
 		}
+		[value release];
 	}
 	
 	return data;
