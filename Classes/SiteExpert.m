@@ -177,6 +177,15 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
  
  <div>
 */ 
+/* For mobile page
+<div class="downlink"><a href="#navigation">Menu</a></div> <h1>Iraq violence 'may have prompted UK rethink'</h1> <div class="date">16 December 09 17:49 GMT</div> 
+ <img src="http://newsimg.bbc.co.uk/media/images/46931000/jpg/_46931088_000748208-1.jpg" width="66" height="49" alt=""> 
+ */
+/*
+<div class="downlink"><a href="#navigation">Menu</a></div> <h1>Cheques to be phased out in 2018</h1> 
+ <div class="date">16 December 09 16:24 GMT</div> 
+ <img src="http://newsimg.bbc.co.uk/media/images/45971000/jpg/_45971561_002320645-1.jpg" width="66" height="49" alt=""> 
+ */
 
 - (id)initWithParser:(HTMLParser*)parser 
 {
@@ -198,19 +207,28 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 	
 	if (([(NSString*)key compare:@"name"] == 0) && 
 		([(NSString*)value compare:@"THUMBNAIL_URL"] == 0)) {
+		// Just pass, we may see "content" next time.
 		ret = YES;
 	}
 	else if ([(NSString*)key compare:@"content"] == 0) {
+		// We really see "content", which means that it is the thumbnail.
 		addToThumbnail = YES;
 		
 	}
 	else if (([(NSString*)key compare:@"class"] == 0) && 
 			 ([(NSString*)value compare:@"storybody"] == 0)) {
-		// found storybody
+		// found storybody, great change to have embedded image
+		foundStoryBody = YES;
+	}
+	else if (([(NSString*)key compare:@"class"] == 0) && 
+			 ([(NSString*)value compare:@"downlink"] == 0)) {
+		// found image block for mobil page.
 		foundStoryBody = YES;
 	}
 	else if (foundStoryBody == YES && [(NSString*)key compare:@"src"] == 0) {
 		if ([[(NSString*)value pathExtension] compare:@"jpg"] == NSOrderedSame) {
+			// We found an image. When this is called, everything is done. 
+			// so we should reset the knowledge. 
 			addToThumbnail = YES;
 			foundStoryBody = NO;
 		}
