@@ -12,7 +12,6 @@
 #import "MReader_Defs.h"
 #import "WebLink.h"
 
-#define GEO_JOURNAL_TEMPLATE_BUNDLE_ID		155064341879
 #define LINE_FEED							0x0A
 #define CARRIAGE_RETURN						0x0D
 #define BLANK								@" "
@@ -89,21 +88,21 @@ NSString *getJASONSafeString(NSString *string) {
  */
 - (void)publishToFacebook:(NSString*)image_url
 {
-	FBFeedDialog* dialog = [[FBFeedDialog alloc] init];
+	FBStreamDialog* dialog = [[FBStreamDialog alloc] init];
 	dialog.delegate = self;
-	dialog.templateBundleId = GEO_JOURNAL_TEMPLATE_BUNDLE_ID;
+	dialog.userMessagePrompt = @"BBCReader";
 	NSString *data = nil;
 	
 	if (image_url) {
-		data = [[NSString alloc] initWithFormat:@"{\"bbc_story_title\": \"%@\", \"bbc_short_description\":\"%@\", \"bbc_link\":\"%@\", \"images\":[{\"src\":\"%@\",\"href\":\"%@\"}]}", 
+		data = [[NSString alloc] initWithFormat:@"{\"caption\": \"%@\", \"description\":\"%@\", \"href\":\"%@\", \"media\":[{\"type\":\"image\",\"src\":\"%@\",\"href\":\"%@\"}]}", 
 				(self.webLink.text==nil?@"No title":self.webLink.text), 
 				(self.webLink.description ==nil?@"No message":getJASONSafeString(self.webLink.description)), 
 				(self.webLink.url ==nil?@"No URL is available":self.webLink.url),
 				image_url, self.webLink.url];
-				
+		
 	}
 	else {
-		data = [[NSString alloc] initWithFormat:@"{\"bbc_story_title\": \"%@\", \"bbc_short_description\":\"%@\", \"bbc_link\":\"%@\"}", 
+		data = [[NSString alloc] initWithFormat:@"{\"caption\": \"%@\", \"description\":\"%@\", \"href\":\"%@\"}", 
 				(self.webLink.text==nil?@"No title":self.webLink.text), 
 				(self.webLink.description ==nil?@"No message":getJASONSafeString(self.webLink.description)), 
 				(self.webLink.url ==nil?@"No URL is available":self.webLink.url)];
@@ -111,7 +110,7 @@ NSString *getJASONSafeString(NSString *string) {
 	
 	TRACE("%s, %s", __func__, [data UTF8String]);
 	_fbCallType = FB_UPLOAD_STORY;
-	dialog.templateData = data;
+	dialog.attachment = data;
 	[dialog show];		
 	[data release];
 	[dialog release];
@@ -125,12 +124,12 @@ NSString *getJASONSafeString(NSString *string) {
 - (void)publishPhotoToFacebook
 {
 	if (self.imageForLink) {
-		NSMutableDictionary *args = [[[NSMutableDictionary alloc] init] autorelease];
-		
-		[args setObject:self.imageForLink forKey:@"image"];    // 'images' is an array of 'UIImage' objects
 		FBRequest *uploadPhotoRequest = [self getRequest];
+		 
 		_fbCallType = FB_UPLOAD_PICTURE;
-		[uploadPhotoRequest call:@"facebook.photos.upload" params:args];
+		NSDictionary *params = nil;
+
+		[uploadPhotoRequest call:@"facebook.photos.upload" params:params dataParam:(NSData*)self.imageForLink];
 	}
 	else {
 		NSLog(@"%s, image is not available.", __func__);
@@ -262,6 +261,10 @@ NSString *getJASONSafeString(NSString *string) {
 {
 	TRACE_HERE;
 	NSLog(@"%s, %@", __func__, error);
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook error" message:[error description]
+												   delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
+	[alert release];
 }
 #pragma mark -
 
