@@ -22,6 +22,9 @@
 }
 
 @property (nonatomic, retain) WebLink *webLink;
+@property (nonatomic, retain) ArticleImageView *articleImageView;
+@property (nonatomic, retain) UILabel *articleDescription;
+@property (nonatomic, retain) UILabel *articleTitle;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil withPage:(NSInteger)page;
 

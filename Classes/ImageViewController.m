@@ -61,6 +61,9 @@ NSMutableData *getImageFileBuffer()
 @implementation ImageViewController
 
 @synthesize webLink;
+@synthesize articleImageView;
+@synthesize articleTitle;
+@synthesize articleDescription;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil withPage:(NSInteger)page {
 	if (self = [super initWithNibName:nibNameOrNil bundle:nil]) {
@@ -189,10 +192,22 @@ NSMutableData *getImageFileBuffer()
 	// Release anything that's not essential, such as cached data
 }
 
+- (void)viewDidUnload
+{
+	TRACE("%s\n", __func__);
+	self.articleTitle = nil;
+	self.articleDescription = nil;
+	self.articleImageView = nil;
+	
+}
 
 - (void)dealloc {
 	//TRACE("%s, %d\n", __func__, [articleImageView.image retainCount]);
-	[articleImageView.image release];
+	
+	[articleTitle release];
+	[articleDescription release];
+	[articleImageView release];
+	
 	[super dealloc];
 }
 
