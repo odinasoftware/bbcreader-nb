@@ -581,6 +581,7 @@ repeat:
 - (void)connectionDidFinishLoading:(HTTPConnection *)connection 
 { 
 	BOOL parserStatus = YES;
+	NSData *data = nil;
 	//HTTPConnection* theConnection = (HTTPConnection*)connection;
 	
 	// do something with the data 
@@ -604,7 +605,9 @@ repeat:
 				// XML does not change the content, so we can just save it.
 				if (parserStatus == YES) {
 					[cacheService saveToCache:theCacheEntry withData:theConnection.receivedData];
-					[cacheService saveResponseHeader:[self getResponseHeader] withLocalFile:theCacheEntry.cacheFile];
+					data = [self getResponseHeader];
+					[cacheService saveResponseHeader:data withLocalFile:theCacheEntry.cacheFile];
+					[data release];
 				}
 				else {
 					NSLog(@"%s, parser failed.", __func__);
@@ -614,7 +617,9 @@ repeat:
 				break;
 			case MREADER_FILE_TYPE:
 				[self saveToFile:theConnection.localFile withData:theConnection.receivedData];
-				[cacheService saveResponseHeader:[self getResponseHeader] withLocalFile:theConnection.localFile];
+				data = [self getResponseHeader];
+				[cacheService saveResponseHeader:data withLocalFile:theConnection.localFile];
+				[data release];
 				// TODO: tell tableview we have a picture
 				// Before setting we will have to set the image file to WebLink.
 				[ArticleStorage setImageLink:theConnection.localFile atIndexPath:theConnection.indexForFeed];
@@ -622,8 +627,10 @@ repeat:
 				break;
 			case MREADER_HTML_PARSER:
 				[cacheService flushCacheEntry:theCacheEntry];
-				[cacheService saveResponseHeader:[self getResponseHeader] withLocalFile:theCacheEntry.cacheFile];
+				data = [self getResponseHeader];
+				[cacheService saveResponseHeader:data withLocalFile:theCacheEntry.cacheFile];
 				[theCacheEntry release];
+				[data release];
 				break;
 			default:
 				NSLog(@"Unknown parser type: %d", parserType);
@@ -687,12 +694,30 @@ repeat:
 	
 	NSEnumerator *enumerator = [responseDict keyEnumerator];
 	
-	id key;
+	NSString *key;
 	NSString *field;
 	NSMutableData *buffer = [[NSMutableData alloc] initWithLength:200];
 	NSString *line;
 	[buffer setLength:0];
 	[buffer appendBytes:HTTP_OK length:strlen(HTTP_OK)];
+	
+	key = @"Content-Type";
+	field = [responseDict objectForKey:key];
+	if (field) {
+		line = [[NSString alloc] initWithFormat:@"%@: %@\r\n", (NSString*)key, field];
+		[buffer appendBytes:[line UTF8String] length:[line length]];
+		[line release];
+	}
+	
+	line = [[NSString alloc] initWithFormat:@"Content-Length: %d\r\n", [theConnection.receivedData length]];
+	[buffer appendBytes:[line UTF8String] length:[line length]];
+	[line release];
+	
+	line = [[NSString alloc] initWithString:@"Connection: close\r\n"];
+	[buffer appendBytes:[line UTF8String] length:[line length]];
+	[line release];
+	
+	/*
 	while (key = [enumerator nextObject]) {
 		if ([(NSString*)key caseInsensitiveCompare:@"Connection"] == NSOrderedSame) {
 			line = [[NSString alloc] initWithString:@"Connection: close\r\n"];
@@ -709,9 +734,10 @@ repeat:
 		[buffer appendBytes:[line UTF8String] length:[line length]];
 		[line release];
 	}
+	 */
+	
 	[buffer appendBytes:"\r\n" length:2];
 	response = buffer;	
-	
 	
 	return response;
 }
