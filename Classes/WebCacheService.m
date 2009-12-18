@@ -367,6 +367,7 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	BOOL ret = YES;
 	//NSDate *expirationDate = nil;
 	NSString *responseFile = [file stringByAppendingString:@".req"];
+	BOOL unknown = NO;
 	
 	NSData *responseData = [self readFromFile:responseFile]; 
 
@@ -483,6 +484,7 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 		if (expire_date == nil) {
 			NSLog(@"%s, unknown date format detected. %@", __func__, fieldValue);
 			ret = NO;
+			unknown = YES;
 		}
 		else {
 			expire_date = [expire_date addTimeInterval:43200.0];
@@ -504,11 +506,25 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 		
 	}
 	else {
+		unknown = YES;
 		NSLog(@"%s, couldn't get expiration date, assume expired.", __func__);
 		ret = NO;
 	}
 	
 	[responseData release];
+	
+	if (unknown == YES) {
+		NSDate *last_updated = [Configuration sharedConfigurationInstance].lastUpdatedDate;
+		NSDate *date = [[NSDate date] addTimeInterval:43200.0];
+		
+		if ([date compare:last_updated] == NSOrderedAscending) {
+			TRACE("%s, expired by last saved date.\n", __func__);
+			ret = NO;
+		}
+		else {
+			ret = YES;
+		}
+	}
 	
 	return ret;
 }
@@ -600,6 +616,8 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 					if (anEntry.category < category) {
 						NSLog(@"##### Detect potential duplicate item: %@ for category: %d", cachedFile, category);
 						if (copyToNewCategory(cachedFile, indexComponent, category) == NO) {
+							// donesn't exist, so remove it here. will be added later.
+							[urls removeObject:anEntry];
 							*available = NO;
 						}
 						else {
@@ -625,7 +643,12 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 				
 				cachedFile = [rootLocation stringByAppendingPathComponent:hostForCacheObjects];
 				cachedFile = [cachedFile stringByAppendingPathComponent:category_component];
-				cachedFile = [cachedFile stringByAppendingFormat:@"/%d-%s",i,[file UTF8String]];
+				if (i > 0) {
+					cachedFile = [cachedFile stringByAppendingFormat:@"/%d-%s",i,[file UTF8String]];
+				}
+				else {
+					cachedFile = [cachedFile stringByAppendingFormat:@"/%s",[file UTF8String]];
+				}
 				NSLog(@"###### Detect duplicated cache entry, but has to be created: %@", cachedFile);		
 				if (collision != nil) *collision = YES;
 			}
