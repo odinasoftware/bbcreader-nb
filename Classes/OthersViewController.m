@@ -63,7 +63,7 @@
 {
 	//ArticleStorage* storage = [ArticleStorage sharedArticleStorageInstance];
 	//return [storage countSection];
-	return 2;
+	return 3;
 }
 
 - (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
@@ -102,6 +102,9 @@
 	//return [storage getTitleInSection:section];
 	if (section == 0) {
 		title = @"BBC World News";
+	}
+	else if (section == 1) {
+		title = @"BBC Mobile";
 	}
 	else {
 		title = @"BBC Sports";
