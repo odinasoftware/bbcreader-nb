@@ -352,6 +352,11 @@ clean:
 {
 	NSString *file = [cacheService getLocalFileNameFromURL:link.url];
 	
+	if (file == nil) {
+		NSLog(@"%s, adding null link", __func__);
+		return;
+	}
+	
 	if ([historyDictionary objectForKey:file] == nil) {
 		historyIndex = ++historyIndex % MAX_HISTORY_NUM;
 		
