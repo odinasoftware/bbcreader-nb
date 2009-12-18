@@ -58,6 +58,7 @@ typedef enum {ARTICLE_MAIN_NAV_MODE, ARTICLE_OTHER_NAV_MODE} article_nav_mode_t;
 	int				theOtherIndex;
 	NSArray			*FeedsArray;
 	NSArray			*sportFeedsArray;
+	NSArray			*mobileFeedsArray;
 	//NSArray			*internationalFeedsArray;
 	NSMutableArray	*imageStorage;
 	section_t		theCurrentSlide;

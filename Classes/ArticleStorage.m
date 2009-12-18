@@ -213,6 +213,10 @@ NSString *getTitle(NSString *str)
 		
 		thePath = [[NSBundle mainBundle]  pathForResource:@"Sports" ofType:@"plist"];
 		sportFeedsArray = [[NSArray alloc] initWithContentsOfFile:thePath];
+		
+		thePath = [[NSBundle mainBundle]  pathForResource:@"mobile" ofType:@"plist"];
+		mobileFeedsArray = [[NSArray alloc] initWithContentsOfFile:thePath];
+		
 		networkService = [NetworkService sharedNetworkServiceInstance];
 		//thePath = [[NSBundle mainBundle]  pathForResource:@"InternationalFeeds" ofType:@"plist"];
 		//internationalFeedsArray = [[NSArray alloc] initWithContentsOfFile:thePath];
@@ -233,7 +237,16 @@ NSString *getTitle(NSString *str)
 				[feedInformationStorage insertObject:feed atIndex:i]; i++;
 			}
 		}
+		
 		feedBegin[1] = i;
+		for (NSDictionary *entry in mobileFeedsArray) {
+			for (NSString *key in entry) {
+				feed = [[FeedInformation alloc] initWithFeedInformation:key origURL:[entry objectForKey:key]];
+				[feedInformationStorage insertObject:feed atIndex:i]; i++;
+			}
+		}
+		
+		feedBegin[2] = i;
 		for (NSDictionary *entry in sportFeedsArray) {
 			for (NSString *key in entry) {
 				feed = [[FeedInformation alloc] initWithFeedInformation:key origURL:[entry objectForKey:key]];
@@ -256,7 +269,7 @@ NSString *getTitle(NSString *str)
 		}
 		
 		contentsArray = (id*) malloc(sizeof(id)*articleSize);
-		for (i=0; i<i; ++i) {
+		for (i=0; i<articleSize; ++i) {
 			contentsArray[i] = nil;
 		}
 		
@@ -280,7 +293,7 @@ NSString *getTitle(NSString *str)
 
 - (NSInteger) numberOfFeedSections
 {
-	return 2; //[FeedsArray count] + [sportFeedsArray count] + [internationalFeedsArray count];
+	return 3; //[FeedsArray count] + [sportFeedsArray count] + [internationalFeedsArray count];
 }
 
 - (NSInteger)numberOfFeeds:(NSInteger)component 
@@ -292,6 +305,9 @@ NSString *getTitle(NSString *str)
 			c = [FeedsArray count];
 			break;
 		case 1:
+			c = [mobileFeedsArray count];
+			break;
+		case 2:
 			c = [sportFeedsArray count];
 			break;
 			/*
@@ -315,6 +331,9 @@ NSString *getTitle(NSString *str)
 					title = @"World news";
 					break;
 				case 1:
+					title = @"Mobile";
+					break;
+				case 2:
 					title = @"Sports";
 					break;
 					/*
@@ -347,6 +366,7 @@ NSString *getTitle(NSString *str)
 {
 	FeedInformation *feed = nil;
 	
+	TRACE("%s, section: %d, row: %d\n", __func__, index.section, index.row);
 	feed = [feedInformationStorage objectAtIndex:feedBegin[index.section] + index.row];
 	
 	return feed;
@@ -356,11 +376,19 @@ NSString *getTitle(NSString *str)
 {
 	NSInteger c = 0;
 	
+	if (section > NUM_FEED) {
+		NSLog(@"%s, index error: %d", __func__, section);
+		return 0;
+	}
+	
 	if (section == 0) {
 		c = feedBegin[1];
 	}
+	else if (section == 1) {
+		c = feedBegin[section+1] - feedBegin[section];
+	}
 	else {
-		c = articleSize - feedBegin[1];
+		c = articleSize - feedBegin[2];
 	}
 	
 	return c;
