@@ -93,6 +93,7 @@
 		[theSegmentedControl setTitle:[titles objectAtIndex:i] forSegmentAtIndex:i];
 	}
 	[titles release];
+	[((ArticleViewController*)self.topViewController).theTableView reloadData];
 }
 
 - (void)toggleSection:(id)sender
