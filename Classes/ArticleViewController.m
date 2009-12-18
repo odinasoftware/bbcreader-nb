@@ -506,6 +506,11 @@
 
 - (IBAction)reloadArticles:(id)sender
 {
+	if ([activityIndicator isAnimating] == NO) {
+		[activityIndicator startAnimating];
+	}
+	if (reloadButton.hidden == NO)
+		reloadButton.hidden = YES;
 	[[NetworkService sharedNetworkServiceInstance] reloadArticles];
 }
 
