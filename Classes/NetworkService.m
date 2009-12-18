@@ -793,7 +793,7 @@ clean:
 {
 	BOOL cont = NO;
 	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = nil;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	BOOL thumbNailCacheLoaded = NO;
 	
 	if (thumbNailCacheLoaded == NO) {
@@ -811,12 +811,14 @@ clean:
 	for (;;) {
 		[self checkDownloadStatus];
 		
+		/*
 		if (isPoolCreated == YES) {
 			[pool release];
 			isPoolCreated = NO;
 		}
 		pool = [[NSAutoreleasePool alloc] init];
 		isPoolCreated = YES;
+		 */
 				
 		cont = [self getNextArticleOfActiveFeed];
 		//pthread_mutex_unlock(&network_mutex);
@@ -924,7 +926,7 @@ clean:
 {
 	BOOL cont = NO;
 	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = nil;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 #ifdef RUN_REACHABILITY
 	if (reachabilityTestLater == YES) {
@@ -936,12 +938,14 @@ clean:
 	for (;;) {
 		[self checkDownloadStatus];
 		
+		/*
 		if (isPoolCreated == YES) {
 			[pool release];
 			isPoolCreated = NO;
 		}
 		pool = [[NSAutoreleasePool alloc] init];
 		isPoolCreated = YES;
+		 */
 
 		cont = [self getNextActiveFeed];
 		//pthread_mutex_unlock(&network_mutex);
@@ -1011,17 +1015,19 @@ clean:
 {
 	BOOL cont = NO;
 	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = nil;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	for (;;) {
 		[self checkDownloadStatus];
 		
+		/*
 		if (isPoolCreated == YES) {
 			[pool release];
 			isPoolCreated = NO;
 		}
 		pool = [[NSAutoreleasePool alloc] init];
 		isPoolCreated = YES;
+		 */
 		
 		cont = [self getThumbnail];
 		//pthread_mutex_unlock(&network_mutex);
@@ -1080,17 +1086,18 @@ clean:
 {
 	BOOL cont = NO;
 	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = nil;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	for (;;) {
 		[self checkDownloadStatus];
-		
+		/*
 		if (isPoolCreated == YES) {
 			[pool release];
 			isPoolCreated = NO;
 		}
 		pool = [[NSAutoreleasePool alloc] init];
 		isPoolCreated = YES;
+		 */
 		
 		//pthread_mutex_lock(&network_mutex);
 		cont = [self getThumbnail];
