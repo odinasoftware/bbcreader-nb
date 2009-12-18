@@ -118,7 +118,7 @@
 {
 	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
 	if (component == 0) 
-		return 2;
+		return 3;
 	return [storage numberOfFeeds:selectedFeed];
 }
 
