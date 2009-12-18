@@ -28,6 +28,7 @@ extern int networkError;
 @implementation SettingsView
 
 @synthesize myTableView;
+@synthesize switchCtl;
 
 enum ControlTableSections
 {
@@ -129,7 +130,7 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"Message (v.1.7.0):";
+			title = @"Message (v.2.0):";
 			break;
 		}
 	}
@@ -445,9 +446,15 @@ enum ControlTableSections
 	// Release anything that's not essential, such as cached data
 }
 
+- (void)viewDidUnload
+{
+	self.myTableView = nil;
+	self.switchCtl = nil;
+}
 
 - (void)dealloc {
 	//[progressBar release];
+	[myTableView release];
 	[switchCtl release];
 	[super dealloc];
 }

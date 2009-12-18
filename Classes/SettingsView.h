@@ -26,6 +26,7 @@
 }
 
 @property (nonatomic, retain) UITableView *myTableView;
+@property (nonatomic, retain) UISwitch *switchCtl;
 
 - (IBAction)cleanCache:(id)sender; 
 - (void)create_UIProgressView;
