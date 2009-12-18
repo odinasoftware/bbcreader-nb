@@ -39,6 +39,7 @@
 
 - (void)dealloc
 {
+	[controller release];
 	[super dealloc];
 }
 
@@ -47,6 +48,8 @@
 
 @implementation ScrollViewController
 
+@synthesize scrollView;
+@synthesize controllerArray;
 
 // Override initWithNibName:bundle: to load the view using a nib file then perform additional customization that is not appropriate for viewDidLoad.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -99,7 +102,9 @@
 	
 	PageViewControllerPointer *pointer = [controllerArray objectAtIndex:target];
 	if (pointer.controller == nil) {
-		pointer.controller = [[ImageViewController alloc] initWithNibName:@"ImageView" withPage:page];
+		ImageViewController *c = [[ImageViewController alloc] initWithNibName:@"ImageView" withPage:page];
+		pointer.controller = c;
+		[c release];
 		//pointer.link = [storage getArticleAtPage:page]; //pointer.controller.webLink;
 		pointer.controller.view.tag = page;
 		*redraw = NO;
@@ -171,11 +176,14 @@
 	playBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPlay target:self action:@selector(playSlideShow:)];
 	stopBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemPause target:self action:@selector(stopSlideShow:)];
 	
-	controllerArray = [[NSArray alloc] initWithObjects:
-					   [[PageViewControllerPointer alloc] initWithPage:-1],
-					   [[PageViewControllerPointer alloc] initWithPage:-1],
-					   /*[[PageViewControllerPointer alloc] initWithPage:-1],*/
-					   [[PageViewControllerPointer alloc] initWithPage:-1], nil];
+	PageViewControllerPointer *page1 = [[PageViewControllerPointer alloc] initWithPage:-1];
+	PageViewControllerPointer *page2 = [[PageViewControllerPointer alloc] initWithPage:-1];
+	PageViewControllerPointer *page3 = [[PageViewControllerPointer alloc] initWithPage:-1];
+	
+	NSArray *array = [[NSArray alloc] initWithObjects:page1, page2, page3, nil];
+	[page1 release]; [page2 release]; [page3 release];
+	self.controllerArray = array;
+	[array release];
 	currentArrayPointer = 0;
 	currentPage = -1;
 	
@@ -412,10 +420,22 @@
 	NSLog(@"%s", __func__);
     [super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
     // Release anything that's not essential, such as cached data
+	
 }
 
+- (void)viewDidUnload
+{
+	TRACE("%s\n", __func__);
+	self.scrollView = nil;
+	//TRACE("%s, %d, %d\n", __func__, [controllerArray retainCount], [[controllerArray objectAtIndex:0] retainCount]);
+	self.controllerArray = nil;
+	
+	
+}
 
 - (void)dealloc {
+	[controllerArray release];
+	[scrollView release];
     [super dealloc];
 }
 

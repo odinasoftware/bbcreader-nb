@@ -50,6 +50,9 @@
 	ArticleStorage				*storage;
 }
 
+@property (nonatomic, retain) ArticleScrollView *scrollView;
+@property (nonatomic, retain) NSArray *controllerArray;
+
 - (void)playSlideShow:(id)sender;
 - (void)stopSlideShow:(id)sender;
 
