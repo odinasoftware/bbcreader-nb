@@ -515,9 +515,10 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	
 	if (unknown == YES) {
 		NSDate *last_updated = [Configuration sharedConfigurationInstance].lastUpdatedDate;
-		NSDate *date = [[NSDate date] addTimeInterval:43200.0];
+		NSDate *expired_date = [last_updated addTimeInterval:43200.0];
+		NSDate *date = [[NSDate date] init];
 		
-		if ([date compare:last_updated] == NSOrderedAscending) {
+		if ([expired_date compare:date] == NSOrderedAscending) {
 			TRACE("%s, expired by last saved date.\n", __func__);
 			ret = NO;
 		}

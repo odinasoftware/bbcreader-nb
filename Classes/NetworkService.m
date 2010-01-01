@@ -28,10 +28,10 @@
 
 #import <SystemConfiguration/SystemConfiguration.h>
 
-#define MIN_SPACE_FOR_MREADER 26214400
-#define NUMBER_OF_ARTICLE_IN_TABLE 4
-#define SLOW_NETWORK_INTERVAL 10
-#define NUMBER_OF_THREAD 4
+#define MIN_SPACE_FOR_MREADER			26214400
+#define NUMBER_OF_ARTICLE_IN_TABLE		4
+#define SLOW_NETWORK_INTERVAL			30
+#define NUMBER_OF_THREAD				4
 
 //NSString *rssfeedFilename = @"main_rss.xml";
 //NSString *mainURLString = @"http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml";
@@ -253,9 +253,9 @@ static NetworkService *sharedNetworkService = nil;
 			NSLog(@"%s, can't get the temporary directory.");
 			return;
 		}
-		if ([self checkDiskSpace:tmpDir] == NO) {
-			[self displayDiskWarning];
-		}
+		//if ([self checkDiskSpace:tmpDir] == NO) {
+		//	[self displayDiskWarning];
+		//}
 		
 		Configuration *config = [Configuration sharedConfigurationInstance];
 		
