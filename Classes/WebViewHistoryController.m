@@ -77,23 +77,30 @@
 	UIImage *image = nil;
 	TableCellView *imageRect = nil;
 	BOOL dontDoAnything = NO;
-	
+	int rect_x = RECT_START_MARGIN;
+	int rect_y = 0.0;
+	BOOL shouldAddImageCell = NO;
+	BOOL reusableCell = NO;
 	
 	if (cell == nil) {
 		TRACE("---> cell is created.\n");
 		cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:identity] autorelease];
 	}
-	
-	imageRect = (TableCellView*)[cell.contentView viewWithTag:MREADER_IMG_TAG];
-	if (imageRect == nil) {
-		imageRect = [[[TableCellView alloc] initWithFrame:CGRectMake(IMG_RECT_X, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT)] autorelease];
-		imageRect.tag = MREADER_IMG_TAG;
-		[imageRect setImageLink:NO_IMAGE_AVAIABLE];
+	else {
+		reusableCell = YES;
 	}
 	
+	WebLink *link = [configuration.history objectAtIndex:indexPath.row];
+	imageLink = link.imageLink;
+	
 	title = (UILabel*)[cell.contentView viewWithTag:MREADER_TITLE_TAG];
+	rect_y = TITLE_RECT_WIDTH;
+	if (imageLink == nil) {
+		rect_y += IMG_RECT_WIDTH;
+	}
+	
 	if (title == nil) {
-		title = [[[UILabel alloc] initWithFrame:CGRectMake(TITLE_RECT_X, TITLE_RECT_Y, TITLE_RECT_WIDTH, TITLE_RECT_HEIGHT)] autorelease]; 
+		title = [[[UILabel alloc] initWithFrame:CGRectMake(rect_x, TITLE_RECT_Y, rect_y, TITLE_RECT_HEIGHT)] autorelease]; 
 		title.tag = MREADER_TITLE_TAG;
 		title.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:15]; //[UIFont systemFontOfSize:15.0]; 
 		title.textColor = [UIColor blackColor]; 
@@ -101,11 +108,18 @@
 		title.numberOfLines = 2;
 		//title.autoresizingMask = UIViewAutoresizingFlexibleWidth | 	UIViewAutoresizingFlexibleHeight; 
 	}
+	else {
+		title.frame = CGRectMake(rect_x, TITLE_RECT_Y, rect_y, TITLE_RECT_HEIGHT);
+	}
 	
-	
+	rect_x = RECT_START_MARGIN;
+	rect_y = DESC_RECT_WIDTH;
+	if (imageLink == nil) {
+		rect_y += IMG_RECT_WIDTH;
+	}
 	description = (UILabel*)[cell.contentView viewWithTag:MREADER_DESCRIPTION_TAG];
 	if (description == nil) {
-		description = [[[UILabel alloc] initWithFrame:CGRectMake(DESC_RECT_X, DESC_RECT_Y, DESC_RECT_WIDTH, DESC_RECT_HEIGHT)] autorelease];
+		description = [[[UILabel alloc] initWithFrame:CGRectMake(rect_x, DESC_RECT_Y, rect_y, DESC_RECT_HEIGHT)] autorelease];
 		description.tag = MREADER_DESCRIPTION_TAG;
 		description.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
 		description.textColor = [UIColor grayColor];
@@ -113,25 +127,40 @@
 		description.numberOfLines = 4;
 		//description.autoresizingMask = UIViewAutoresizingFlexibleWidth | 	UIViewAutoresizingFlexibleHeight; 
 	}
+	else {
+		description.frame = CGRectMake(rect_x, DESC_RECT_Y, rect_y, DESC_RECT_HEIGHT);
+	}
 	
-	WebLink *link = [configuration.history objectAtIndex:indexPath.row];
-	imageLink = link.imageLink;
+	imageRect = (TableCellView*)[cell.contentView viewWithTag:MREADER_IMG_TAG];
+	rect_x = rect_x + rect_y + IMG_MARGIN;
+	if (imageRect == nil) {
+		imageRect = [[[TableCellView alloc] initWithFrame:CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT)] autorelease];
+		imageRect.tag = MREADER_IMG_TAG;
+		[imageRect setImageLink:NO_IMAGE_AVAIABLE];
+	}
+	else {
+		imageRect.frame = CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT);
+	}
+	
 	if (imageLink != nil) {		
 		// Image link is available.
 		//			[storage addImage:image];
-		
+		if (imageRect.image == nil) {
+			shouldAddImageCell = YES;
+		}
 		
 		if ([imageRect compareImageLink:imageLink] == NO) {
 			// new image link is set
 			if (([imageRect compareImageLink:DEFAULT_IMAGE] == NO) && (imageRect.image != nil)) 
 				[imageRect.image release];
-			image = [[UIImage alloc] initWithContentsOfFile:imageLink];
+			image = [[UIImage alloc] initWithContentsOfFile:getActualPath(imageLink)];
 			if (image == nil) {
 				NSLog(@"%s, image is nul: %@", __func__, imageLink);
 			}
 			imageRect.image = image;
 			[imageRect setImageLink:imageLink];
-			[cell.contentView addSubview:imageRect];
+			if ((reusableCell == NO) || (shouldAddImageCell == YES))
+				[cell.contentView addSubview:imageRect];
 		}
 		else {
 			dontDoAnything = YES;
@@ -146,10 +175,8 @@
 		// Change to default image.
 		if (imageRect.image != nil)
 			[imageRect.image release];
-		imageRect.image = defaultBBCLogo;
-		[imageRect.image retain];
+		imageRect.image = nil;
 		[imageRect setImageLink:DEFAULT_IMAGE];
-		[cell.contentView addSubview:imageRect];
 	}
 	else {
 		dontDoAnything = YES;
@@ -173,6 +200,8 @@
 		description.text = descriptionText;
 		[cell.contentView addSubview:description];
 	}
+	
+	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 	
 	return cell;
 }

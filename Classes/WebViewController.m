@@ -231,7 +231,7 @@ extern BOOL localServerStarted;
 		
 		NSString *pictureLink = self.webLink.imageLink;
 		if (pictureLink) {
-			NSData *data = [[NSData alloc] initWithContentsOfFile:pictureLink];
+			NSData *data = [[NSData alloc] initWithContentsOfFile:getActualPath(pictureLink)];
 			[mailController addAttachmentData:data mimeType:@"image/jpeg" fileName:IMAGE_ATTACHMENT_FILENAME];
 			TRACE("%s, attachment: %s, size: %d\n", __func__, [pictureLink UTF8String], [data length]);
 			[data release];

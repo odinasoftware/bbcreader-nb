@@ -8,13 +8,16 @@
 #include <fcntl.h>
 #import "EmbeddedObjects.h"
 #import "WebCacheService.h"
+#import "Parser_Defs.h"
 
 const char BLANK = ' ';
 const char NEWLINE = '\n';
 
-void writeToIndexFile(const char *file_name, const char *url, BOOL collision) 
+extern int OPEN(NSString* name, int flag);
+
+void writeToIndexFile(NSString *file_name, const char *url, BOOL collision) 
 {
-	int fd = open(file_name, O_RDWR | O_APPEND);
+	int fd = OPEN(file_name, O_RDWR | O_APPEND);
 	// if it is already there, then just appening url to the file, 
 	// this the hash collision case.
 	if ((fd != -1) && (collision == NO)) {
@@ -24,7 +27,7 @@ void writeToIndexFile(const char *file_name, const char *url, BOOL collision)
 	}
 	if (fd == -1) {
 		// otherwise create a new file
-		fd = open(file_name, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+		fd = open([getActualPath(file_name) UTF8String], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 		if (fd == -1) {
 			NSLog(@"%s: %s, %s", __func__, file_name, strerror(errno));
 			return;
@@ -107,7 +110,7 @@ void writeToIndexFile(const char *file_name, const char *url, BOOL collision)
 {	
 	//NSFileManager* manager = [NSFileManager defaultManager];
 	//[manager createFileAtPath:rootName contents:nil attributes:nil];
-	int fd = open([rootName UTF8String], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	int fd = open([getActualPath(rootName) UTF8String], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (fd == -1) {
 		NSLog(@"%s: %@, %s", __func__, rootName, strerror(errno));
 		return;
@@ -124,7 +127,7 @@ void writeToIndexFile(const char *file_name, const char *url, BOOL collision)
 			write(fd, (const void*) &NEWLINE, 1);
 			//[file writeData:[object.orig_url dataUsingEncoding:NSUTF8StringEncoding]];
 			//[file writeData:[object.local_name dataUsingEncoding:NSUTF8StringEncoding]];
-			writeToIndexFile([object.index_name UTF8String], [object.orig_url UTF8String], object.collision);
+			writeToIndexFile(object.index_name, [object.orig_url UTF8String], object.collision);
 			if ([[object.local_name pathExtension] compare:@"css"] == NSOrderedSame) {
 				// Add this to css dictionary
 				[cacheService addToCSSDictionary:object];

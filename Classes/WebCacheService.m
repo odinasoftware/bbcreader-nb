@@ -46,6 +46,32 @@ static const NSString* OTHER_INDEX_FILE_NAME = @"other.mreader";
  */
 //static const NSString *local_host_prefix = @"http://localhost:9000";
 
+NSString *getActualPath(NSString* sourcePath)
+{
+	NSString *file = nil;
+#define USE_DOCUMENT_DIR	1
+	
+#if USE_DOCUMENT_DIR
+	NSArray *paths;
+	NSError *error;
+	
+    paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    if ([paths count] > 0)
+    {
+        // only copying one file
+        file = [[paths objectAtIndex:0] stringByAppendingPathComponent:sourcePath];
+    }
+	else {
+		// create a suitable NSError object to return in outError
+		NSLog(@"%s, %@", __func__, [error localizedDescription]);
+	}
+#else
+	file = [NSTemporaryDirectory() stringByAppendingPathComponent:sourcePath];
+#endif
+	
+    return file;
+}
+
 static int scanTwoStrings(unsigned char *buffer, int read, NSString **first, NSString **second)
 {
 	int i = 0;
@@ -140,12 +166,13 @@ BOOL copyToNewCategory(NSString *file, NSString* currentCategoryString, cache_ca
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSError *error = nil;
 	
-	if ([manager fileExistsAtPath:file] == YES) {
+	if ([manager fileExistsAtPath:getActualPath(file)] == YES) {
 		// copy this to the new category.
-		NSRange range = [file rangeOfString:currentCategoryString];
-		NSString *new_file = [file stringByReplacingCharactersInRange:range withString:getCategoryComponent(category)];
+		NSString *path = getActualPath(file);
+		NSRange range = [path rangeOfString:currentCategoryString];
+		NSString *new_file = [path stringByReplacingCharactersInRange:range withString:getCategoryComponent(category)];
 		
-		[manager copyItemAtPath:file toPath:new_file error:&error];
+		[manager copyItemAtPath:getActualPath(file) toPath:new_file error:&error];
 		if (error != nil) {
 			NSLog(@"%s, %@", __func__, error);
 		}	
@@ -179,6 +206,12 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	
 	return NO;
 }
+
+int OPEN(NSString* name, int flag)
+{
+	return open([getActualPath(name) UTF8String], flag);
+}
+
 
 @implementation CacheObject 
 
@@ -242,16 +275,18 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 
 - (id)init
 {
-	NSString *tmp_loc;
+	//NSString *tmp_loc;
 	if (self = [super init]) {
 		
 		// TODO: Why should I do retain here???
-		tmp_loc = [[NSString alloc] initWithString:NSTemporaryDirectory()];
-		rootLocation = [[tmp_loc stringByAppendingPathComponent:@"/cache/"] retain];
-		[tmp_loc release];
-		tmp_loc = [[NSString alloc] initWithString:NSTemporaryDirectory()];
-		indexLocation = [[tmp_loc stringByAppendingPathComponent:@"/index/"] retain];
-		[tmp_loc release];
+		//tmp_loc = [[NSString alloc] initWithString:NSTemporaryDirectory()];
+		//rootLocation = [[tmp_loc stringByAppendingPathComponent:@"/cache/"] retain];
+		rootLocation = [[NSString stringWithString:@"/cache/"] retain];
+		//[tmp_loc release];
+		//tmp_loc = [[NSString alloc] initWithString:NSTemporaryDirectory()];
+		//indexLocation = [[tmp_loc stringByAppendingPathComponent:@"/index/"] retain];
+		indexLocation = [[NSString stringWithString:@"/index/"] retain];
+		//[tmp_loc release];
 		
 		// Only when device needs to be cleaned
 		//[self removeAllItems];
@@ -291,40 +326,6 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	
 	return [path stringByAppendingPathComponent:@"html"];
 }
-/*
-- (void)removeAllItems
-{
-	NSError *error=nil;
-	NSFileManager *manager = [NSFileManager defaultManager];
-	
-	[manager removeItemAtPath:rootLocation error:&error];
-	if (error) {
-		NSLog(@"%s: %@", __func__, error);
-	}
-	
-	error = nil;
-	
-	[manager removeItemAtPath:indexLocation error:&error];
-	if (error) {
-		NSLog(@"%s: %@", __func__, error);
-	}
-	
-	NSLog(@"All items are removed from the cache.");
-}
-*/
-/*
-- (NSString*)getUniqueFileName:(NSURL*)url 
-{
-	// get the host name
-	//NSString *host = [url host];
-	
-	// create a folder with the host name if there is not.
-	// Unique file name = temporary dir + host name + hash of the url + index (if there is hash duplication)
-	NSString *name = [[rootLocation stringByAppendingPathComponent:host] stringByAppendingPathComponent:[NSString stringWithFormat:@"%u", [[url absoluteString] hash]]];	
-	
-	return name;
-}
- */
 
 - (NSMutableArray*) getUrlForIndex:(NSString*)file forCategory:(cache_category_t)category
 {
@@ -757,7 +758,10 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 - (void)saveToCache:(CacheEntry*)entry withData:(NSData*)data
 {
 	[entry retain];
-	[fileManager createFileAtPath:entry.cacheFile contents:data attributes:nil];
+	if ([fileManager createFileAtPath:getActualPath(entry.cacheFile) contents:data attributes:nil] == NO) {
+		NSLog(@"%s, fail to create a file: %@", __func__, entry.cacheFile);
+		return;
+	}
 	
 	NSString *url = [entry.origURL absoluteString];
 	url = [url stringByAppendingString:@"\n"];
@@ -771,7 +775,9 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	 NSLog(@"%s, can't opne for writing: %@", __func__, entry.indexFile);
 	 }
 	 */
-	[fileManager createFileAtPath:entry.indexFile contents:[url dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
+	if ([fileManager createFileAtPath:getActualPath(entry.indexFile) contents:[url dataUsingEncoding:NSUTF8StringEncoding] attributes:nil] == NO) {
+		NSLog(@"%s, fail to create file: %@", __func__, entry.indexFile);
+	}
 	//NSLog(@"%s, %@", __func__, entry.indexFile);
 	[entry release];
 	//[url release]; <-- auto released.
@@ -782,7 +788,9 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	[entry retain];
 	NSString *url = [entry.origURL absoluteString];
 	url = [url stringByAppendingString:@"\n"];
-	[fileManager createFileAtPath:entry.indexFile contents:[url dataUsingEncoding:NSUTF8StringEncoding] attributes:nil];
+	if ([fileManager createFileAtPath:getActualPath(entry.indexFile) contents:[url dataUsingEncoding:NSUTF8StringEncoding] attributes:nil] == NO) {
+		NSLog(@"%s, fail to create file: %@", __func__, entry.indexFile);
+	}
 	TRACE("%s, %s\n", __func__, [entry.indexFile UTF8String]);
 	[entry release];
 }
@@ -839,10 +847,12 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 
 - (void)saveResponseHeader:(NSData*)response withLocalFile:(NSString*)file
 {	
-	NSString *name = [file stringByAppendingString:@".req"];
+	NSString *name = [getActualPath(file) stringByAppendingString:@".req"];
 	
 	NSFileManager *manager = [NSFileManager defaultManager];
-	[manager createFileAtPath:name contents:response attributes:nil];
+	if ([manager createFileAtPath:name contents:response attributes:nil] == NO) {
+		NSLog(@"%s, fail to create file: %@", __func__, file);
+	}
 }
 
 - (void)moveTheCurrentEmbeddedObjectToFront
@@ -856,7 +866,7 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 	
 	NSString* name = [cacheEntry.cacheFile stringByAppendingString:EMBEDDED_FILE_EXT];
 	
-	int fd = open([name UTF8String], O_RDONLY);
+	int fd = OPEN(name, O_RDONLY);
 	if (fd == -1) {
 		NSLog(@"%s: %@, %s", __func__, name, strerror(errno));
 		[cacheEntry release];
@@ -907,7 +917,7 @@ clean:
 	
 	
 	@synchronized (self) {
-		fd = open([file UTF8String], O_RDONLY);
+		fd = OPEN(file, O_RDONLY);
 		if (fd == -1) {
 			NSLog(@"%s: %@, %s", __func__, file, strerror(errno));
 			return nil;
@@ -984,7 +994,8 @@ clean:
 	BOOL ret = NO;
 	
 	NSFileManager *manager = [NSFileManager defaultManager];
-	if ([manager fileExistsAtPath:file] == YES) {
+
+	if ([manager fileExistsAtPath:getActualPath(file)] == YES) {
 		[ArticleStorage setImageLink:file atIndexPath:indexPath];
 		[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(addNewArticle:) withObject:nil	waitUntilDone:YES];
 		ret = YES;
@@ -1003,7 +1014,7 @@ clean:
 {
 	NSFileManager *manager = [NSFileManager defaultManager];
 	
-	if ([manager fileExistsAtPath:rootLocation] == YES && [manager fileExistsAtPath:indexLocation] == YES)
+	if ([manager fileExistsAtPath:getActualPath(rootLocation)] == YES && [manager fileExistsAtPath:getActualPath(indexLocation)] == YES)
 		return YES;
 	
 	return NO;
@@ -1031,17 +1042,18 @@ clean:
 	TRACE("host: %s\n", [host UTF8String]);
 	// check the folder exists or not
 	NSFileManager *manager = [NSFileManager defaultManager];
-	
-	if ([manager fileExistsAtPath:rootLocation] == NO) {
-		[manager createDirectoryAtPath:rootLocation attributes:nil];
+	NSString *path = getActualPath(rootLocation);
+	if ([manager fileExistsAtPath:path] == NO) {
+		[manager createDirectoryAtPath:path attributes:nil];
 	}
 	
-	if ([manager fileExistsAtPath:indexLocation] == NO) {
-		[manager createDirectoryAtPath:indexLocation attributes:nil];
+	path = getActualPath(indexLocation);
+	if ([manager fileExistsAtPath:path] == NO) {
+		[manager createDirectoryAtPath:path attributes:nil];
 	}
 	
 	// Create index directory
-	NSString *indexdir = [indexLocation stringByAppendingPathComponent:host];
+	NSString *indexdir = [getActualPath(indexLocation) stringByAppendingPathComponent:host];
 	if ([manager fileExistsAtPath:indexdir] == NO) {
 		[manager createDirectoryAtPath:indexdir	attributes:nil];
 	}
@@ -1063,7 +1075,7 @@ clean:
 	}
 	
 	// Create cache directory
-	NSString *cachedir = [rootLocation stringByAppendingPathComponent:host];
+	NSString *cachedir = [getActualPath(rootLocation) stringByAppendingPathComponent:host];
 	if ([manager fileExistsAtPath:cachedir] == NO) {
 		[manager createDirectoryAtPath:cachedir attributes:nil];
 	}
@@ -1091,10 +1103,10 @@ clean:
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSError *error = nil;
 	
-	if ([manager removeItemAtPath:indexLocation error:(NSError **)error] == NO) {
+	if ([manager removeItemAtPath:getActualPath(indexLocation) error:(NSError **)error] == NO) {
 		NSLog(@"%s, error in emptying cache: %s", __func__, error);
 	}
-	if ([manager removeItemAtPath:rootLocation error:(NSError **)error] == NO) {
+	if ([manager removeItemAtPath:getActualPath(rootLocation) error:(NSError **)error] == NO) {
 		NSLog(@"%s, error in emptying cache: %s", __func__, error);
 	}
 }
@@ -1102,7 +1114,7 @@ clean:
 - (NSInteger)loadCacheObjectsFromCategory:(cache_category_t)category
 {
 	NSInteger i=0;
-	NSString *indexdir = [indexLocation stringByAppendingPathComponent:hostForCacheObjects];
+	NSString *indexdir = [getActualPath(indexLocation) stringByAppendingPathComponent:hostForCacheObjects];
 	indexdir = [indexdir stringByAppendingPathComponent:getCategoryComponent(category)];
 		
 	NSDirectoryEnumerator *direnum = [[NSFileManager defaultManager] 
@@ -1165,13 +1177,13 @@ clean:
 	NSMutableData *objects = nil;
 	NSMutableDictionary *objectDictionary = nil;
 	
-	NSString* name = [rootLocation stringByAppendingFormat:@"/%@/html/%@%@", hostForCacheObjects, file, EMBEDDED_FILE_EXT];
-	NSString* request_name = [rootLocation stringByAppendingFormat:@"/%@/html/%@.req", hostForCacheObjects, file];
-	NSString* orig_name = [rootLocation stringByAppendingFormat:@"/%@/html/%@", hostForCacheObjects, file];
-	NSString* index_name = [indexLocation stringByAppendingFormat:@"/%@/html/%@", hostForCacheObjects, file];
+	NSString* name = [rootLocation stringByAppendingFormat:@"%@/html/%@%@", hostForCacheObjects, file, EMBEDDED_FILE_EXT];
+	NSString* request_name = [rootLocation stringByAppendingFormat:@"%@/html/%@.req", hostForCacheObjects, file];
+	NSString* orig_name = [rootLocation stringByAppendingFormat:@"%@/html/%@", hostForCacheObjects, file];
+	NSString* index_name = [indexLocation stringByAppendingFormat:@"%@/html/%@", hostForCacheObjects, file];
 	NSFileManager *manager = [NSFileManager defaultManager];
 	
-	int fd = open([name UTF8String], O_RDONLY);
+	int fd = OPEN(name, O_RDONLY);
 	if (fd == -1) {
 		NSLog(@"%s: %@, %s", __func__, name, strerror(errno));
 		goto cleanLast;
@@ -1245,15 +1257,15 @@ clean:
 	if (fd >= 0) {
 		close(fd);
 	}
-	[manager removeItemAtPath:name error:&error];
+	[manager removeItemAtPath:getActualPath(name) error:&error];
 	if (error != nil) {
 		NSLog(@"Error occurred during removing this file: %@, %@", name, error);
 	}
-	[manager removeItemAtPath:orig_name error:&error];
+	[manager removeItemAtPath:getActualPath(orig_name) error:&error];
 	if (error != nil) {
 		NSLog(@"Error occurred during removing this file: %@, %@", orig_name, error);
 	}
-	[manager removeItemAtPath:request_name error:&error];
+	[manager removeItemAtPath:getActualPath(request_name) error:&error];
 	if (error != nil) {
 		NSLog(@"Error occurred during removing this file: %@, %@", request_name, error);
 	}
@@ -1261,7 +1273,7 @@ clean:
 	[objects release];
 	
 cleanLast:
-	[manager removeItemAtPath:index_name error:&error];
+	[manager removeItemAtPath:getActualPath(index_name) error:&error];
 	if (error != nil) {
 		NSLog(@"Error occurred during removing this file: %@, %@", index_name, error);
 	}
@@ -1312,9 +1324,9 @@ cleanLast:
 	NSError *error = nil;
 	//time_t today = time(nil);
 	
-	NSString* request_name = [rootLocation stringByAppendingFormat:@"/%@/thumb/%@.req", hostForCacheObjects, file];
-	NSString* orig_name = [rootLocation stringByAppendingFormat:@"/%@/thumb/%@", hostForCacheObjects, file];
-	NSString* index_name = [indexLocation stringByAppendingFormat:@"/%@/thumb/%@", hostForCacheObjects, file];
+	NSString* request_name = [getActualPath(rootLocation) stringByAppendingFormat:@"/%@/thumb/%@.req", hostForCacheObjects, file];
+	NSString* orig_name = [getActualPath(rootLocation) stringByAppendingFormat:@"/%@/thumb/%@", hostForCacheObjects, file];
+	NSString* index_name = [getActualPath(indexLocation) stringByAppendingFormat:@"/%@/thumb/%@", hostForCacheObjects, file];
 	NSFileManager *manager = [NSFileManager defaultManager];
 	
 	// TODO: Need more thought, probably for next version.
@@ -1370,7 +1382,7 @@ cleanLast:
 - (BOOL)doesCacheExist:(NSString*)file
 {
 	NSFileManager *manager = [NSFileManager defaultManager];
-	return [manager fileExistsAtPath:file];
+	return [manager fileExistsAtPath:getActualPath(file)];
 }
 
 - (id)copyWithZone:(NSZone *)zone 

@@ -692,7 +692,7 @@ repeat:
 	
 	NSDictionary *responseDict = [theResponse allHeaderFields];
 	
-	NSEnumerator *enumerator = [responseDict keyEnumerator];
+	//NSEnumerator *enumerator = [responseDict keyEnumerator];
 	
 	NSString *key;
 	NSString *field;
@@ -765,7 +765,9 @@ repeat:
 	}
 	
 	NSFileManager* fileManager = [NSFileManager defaultManager];
-	[fileManager createFileAtPath:fileName contents:data attributes:nil];
+	if ([fileManager createFileAtPath:getActualPath(fileName) contents:data attributes:nil] == NO) {
+		NSLog(@"%s, fail to create file: %@", __func__, fileName);
+	}
 }
 
 - (void)dealloc {

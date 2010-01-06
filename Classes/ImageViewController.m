@@ -11,52 +11,6 @@
 #import "WebLink.h"
 #import "ArticleImageView.h"
 
-/*
-#define BLOCK_SIZE	1024
-static NSMutableData *fileBuffer = nil;
-static unsigned char temp_file_storage[BLOCK_SIZE];
-
-NSMutableData *getImageFileBuffer()
-{
-	if (fileBuffer == nil) {
-		fileBuffer = [[NSMutableData alloc]initWithCapacity:BLOCK_SIZE];
-	}
-	
-	return fileBuffer;
-}
-
-(NSData*)readFromFile(NSString* file)
-{
-	int fd = open([file UTF8String], O_RDONLY);
-	if (fd == -1) {
-		NSLog(@"%s: %@, %s", __func__, file, strerror(errno));
-		return nil;
-	}
-	
-	int size = 0;
-	int totalLength = 0;
-	//NSMutableData *data = [[NSMutableData alloc] initWithCapacity:BLOCK_SIZE];
-	NSMutableData *data = getImageFileBuffer();
-	[data setLength:0];
-	
-	do {
-		size = read(fd, temp_file_storage, BLOCK_SIZE);
-		if (size > 0) {
-			[data appendBytes:temp_file_storage length:size];
-		}
-		else if (size < 0) {
-			NSLog(@"%s: %@, %s", __func__, file, strerror(errno));
-			//[data release];
-			close(fd);
-			return nil;
-		}
-		totalLength += size;
-	} while (size > 0);
-	
-	close(fd);
-	return data;
-}
-*/
 
 @implementation ImageViewController
 
@@ -87,7 +41,7 @@ NSMutableData *getImageFileBuffer()
 	WebLink *link = [storage getArticleAtPage:pageNum];
 	webLink = link;
 	if (link != nil) {
-		NSData *data = [[NSData alloc] initWithContentsOfFile:link.imageLink];
+		NSData *data = [[NSData alloc] initWithContentsOfFile:getActualPath(link.imageLink)];
 		UIImage *image = [[UIImage alloc] initWithData:data];
 		articleImageView.image = image;
 		articleDescription.text = link.description;
@@ -108,7 +62,7 @@ NSMutableData *getImageFileBuffer()
 	webLink = link;
 	pageNum = page;
 	if (link != nil) {
-		NSData *data = [[NSData alloc] initWithContentsOfFile:link.imageLink];
+		NSData *data = [[NSData alloc] initWithContentsOfFile:getActualPath(link.imageLink)];
 		UIImage *image = [[UIImage alloc] initWithData:data];
 		
 		articleImageView.image = image;
@@ -132,7 +86,7 @@ NSMutableData *getImageFileBuffer()
 	WebLink *link = [storage getPrevArticle];
 	if (link != nil) {
 		//UIImage *image = [[UIImage alloc] initWithContentsOfFile:link.imageLink];
-		NSData *data = [[NSData alloc] initWithContentsOfFile:link.imageLink];
+		NSData *data = [[NSData alloc] initWithContentsOfFile:getActualPath(link.imageLink)];
 		UIImage *image = [[UIImage alloc] initWithData:data];
 		
 		//if (articleImageView.image != nil)
@@ -156,7 +110,7 @@ NSMutableData *getImageFileBuffer()
 	webLink = link;
 	if (link != nil) {
 		//UIImage *image = [[UIImage alloc] initWithContentsOfFile:link.imageLink];
-		NSData *data = [[NSData alloc] initWithContentsOfFile:link.imageLink];
+		NSData *data = [[NSData alloc] initWithContentsOfFile:getActualPath(link.imageLink)];
 		UIImage *image = [[UIImage alloc] initWithData:data];
 		
 		//if (articleImageView.image != nil) {

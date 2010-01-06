@@ -166,7 +166,7 @@ NSString *getJASONSafeString(NSString *string) {
 	TRACE_HERE;
 	
 	self.webLink = w;
-	self.imageForLink = [[UIImage alloc] initWithContentsOfFile:w.imageLink];
+	self.imageForLink = [[UIImage alloc] initWithContentsOfFile:getActualPath(w.imageLink)];
 	
 	TRACE("%s, image size: w: %f, h: %f\n", __func__, self.imageForLink.size.width, self.imageForLink.size.height);
 	if ([GeoSession sharedGeoSessionInstance].fbUID == 0) {

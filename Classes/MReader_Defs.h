@@ -20,10 +20,12 @@ typedef enum {CACHE_NONE, CACHE_THUMB_NAIL, CACHE_HTML, CACHE_FEED} cache_catego
 #define TABLE_WIDTH			320
 #define TABLE_HEIGHT		347
 
+#define RECT_START_MARGIN	10.0
+#define IMG_MARGIN			5.0
 #define IMG_RECT_X			5.0
-#define IMG_RECT_Y			5.0
-#define IMG_RECT_WIDTH		90.0 //100
-#define IMG_RECT_HEIGHT		72.0 //82.0
+#define IMG_RECT_Y			8.0
+#define IMG_RECT_WIDTH		80.0 //100
+#define IMG_RECT_HEIGHT		65.6 //82.0
 
 #define TITLE_RECT_X		IMG_RECT_WIDTH + 10.0
 #define TITLE_RECT_Y		0.0
@@ -42,3 +44,6 @@ typedef enum {CACHE_NONE, CACHE_THUMB_NAIL, CACHE_HTML, CACHE_FEED} cache_catego
 #endif
 
 #define	TRACE_HERE		TRACE("%s\n", __func__)
+
+extern NSString *getActualPath(NSString* sourcePath);
+extern int OPEN(NSString* name, int flag);

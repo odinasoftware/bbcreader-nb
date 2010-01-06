@@ -176,24 +176,6 @@ NSString *readStringSeparatedBySpace(const char *data, int len, int *index)
 
 - (void)readSettings
 {
-	/*
-	char buf[256];
-	
-	//NSFileHandle *handle = (NSFileHandle*) [NSFileHandle fileHandleForReadingAtPath:configLocation];
-	int fd = open([configLocation UTF8String], O_RDWR);
-	if (fd > 0) {
-		int size = read(fd, buf, 256);
-		//if (size > 9) {
-			NSData* data = [[NSData alloc] initWithBytes:buf length:size]; //[handle readDataToEndOfFile];
-			[self fillValues:data];
-		//}
-		close(fd);
-	}
-	else {
-		NSLog(@"%s, %s", __func__, strerror(errno));
-		[self useDefaultSettings];
-	}
-	 */
 	
 	// due to application data merging problem in application, better to remove all of that.
 	NSString *version = (NSString*) CFPreferencesCopyAppValue((CFStringRef)LAST_VERSION, kCFPreferencesCurrentApplication);
@@ -298,32 +280,6 @@ clean:
 
 - (void)saveSettings
 {
-	/*
-	int fd = -1;
-	
-	pthread_mutex_lock(&fileMutex);
-	
-	//if (chmod([configLocation UTF8String], S_IRUSR | S_IWUSR) < 0) {
-	//	NSLog(@"%s, %s", __func__, strerror(errno));
-	//	goto clean;
-	//}
-	fd = open([configLocation UTF8String], O_RDWR | O_CREAT);
-	
-	if (fd < 0) {
-		NSLog(@"%s, %s", __func__, strerror(errno));
-		goto clean;
-	}
-	
-	NSString *buffer = [[NSString alloc] initWithFormat:@"%u %u %u %u %d\n", segmentIndex[0], segmentIndex[1], segmentIndex[2], segmentIndex[3], lastUpdatedDate];
-	
-	write(fd, [buffer UTF8String], [buffer length]);
-	[buffer release];
-	close(fd);
-	
-clean:
-	
-	pthread_mutex_unlock(&fileMutex);
-	 */
 	
 	CFPreferencesSetAppValue((CFStringRef)SEGMENT0, [NSNumber numberWithInt:segmentIndex[0]], kCFPreferencesCurrentApplication);
 	CFPreferencesSetAppValue((CFStringRef)SEGMENT1, [NSNumber numberWithInt:segmentIndex[1]], kCFPreferencesCurrentApplication);
@@ -436,7 +392,7 @@ clean:
 				
 				NSString *file = [cacheService getLocalFileNameFromURL:link.url];
 				NSString *file_path = [html_path stringByAppendingPathComponent:file];
-				if ([manager fileExistsAtPath:file_path] && [historyDictionary objectForKey:file] == nil) {
+				if ([manager fileExistsAtPath:getActualPath(file_path)] && [historyDictionary objectForKey:file] == nil) {
 					TRACE("%s: add %s: %s to history.\n", __func__, [link.url UTF8String], [file UTF8String]);
 					[historyLink addObject:link];
 					[historyDictionary setObject:link forKey:file];

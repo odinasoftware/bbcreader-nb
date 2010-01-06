@@ -59,11 +59,11 @@
 	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 
-	[fileManager removeItemAtPath:rootLocation error:&error];
+	[fileManager removeItemAtPath:getActualPath(rootLocation) error:&error];
 	if (error != nil) {
 		NSLog(@"error: %@", error);
 	}
-	[fileManager removeItemAtPath:indexLocation error:&error];
+	[fileManager removeItemAtPath:getActualPath(indexLocation) error:&error];
 	if (error != nil) {
 		NSLog(@"error: %@", error);
 	}

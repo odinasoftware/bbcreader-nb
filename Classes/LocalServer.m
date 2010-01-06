@@ -300,19 +300,6 @@ void sigpipe_handler(int sig)
 					}
 				}
 				TRACE(">>>>> Writing response: fd: %d, header: %d, body: %d\n", connfd, [header length], [body length]);
-				/*
-				 NSString *dir = NSTemporaryDirectory();
-				 dir = [dir stringByAppendingPathComponent:@"test.txt"];
-				 int fd = open([dir UTF8String], O_RDWR | O_CREAT);
-				 if (fd < 0) {
-				 NSLog(@"Can't create a file, %s", strerror(errno));
-				 }
-				 write(fd, [header bytes], [header length]);
-				 write(fd, [body bytes], [body length]);
-				 close(fd);
-				 NSLog(@"|||||||||| Creating file: %@", dir);
-				 */
-				//[header release];
 			}
 			
 		}
@@ -370,7 +357,7 @@ clean:
 		return nil;
 	}
 	
-	int fd = open([file UTF8String], O_RDONLY);
+	int fd = OPEN(file, O_RDONLY);
 	//NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:file];
 	
 	if (fd == -1) {
@@ -386,7 +373,7 @@ clean:
 
 		//[file stringByReplacingCharactersInRange:range withString:@"index"];
 		NSString *indexFile = [theCacheService getIndexDescriptorFromCacheFile:file]; 
-		fd = open([indexFile UTF8String], O_RDONLY);
+		fd = OPEN(indexFile, O_RDONLY);
 		if (fd == -1) {
 			NSLog(@"%s, %s", __func__, strerror(errno));
 			*body = theNotFoundBody;

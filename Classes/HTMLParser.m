@@ -920,7 +920,9 @@ char CharFromNSDataAtIndex(NSData *x, int i) {
 	//   1. save the destination stream
 	//   2. flush embedded objects
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	[fileManager createFileAtPath:entry.cacheFile contents:destStream attributes:nil];
+	if ([fileManager createFileAtPath:getActualPath(entry.cacheFile) contents:destStream attributes:nil] == NO) {
+		NSLog(@"%s, fail to create file: %@", __func__, entry.cacheFile);
+	}
 	
 	[theSiteExpert stopSiteExpert];
 	[self resetParser];
