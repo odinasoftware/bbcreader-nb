@@ -328,6 +328,11 @@
 			image = [[UIImage alloc] initWithContentsOfFile:getActualPath(imageLink)];
 			if (image == nil) {
 				NSLog(@"%s, %@ is null.", __func__, imageLink);
+				// Adjust rectangle accordingly
+				title.frame = CGRectMake(title.frame.origin.x, title.frame.origin.y, 
+										 title.frame.size.width+IMG_RECT_WIDTH, title.frame.size.height);
+				description.frame = CGRectMake(description.frame.origin.x, description.frame.origin.y, 
+											   description.frame.size.width+IMG_RECT_WIDTH, description.frame.size.height);
 			}
 			imageRect.image = image;
 			[imageRect setImageLink:imageLink];
