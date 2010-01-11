@@ -130,7 +130,7 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"Message (v.2.0):";
+			title = @"Message (v.2.1):";
 			break;
 		}
 	}
@@ -355,7 +355,7 @@ enum ControlTableSections
 			}
 			else {
 				if (downloadProgress > 0.9) {
-					((SourceCell*)cell).sourceLabel.text = @"The current version downloads the minimum requried objects to display a web page. You may see some broken links in offline mode.";
+					((SourceCell*)cell).sourceLabel.text = @"The current version downloads the minimum required objects to display a web page. You may see some broken links in offline mode.";
 				}
 				else {
 					((SourceCell*)cell).sourceLabel.text = @"For best results, please do the first sync in 3G or WiFi.";

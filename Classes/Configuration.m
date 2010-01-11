@@ -106,7 +106,9 @@ NSString *readStringSeparatedBySpace(const char *data, int len, int *index)
 		
 		NSLog(@"Config file: %@", configLocation);
 		 */
+		// TODO: clean up these dictionary at some point.
 		historyDictionary = [[NSMutableDictionary alloc] initWithCapacity:MAX_HISTORY_NUM];
+		thumbHistoryDictionary = [[NSMutableDictionary alloc] initWithCapacity:MAX_HISTORY_NUM];
 		cacheService = [WebCacheService sharedWebCacheServiceInstance];
 		historyIndex = -1;
 		[self readSettings];
@@ -341,6 +343,11 @@ clean:
 	return ([historyDictionary objectForKey:file]==nil?NO:YES);
 }
 
+- (BOOL)isThumbInHistory:(NSString*)file
+{
+	return ([thumbHistoryDictionary objectForKey:file]==nil?NO:YES);
+}
+
 - (void)saveWebLinkPreference:(WebLink*)link
 {
 	NSString *key = [[NSString alloc] initWithFormat:@"%@%d", HISTORY_TEXT, historyIndex];
@@ -396,6 +403,13 @@ clean:
 					TRACE("%s: add %s: %s to history.\n", __func__, [link.url UTF8String], [file UTF8String]);
 					[historyLink addObject:link];
 					[historyDictionary setObject:link forKey:file];
+					if (link.imageLink != nil) {
+						file = [link.imageLink lastPathComponent];
+						if ([manager fileExistsAtPath:getActualPath(link.imageLink)] && [thumbHistoryDictionary objectForKey:file] == nil) {
+							[thumbHistoryDictionary setObject:link.imageLink forKey:file];
+							NSLog(@"Add this thumb to history: %@", file);
+						}
+					}
 				}
 				else {
 					TRACE("%s, this will not be added: %s\n", __func__, [file UTF8String]);

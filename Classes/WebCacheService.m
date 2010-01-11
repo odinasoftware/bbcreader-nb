@@ -327,6 +327,13 @@ int OPEN(NSString* name, int flag)
 	return [path stringByAppendingPathComponent:@"html"];
 }
 
+- (NSString*)getThumbPathWithHost:(NSString*)host
+{
+	NSString *path = [rootLocation stringByAppendingPathComponent:host];
+	
+	return [path stringByAppendingPathComponent:@"thumb"];
+}
+
 - (NSMutableArray*) getUrlForIndex:(NSString*)file forCategory:(cache_category_t)category
 {
 	NSMutableArray* objects = nil;
@@ -1364,9 +1371,14 @@ cleanLast:
 	
 	NSString *file = (NSString*) key;
 	
-	if ([self unlinkThisThumbFile:file] == YES) {
-		TRACE("%s, removing this file: %s.\n", __func__, [file UTF8String]);
-		nThumbGarbage++;
+	Configuration *config = [Configuration sharedConfigurationInstance];
+	
+	if ([config isThumbInHistory:file] == NO) {
+		// Remove only when this file is not in hash.
+		if ([self unlinkThisThumbFile:file] == YES) {
+			NSLog(@"%s, removing this file: %s.\n", __func__, [file UTF8String]);
+			nThumbGarbage++;
+		}
 	}
 	
 	[thumbDictionary removeObjectForKey:key];

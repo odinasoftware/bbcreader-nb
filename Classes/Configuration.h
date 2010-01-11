@@ -22,6 +22,7 @@
 	pthread_mutex_t fileMutex;
 	NSMutableArray	*history;
 	NSMutableDictionary *historyDictionary;
+	NSMutableDictionary *thumbHistoryDictionary;
 	int				historyIndex;
 	WebCacheService *cacheService;
 	NSString		*lastUsedURLHash;
@@ -47,5 +48,6 @@
 - (BOOL)isFileInHistory:(NSString*)file;
 - (void)setOfflineMode:(BOOL)mode;
 - (void)clearHistory;
+- (BOOL)isThumbInHistory:(NSString*)file;
 
 @end

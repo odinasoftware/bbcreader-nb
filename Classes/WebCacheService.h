@@ -107,5 +107,6 @@
 - (BOOL)doGarbageCollectionForThumbnail;
 - (void)emptyCache;
 - (BOOL)isCacheCreated;
+- (NSString*)getThumbPathWithHost:(NSString*)host;
 
 @end
