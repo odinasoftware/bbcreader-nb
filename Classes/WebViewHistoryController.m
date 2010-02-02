@@ -136,7 +136,7 @@
 	if (imageRect == nil) {
 		imageRect = [[[TableCellView alloc] initWithFrame:CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT)] autorelease];
 		imageRect.tag = MREADER_IMG_TAG;
-		[imageRect setImageLink:NO_IMAGE_AVAIABLE];
+		imageRect.imageLink = NO_IMAGE_AVAIABLE;
 	}
 	else {
 		imageRect.frame = CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT);
@@ -158,7 +158,7 @@
 				NSLog(@"%s, image is nul: %@", __func__, imageLink);
 			}
 			imageRect.image = image;
-			[imageRect setImageLink:imageLink];
+			imageRect.imageLink = imageLink;
 			if ((reusableCell == NO) || (shouldAddImageCell == YES))
 				[cell.contentView addSubview:imageRect];
 		}
@@ -176,7 +176,7 @@
 		if (imageRect.image != nil)
 			[imageRect.image release];
 		imageRect.image = nil;
-		[imageRect setImageLink:DEFAULT_IMAGE];
+		imageRect.imageLink = DEFAULT_IMAGE;
 	}
 	else {
 		dontDoAnything = YES;
