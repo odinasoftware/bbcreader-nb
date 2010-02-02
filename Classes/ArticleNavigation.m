@@ -13,7 +13,7 @@
 #import "WebViewController.h"
 #import "WebViewControllerHolder.h"
 
-#define kSegmentCtrlBoxSize		280.0
+#define kSegmentCtrlBoxSize		260.0
 #define kSegmentCtrlBoxYOrigin	5.0
 #define kSegmentCtrlBoxHeight	30.0
 
@@ -66,11 +66,12 @@
 		[theSegmentedControl sizeToFit];
 		theSegmentedControl.selectedSegmentIndex = 0;
 		CGRect parentFrame = [self.navigationBar frame];
-		CGRect segmentedControlFrame = CGRectMake(parentFrame.size.width/2 - kSegmentCtrlBoxSize/2,
+		CGRect segmentedControlFrame = CGRectMake(5.0, //parentFrame.size.width/2 - kSegmentCtrlBoxSize/2,
 												  parentFrame.size.height/2 - kSegmentCtrlBoxHeight/2,
 												  kSegmentCtrlBoxSize,
 												  kSegmentCtrlBoxHeight);
 		theSegmentedControl.frame = segmentedControlFrame;
+		
 		//[self.navigationBar addSubview:theSegmentedControl];
 		//[segmentedControl release];	
 		[titles release];
