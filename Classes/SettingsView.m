@@ -130,7 +130,7 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"Message (v.2.1):";
+			title = @"Message (v.2.2):";
 			break;
 		}
 	}
@@ -164,7 +164,7 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"2009 Odina software.\n Maker of iGeoJournal.\n Map, camera, journal, and recorder,\n all in one place!\nVisit App Store for more information.";
+			title = @"2010 Odina software.\n Maker of iGeoJournal.\n Map, camera, journal, and recorder,\n all in one place!\nVisit App Store for more information.";
 			break;
 		}
 	}
