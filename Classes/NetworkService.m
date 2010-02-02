@@ -894,6 +894,7 @@ clean:
 					// feed is expired.
 					TRACE(">>>>> %s, refresh feed, %s\n", __func__, [feedInfo.origURL UTF8String]);
 					[self refreshFeed:feedInfo withIndex:i];
+					shouldReloadArticles = YES;
 				}
 				if (continueRefreshArticles == NO) break;
 			}
@@ -1160,12 +1161,12 @@ clean:
 	for (;;) {
 		[self checkDownloadStatus];
 		
-		if (isPoolCreated == YES) {
-			[pool release];
-			isPoolCreated = NO;
-		}
-		pool = [[NSAutoreleasePool alloc] init];
-		isPoolCreated = YES;
+		//if (isPoolCreated == YES) {
+		//	[pool release];
+		//	isPoolCreated = NO;
+		//}
+		//pool = [[NSAutoreleasePool alloc] init];
+		//isPoolCreated = YES;
 		
 		//pthread_mutex_lock(&network_mutex);
 		cont = [self getThumbnail];
@@ -1227,12 +1228,12 @@ clean:
 	for (;;) {
 		[self checkDownloadStatus];
 		
-		if (isPoolCreated == YES) {
-			[pool release];
-			isPoolCreated = NO;
-		}
-		pool = [[NSAutoreleasePool alloc] init];
-		isPoolCreated = YES;
+		//if (isPoolCreated == YES) {
+		//	[pool release];
+		//	isPoolCreated = NO;
+		//}
+		//pool = [[NSAutoreleasePool alloc] init];
+		//isPoolCreated = YES;
 		
 		//pthread_mutex_lock(&network_mutex);
 		cont = [self getThumbnail];
@@ -1428,8 +1429,10 @@ clean:
 			[protectFeed lock];
 			FeedStorage *feed = [theArticleStorage getActiveFeedStorage:index];
 			
-			networkService.numberOfDownloadedObjects -= [feed.rssFeeds count];
-			storage.numberOfArticles -= [feed.rssFeeds count];
+			if (networkService.numberOfDownloadedObjects > 0)
+				networkService.numberOfDownloadedObjects -= [feed.rssFeeds count];
+			if (storage.numberOfArticles > 0)
+				storage.numberOfArticles -= [feed.rssFeeds count];
 		    storage.numberOfChannel--;
 
 			[feed release];
