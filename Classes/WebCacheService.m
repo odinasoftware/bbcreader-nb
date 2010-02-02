@@ -374,9 +374,10 @@ int OPEN(NSString* name, int flag)
 {
 	BOOL ret = YES;
 	//NSDate *expirationDate = nil;
-	NSString *responseFile = [file stringByAppendingString:@".req"];
-	BOOL unknown = NO;
+	//NSString *responseFile = [file stringByAppendingString:@".req"];
+	BOOL unknown = YES;
 	
+	/*
 	NSData *responseData = [self readFromFile:responseFile]; 
 
 	if (responseData == nil) {
@@ -520,10 +521,10 @@ int OPEN(NSString* name, int flag)
 	}
 	
 	[responseData release];
-	
+	*/
 	if (unknown == YES) {
 		NSDate *last_updated = [Configuration sharedConfigurationInstance].lastUpdatedDate;
-		NSDate *expired_date = [last_updated addTimeInterval:43200.0];
+		NSDate *expired_date = [last_updated addTimeInterval:21600.0];
 		NSDate *date = [[NSDate date] init];
 		
 		if ([expired_date compare:date] == NSOrderedAscending) {
