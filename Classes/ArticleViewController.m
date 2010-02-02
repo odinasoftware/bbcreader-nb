@@ -58,6 +58,7 @@
 	isThisOtherView = NO;
 	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
 	//self.title = [storage getActiveArticleTitle];
+	self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(reloadArticles:)];
 	if ([storage articleNaviationMode] == ARTICLE_OTHER_NAV_MODE) {
 		/*
 		UINavigationItem *navItem = self.navigationItem;
@@ -307,7 +308,7 @@
 		
 		imageRect = [[[TableCellView alloc] initWithFrame:CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT)] autorelease];
 		imageRect.tag = MREADER_IMG_TAG;
-		[imageRect setImageLink:NO_IMAGE_AVAIABLE];
+		imageRect.imageLink = NO_IMAGE_AVAIABLE;
 	}
 	else {
 		imageRect.frame = CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT);
@@ -335,7 +336,7 @@
 											   description.frame.size.width+IMG_RECT_WIDTH, description.frame.size.height);
 			}
 			imageRect.image = image;
-			[imageRect setImageLink:imageLink];
+			imageRect.imageLink = imageLink;
 			if ((reusableCell == NO) || (shouldAddImageCell == YES))
 				[cell.contentView addSubview:imageRect];
 		}
@@ -350,10 +351,10 @@
 	else if ([imageRect compareImageLink:DEFAULT_IMAGE] == NO) {
 		// The current image in the cell is not default image.
 		// Change to default image.
-		if (imageRect.image != nil)
-			[imageRect.image release];
-		imageRect.image = nil;
-		[imageRect setImageLink:DEFAULT_IMAGE];
+		if (imageRect.image != nil) {
+			imageRect.image = nil;
+		}
+		imageRect.imageLink = DEFAULT_IMAGE;
 	}
 	else {
 		dontDoAnything = YES;
@@ -536,11 +537,21 @@
 
 - (IBAction)reloadArticles:(id)sender
 {
+	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
+	WebCacheService *cacheService = [WebCacheService sharedWebCacheServiceInstance];
+	NetworkService *networkService = [NetworkService sharedNetworkServiceInstance];
+	
 	if ([activityIndicator isAnimating] == NO) {
 		[activityIndicator startAnimating];
 	}
 	if (reloadButton.hidden == NO)
 		reloadButton.hidden = YES;
+	
+	//storage.numberOfArticles = 0;
+	storage.numberOfImages = 0;
+	storage.numberOfChannel = 0;
+	cacheService.numberOfCSSs = 0;
+	networkService.numberOfDownloadedObjects = 0;
 	[[NetworkService sharedNetworkServiceInstance] reloadArticles];
 }
 
