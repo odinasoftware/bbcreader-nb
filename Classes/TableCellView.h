@@ -14,7 +14,9 @@
 	NSString *imageLink;
 }
 
-- (void)setImageLink:(NSString*)link;
+@property (nonatomic, retain) NSString *imageLink;
+
+//- (void)setImageLink:(NSString*)link;
 - (BOOL)compareImageLink:(NSString*)link;
 
 @end

@@ -11,10 +11,12 @@
 
 @implementation TableCellView
 
-- (void)setImageLink:(NSString*)link
-{
-	imageLink = link;
-}
+@synthesize imageLink;
+
+//- (void)setImageLink:(NSString*)link
+//{
+//	self.imageLink = link;
+//}
 
 - (BOOL)compareImageLink:(NSString*)link
 {
