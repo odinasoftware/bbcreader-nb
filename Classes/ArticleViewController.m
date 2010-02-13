@@ -309,6 +309,7 @@
 		imageRect = [[[TableCellView alloc] initWithFrame:CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT)] autorelease];
 		imageRect.tag = MREADER_IMG_TAG;
 		imageRect.imageLink = NO_IMAGE_AVAIABLE;
+		imageRect.contentMode = UIViewContentModeScaleAspectFit;
 	}
 	else {
 		imageRect.frame = CGRectMake(rect_x, IMG_RECT_Y, IMG_RECT_WIDTH, IMG_RECT_HEIGHT);
