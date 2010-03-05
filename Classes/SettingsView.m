@@ -130,7 +130,7 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"Message (v.2.2):";
+			title = @"Message (v.2.3):";
 			break;
 		}
 	}
