@@ -237,7 +237,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 		foundStoryBody = NO;
 	}
 	
-	if (addToThumbnail == YES) {
+	if (addToThumbnail == YES && value != nil) {
 		ret = YES;
 		if (theIndexPath == nil) {
 			NSLog(@"%s, index path is null.", __func__);
