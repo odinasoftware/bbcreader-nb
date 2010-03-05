@@ -169,9 +169,9 @@ NSString *readStringSeparatedBySpace(const char *data, int len, int *index)
 	//}
 	
 	//segmentIndex[NUMBER_OF_ACTIVE_FEED-1] = 7; // UK news
-	segmentIndex[0] = 0;
-	segmentIndex[1] = 7;
-	segmentIndex[2] = 2;
+	segmentIndex[0] = 17;
+	segmentIndex[1] = 18;
+	segmentIndex[2] = 19;
 	
 	lastUpdatedDate = nil;
 }
