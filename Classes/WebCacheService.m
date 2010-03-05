@@ -49,7 +49,7 @@ static const NSString* OTHER_INDEX_FILE_NAME = @"other.mreader";
 NSString *getActualPath(NSString* sourcePath)
 {
 	NSString *file = nil;
-#define USE_DOCUMENT_DIR	1
+//#define USE_DOCUMENT_DIR	1
 	
 #if USE_DOCUMENT_DIR
 	NSArray *paths;
