@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Arabic</key>
+		<string>http://newsrss.bbc.co.uk/rss/arabic/news/rss.xml</string>
+	</dict>
+	<dict>
+		<key>Chinese</key>
+		<string>http://newsrss.bbc.co.uk/rss/chinese/simp/news/rss.xml</string>
+	</dict>
+	<dict>
+		<key>Portuguese</key>
+		<string>http://www.bbc.co.uk/portuguese/index.xml</string>
+	</dict>
+	<dict>
+		<key>Russian</key>
+		<string>http://newsrss.bbc.co.uk/rss/russian/news/rss.xml</string>
+	</dict>
+	<dict>
+		<key>Spanish</key>
+		<string>http://newsrss.bbc.co.uk/rss/spanish/news/rss.xml</string>
+	</dict>
+	<dict>
+		<key>Turkish</key>
+		<string>http://www.bbc.co.uk/turkish/index.xml</string>
+	</dict>
+	<dict>
+		<key>Ukrainian</key>
+		<string>http://www.bbc.co.uk/ukrainian/index.xml</string>
+	</dict>
+</array>
+</plist>

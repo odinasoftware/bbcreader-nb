@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>m-News Front Page</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-World</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/world/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-UK</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/uk/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-England</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/england/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Northern Ireland</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/northern_ireland/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Scotland</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/scotland/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Wales</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/wales/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Business</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/business/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Politics</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/uk_politics/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Health</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/health/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Education</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/education/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Science and Environment</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/sci/tech/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Technology</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/technology/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Entertainment</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/entertainment/rss.xml</string>
+	</dict>
+	<dict>
+		<key>m-Magazine</key>
+		<string>http://news.bbc.co.uk/nol/ukfs_news/mobile/magazine/rss.xml</string>
+	</dict>
+</array>
+</plist>
