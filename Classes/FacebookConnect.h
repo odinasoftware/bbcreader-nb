@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FBConnect/FBConnect.h"
+#import "FBConnect.h"
 
 typedef enum {FB_REQUEST_NONE=0, FB_REQUEST_LOGIN=1, FB_REQUEST_USERNAME=2, FB_REQUEST_PERMISSION=3, FB_UPLOAD_PICTURE=4, FB_UPLOAD_STORY=5} FBRequestType;
 

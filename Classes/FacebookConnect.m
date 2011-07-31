@@ -8,7 +8,8 @@
 
 #import "FacebookConnect.h"
 #import "GeoSession.h"
-#import "FBConnect/FBFeedDialog.h"
+//#import "FBConnect/FBFeedDialog.h"
+#import "FBConnect.h"
 #import "MReader_Defs.h"
 #import "WebLink.h"
 
@@ -88,7 +89,8 @@ NSString *getJASONSafeString(NSString *string) {
  */
 - (void)publishToFacebook:(NSString*)image_url
 {
-	FBStreamDialog* dialog = [[FBStreamDialog alloc] init];
+#if 0
+    FBStreamDialog* dialog = [[FBStreamDialog alloc] init];
 	dialog.delegate = self;
 	dialog.userMessagePrompt = @"BBCReader";
 	NSString *data = nil;
@@ -114,6 +116,42 @@ NSString *getJASONSafeString(NSString *string) {
 	[dialog show];		
 	[data release];
 	[dialog release];
+
+#endif
+    
+    SBJSON *jsonWriter = [[SBJSON new] autorelease];
+	
+	NSString *caption = nil;
+	
+	caption = [[NSString alloc] initWithFormat:@"%@", (self.webLink.text==nil?@"No title":self.webLink.text)];
+	NSDictionary* actionLinks = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:
+														   @"Picture post",@"text",
+														   image_url,@"href", nil], nil];
+	
+	NSString *actionLinksStr = [jsonWriter stringWithObject:actionLinks];
+	NSMutableDictionary* attachment = [[NSMutableDictionary alloc] initWithCapacity:2];
+	
+	if (self.webLink.text) {
+		[attachment setObject:self.webLink.text forKey:@"caption"];
+	}
+	if (self.webLink.description) {
+		[attachment setObject:self.webLink.description forKey:@"description"];
+	}
+    
+	NSString *attachmentStr = [jsonWriter stringWithObject:attachment];
+	NSMutableDictionary* params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+								   @"Share on Facebook via iGeoJournal",  @"user_message_prompt",
+								   actionLinksStr, @"action_links",
+								   attachmentStr, @"attachment",
+								   nil];
+	
+	[[GeoSession sharedGeoSessionInstance].facebook dialog:@"stream.publish"
+												 andParams:params
+											   andDelegate:self];
+	[attachment release];	 
+    	
+	
+
 }
 
 - (FBRequest*)getRequest
@@ -123,18 +161,50 @@ NSString *getJASONSafeString(NSString *string) {
 
 - (void)publishPhotoToFacebook
 {
-	if (self.imageForLink) {
+#if 0
+    if (self.imageForLink) {
 		FBRequest *uploadPhotoRequest = [self getRequest];
-		 
+        
 		_fbCallType = FB_UPLOAD_PICTURE;
 		NSDictionary *params = nil;
-
+        
 		[uploadPhotoRequest call:@"facebook.photos.upload" params:params dataParam:(NSData*)self.imageForLink];
 	}
 	else {
 		NSLog(@"%s, image is not available.", __func__);
 		[self publishToFacebook:nil];
 	}
+#endif
+    
+	if (self.imageForLink) {
+		NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+									   self.imageForLink, @"picture",
+									   nil];
+		
+		[[GeoSession sharedGeoSessionInstance].facebook requestWithMethodName:@"photos.upload"
+                                                                    andParams:params
+																andHttpMethod:@"POST"
+																  andDelegate:self];
+		//[[GeoSession sharedGeoSessionInstance].facebook requestWithGraphPath:@"me" 
+		//														   andParams:params
+		//													   andHttpMethod:@"POST"
+		//														 andDelegate:self];
+        
+        
+		//NSMutableDictionary *args = [[[NSMutableDictionary alloc] init] autorelease];
+		
+		//[args setObject:self.imageForJournal forKey:@"image"];    // 'images' is an array of 'UIImage' objects
+		//FBRequest *uploadPhotoRequest = [self getRequest];
+		//_fbCallType = FB_UPLOAD_PICTURE;
+		[params release];
+		
+		//[uploadPhotoRequest call:@"facebook.photos.upload" params:params dataParam:(NSData*)self.imageForJournal];
+	}
+	else {
+		NSLog(@"%s, image is not available.", __func__);
+		[self publishToFacebook:nil];
+	}
+	self.imageForLink = nil;
 }
 
 - (void)performDismiss:(NSTimer*)timer 
@@ -154,9 +224,10 @@ NSString *getJASONSafeString(NSString *string) {
 - (void)loginToFacebookWithNotification:(BOOL)notify
 {
 	_notifySuccess = notify;
-
+    
 	FBLoginDialog* dialog = [[FBLoginDialog alloc] initWithSession:[GeoSession getFBSession:self]];
 	_fbCallType = FB_REQUEST_LOGIN;
+	dialog.delegate = self;
 	[dialog show];
 	[dialog release];	
 }
@@ -164,7 +235,7 @@ NSString *getJASONSafeString(NSString *string) {
 - (void)publishToFacebookForWebLink:(WebLink*)w
 {
 	TRACE_HERE;
-	
+#if 0	
 	self.webLink = w;
 	self.imageForLink = [[UIImage alloc] initWithContentsOfFile:getActualPath(w.imageLink)];
 	
@@ -181,10 +252,16 @@ NSString *getJASONSafeString(NSString *string) {
 		[self showProgress];
 		[self publishPhotoToFacebook];
 	}
+#endif
+    
+	self.webLink = w;
+	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(getFBExtendedPermission:) withObject:self waitUntilDone:NO];
+	[[GeoSession sharedGeoSessionInstance] publishPhotoToFacebook];
 	
 }
 
 #pragma mark FBSession delegate
+#if 0
 - (void)session:(FBSession*)session didLogin:(FBUID)uid {
 	NSLog(@"%s, user with id %lld logged in.", __func__, uid);
 	[GeoSession sharedGeoSessionInstance].fbUID = uid;
@@ -198,33 +275,31 @@ NSString *getJASONSafeString(NSString *string) {
 		// Wait for the permission is granted.
 	}
 }
+#endif
 #pragma mark -
 #pragma mark FBRequest delegate
 
 - (void)request:(FBRequest*)request didLoad:(id)result 
 {
-	TRACE("%s, %s, call: %d, request succeeded. %d\n", __func__, [request.method UTF8String], _fbCallType, result);
-	
-	if (_fbCallType == FB_UPLOAD_PICTURE) {
-		NSDictionary* users = result;
-		
-		NSString* url = [users objectForKey:@"src"];
-		NSString* url_small = [users objectForKey:@"src_small"];
-		// Show user name
-		
-		TRACE("%s, src: %s, src_small: %s\n", __func__, [url UTF8String], [url_small UTF8String]);
-		NSLog(@"Query returned %@", [GeoSession sharedGeoSessionInstance].fbUserName);
-		
-		if (url) {
-			[self publishToFacebook:url];
-		}
+	if ([result isKindOfClass:[NSArray class]]) {
+		result = [result objectAtIndex:0];
 	}
+	
+	for (NSString *k in [result allKeys]){
+		TRACE("keys: %s\n", [k UTF8String]);
+	}
+	NSString *url = [result objectForKey:@"link"];
+	//NSString *url_small = [results objectForKey:@"src_small"];
+	[self publishToFacebook:url];
 }
 
 - (void)request:(FBRequest*)request didFailWithError:(NSError*)error 
 {
 	NSLog(@"%s, request failed. %@", __func__, error);
-}
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Facebook error" message:[error description]
+												   delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+	[alert show];
+	[alert release];}
 
 #pragma mark -
 #pragma mark FBDialog delegate
@@ -237,7 +312,7 @@ NSString *getJASONSafeString(NSString *string) {
 	if (_fbCallType == FB_REQUEST_PERMISSION) {
 		// has to be abel to differentiate between FB 
 		// Permission for uploading picture succeeded, now upload the picture.
-		[GeoSession sharedGeoSessionInstance].gotExtendedPermission = YES;
+		//[GeoSession sharedGeoSessionInstance].gotExtendedPermission = YES;
 		if (_notifySuccess) {
 			// Notify to ConnectView
 			[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(notifyLoggedin:) withObject:nil waitUntilDone:NO];	
