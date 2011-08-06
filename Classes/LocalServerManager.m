@@ -170,8 +170,9 @@ static LocalServerManager *sharedLocalServerManager = nil;
 			
 			
 			LocalServer *server = [[LocalServer alloc] initWithManager:self connFD:connfd];
+            TRACE("Starting thread: %p\n", server);
 			[server start];
-			
+			[server release];
 			if (++activeThread >= MAX_LOCAL_SERVER_THREAD) {
 				[waitForThread lock];
 				TRACE("%s, waiting for available thread.\n", __func__);
@@ -190,11 +191,12 @@ static LocalServerManager *sharedLocalServerManager = nil;
 
 - (void)exitConnThread:(id)thread
 {
-	if (--activeThread > 0) {
-		activeThread = 0;
-	}
+    TRACE("%s, id: %p, %d\n", __func__, thread, [(LocalServer*)thread retainCount]);
+	//if (--activeThread < 0) {
+	//	activeThread = 0;
+	//}
+    --activeThread;
 	[waitForThread signal];
-	[(LocalServer*)thread release];
 }
 	
 - (void)main 
