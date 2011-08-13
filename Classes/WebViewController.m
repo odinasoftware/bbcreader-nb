@@ -95,7 +95,7 @@ extern BOOL localServerStarted;
 	//
 	CGRect frame = CGRectMake(0.0, 0.0, 25.0, 25.0);
 	progressView = [[UIActivityIndicatorView alloc] initWithFrame:frame];
-	progressView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhiteLarge;
+	progressView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
 	progressView.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin |
 									 UIViewAutoresizingFlexibleRightMargin |
 									 UIViewAutoresizingFlexibleTopMargin |
@@ -114,14 +114,6 @@ extern BOOL localServerStarted;
 	if ([navItem.rightBarButtonItem.customView isKindOfClass:[UIActivityIndicatorView class]]) {
 		[(UIActivityIndicatorView *)navItem.rightBarButtonItem.customView startAnimating];	
 	}
-	
-	/*
-	UIImage *splash = [self getSlideImage];
-	splashView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, 320, 480)];
-	splashView.image = splash;
-	splashView.backgroundColor = [UIColor blackColor];
-	[theWebView addSubview:splashView];
-	 */
 	
 	if (useRequest == NO) {
 		CGRect titleFrame = CGRectMake(0, 5, 200, 40);
@@ -295,6 +287,75 @@ extern BOOL localServerStarted;
 	
 }
 #pragma mark -
+#pragma TWEET
+- (void)syncWithTweet
+{
+    BOOL process = NO;
+    
+    if ([TWTweetComposeViewController canSendTweet] == NO) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tweet alert" message:@"Cannot tweet! Please check your tweet setting in your iphone." 
+                                                       delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+    }
+    else {
+        TWTweetComposeViewController *tweet = [[TWTweetComposeViewController alloc] init];
+        process = [tweet setInitialText:self.webLink.text];
+        process = [tweet addURL:[NSURL URLWithString:self.webLink.url]];
+        UIImage *image = [[UIImage alloc] initWithContentsOfFile:getActualPath(self.webLink.imageLink)];
+        process = [tweet addImage:image];
+        tweet.completionHandler = ^(TWTweetComposeViewControllerResult result) {
+            TRACE("%s, result: %d\n", __func__, result);
+            
+            if(result != TWTweetComposeViewControllerResultDone)
+            {
+                UIAlertView* alertView = [[UIAlertView alloc] initWithTitle:@"Tweet error" message:@"Your Tweet was not posted!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alertView show];
+                [alertView release];
+            }
+            
+            [self dismissModalViewControllerAnimated:YES];
+        };
+        
+        [self presentModalViewController:tweet animated:YES];
+        [tweet release];
+    }
+}
+#pragma -
+#pragma mark - UIActionSheetDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    switch (buttonIndex) {
+        case 1:
+            [self syncWithFacebook];
+            break;
+        case 2:
+            [self syncWithTweet];
+            break;
+        case 3:
+            [self syncWithMail];
+            break;
+        case 0:
+            break;
+        default:
+            break;
+    }
+}
+
+
+#pragma mark -
+- (void)chooseActions:(id)sender
+{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Article" 
+                                                    message:@""
+                                                   delegate:self 
+                                          cancelButtonTitle:@"Cancel" 
+                                          otherButtonTitles:@"Facebook", @"Tweet", @"Send mail", nil];
+	[alert show];
+	[alert release];
+
+}
 
 - (void)stopProgressIndicator
 {
@@ -308,6 +369,7 @@ extern BOOL localServerStarted;
 		progView.hidden = YES;
 	}
 	
+    /*
 	UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:
 											[NSArray arrayWithObjects:
 											 [UIImage imageNamed:@"facebook.png"],
@@ -319,12 +381,18 @@ extern BOOL localServerStarted;
 	segmentedControl.momentary = YES;
 	
 	//defaultTintColor = [segmentedControl.tintColor retain];	// keep track of this for later
-	
-	UIBarButtonItem *segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:segmentedControl];
-    [segmentedControl release];
+    */
     
-	self.navigationItem.rightBarButtonItem = segmentBarItem;
-    [segmentBarItem release];
+	UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction 
+                                                                          target:self 
+                                                                          action:@selector(chooseActions:)];
+	//UIBarButtonItem *segmentBarItem = [[UIBarButtonItem alloc] initWithCustomView:item];
+    
+    //[segmentedControl release];
+    
+	self.navigationItem.rightBarButtonItem = item;
+    [item release];
+    //[segmentBarItem release];
 	
 
 	TRACE("%s\n", __func__);

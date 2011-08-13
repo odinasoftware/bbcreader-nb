@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
+#import <Twitter/TWTweetComposeViewController.h>
 
 @class WebLink;
 
-@interface WebViewController : UIViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate> {
+@interface WebViewController : UIViewController <UIWebViewDelegate, MFMailComposeViewControllerDelegate, UIAlertViewDelegate> {
 	//IBOutlet UIWebView	*theWebView;
 	//IBOutlet UIImageView *splashView;
 	UIWebView	*theWebView;

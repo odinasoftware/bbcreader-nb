@@ -94,6 +94,7 @@
 		19ADF91E107FA5AE00949A14 /* GeoSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 19ADF91C107FA5AE00949A14 /* GeoSession.m */; };
 		19AE14CF107D23E000D5FB3F /* reload4.png in Resources */ = {isa = PBXBuildFile; fileRef = 19AE14CE107D23E000D5FB3F /* reload4.png */; };
 		19AECA3B13EDD32E0068F463 /* readme.txt in Resources */ = {isa = PBXBuildFile; fileRef = 19AECA3A13EDD32E0068F463 /* readme.txt */; };
+		19AECA4513F6F5140068F463 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19AECA4413F6F5140068F463 /* Twitter.framework */; };
 		19B3A9AD0EE719AB00501B7F /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 19B3A9AC0EE719AB00501B7F /* SystemConfiguration.framework */; };
 		19D941B710D8FEDF00F252B4 /* mobile.plist in Resources */ = {isa = PBXBuildFile; fileRef = 19D941B610D8FEDF00F252B4 /* mobile.plist */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -255,6 +256,7 @@
 		19ADF91D107FA5AE00949A14 /* GeoSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeoSession.h; sourceTree = "<group>"; };
 		19AE14CE107D23E000D5FB3F /* reload4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reload4.png; sourceTree = "<group>"; };
 		19AECA3A13EDD32E0068F463 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		19AECA4413F6F5140068F463 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		19B3A9AC0EE719AB00501B7F /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		19D941B610D8FEDF00F252B4 /* mobile.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = mobile.plist; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -270,6 +272,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				19AECA4513F6F5140068F463 /* Twitter.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765080DF74369002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -521,7 +524,6 @@
 			children = (
 				19AECA3A13EDD32E0068F463 /* readme.txt */,
 				1955277613E46EA0009589B7 /* facebook */,
-				1999B3D810801827002443E9 /* MessageUI.framework */,
 				191DF1860ED2060F00C712E7 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -577,6 +579,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				19AECA4413F6F5140068F463 /* Twitter.framework */,
+				1999B3D810801827002443E9 /* MessageUI.framework */,
 				19B3A9AC0EE719AB00501B7F /* SystemConfiguration.framework */,
 				191DF2B50ED20B8B00C712E7 /* CFNetwork.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
