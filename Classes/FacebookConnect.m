@@ -254,6 +254,7 @@ NSString *getJASONSafeString(NSString *string) {
 	}
 #endif
     
+    self.imageForLink = [[UIImage alloc] initWithContentsOfFile:getActualPath(w.imageLink)];
 	self.webLink = w;
 	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(getFBExtendedPermission:) withObject:self waitUntilDone:NO];
 	[[GeoSession sharedGeoSessionInstance] publishPhotoToFacebook];

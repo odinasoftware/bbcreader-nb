@@ -144,7 +144,7 @@ repeat:
 		theConnection.indexForFeed = indexPath;
 		theConnection.localFile = file;
 		//[connectionArray insertObject:(id)theConnection	atIndex:indexPath.row];
-		TRACE("%s, add connection: %x to index: (%d, %d), file: %s\n", __func__, (id)theConnection, indexPath.section, indexPath.row, [file UTF8String]);
+		TRACE("%s, add connection: %p to index: (%d, %d), file: %s\n", __func__, (id)theConnection, indexPath.section, indexPath.row, [file UTF8String]);
 		
 			
 		if (wait == YES) {
@@ -283,6 +283,10 @@ repeat:
 		isCached = YES;
 		NSLog(@"%s, offline mode, will use cache.", __func__);
 	}
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:theCacheEntry.cacheFile] == NO) {
+        isCached = NO;
+    }
 	TRACE("%s, shouldIgnorCache: %d, isCached: %d\n", __func__, shouldIgnoreCache, isCached);
 	if (shouldIgnoreCache == YES || isCached == NO) {
 		// add custom header
@@ -320,7 +324,7 @@ repeat:
 		if (theConnection) {
 			theConnection.indexForFeed = indexPath;
 			//[connectionArray insertObject:(id)theConnection	atIndex:indexPath.row];
-			TRACE("%s, add connection: %x to section: %d, row: %d\n", __func__, (id)theConnection, indexPath.section, indexPath.row);
+			TRACE("%s, add connection: %p to section: %d, row: %d\n", __func__, (id)theConnection, indexPath.section, indexPath.row);
 			
 			
 			if (wait == YES) {
@@ -595,7 +599,7 @@ repeat:
 		//	NSLog(@"%s, feed index error: %d", __func__, index);
 		//	return;
 		//}
-		TRACE("%s, start parsing with: connection: %x\n", __func__, (id) connection);
+		TRACE("%s, start parsing with: connection: %p\n", __func__, (id) connection);
 		parserStatus = [self parseReceivedData:theConnection.receivedData withIndex:theConnection.indexForFeed fromCache:NO];
 		
 		// save to cache

@@ -26,6 +26,7 @@
 #import "WebViewHistoryController.h"
 #import "WebHistoryNavigation.h"
 #import "Configuration.h"
+#import "GeoSession.h"
 
 #include <sys/socket.h>
 #include <sys/select.h>
@@ -238,6 +239,35 @@
 	
 }
 
+#pragma mark FACEBOOK
+- (void)notifyLoggedin:(id)object
+{
+    TRACE("%s\n", __func__);
+}
+
+- (void)getFBExtendedPermission:(id)object 
+{
+	// get extended permission.
+	[[GeoSession sharedGeoSessionInstance] getExtendedPermission:object];
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    TRACE("%s, URL: %s\n", __func__, [[url absoluteString] UTF8String]);
+	[[GeoSession sharedGeoSessionInstance].facebook handleOpenURL:url];
+	[[GeoSession sharedGeoSessionInstance] getAuthorization:nil];
+	
+	return YES;
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    TRACE("%s, URL: %s\n", __func__, [[url absoluteString] UTF8String]);
+	[[GeoSession sharedGeoSessionInstance].facebook handleOpenURL:url];
+    
+	return YES;
+}
+#pragma mark -
 /*
 - (void)openWebViewAtIndex:(NSIndexPath*)indexPath
 {
@@ -381,6 +411,17 @@
 	[alert show];
 	[alert release];
 }
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    TRACE("%s\n", __func__);
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+	TRACE("%s\n", __func__);
+}
+
 
 - (void)dealloc {
 	[tabBarController release];

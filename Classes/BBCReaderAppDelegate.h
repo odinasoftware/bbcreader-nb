@@ -42,5 +42,6 @@
 - (void)updateHistory:(id)object;
 - (void)reachabilityChanged:(NSNotification *)note;
 - (void)showOfflineModeWarning:(id)object;
+- (void)notifyLoggedin:(id)object;
 
 @end

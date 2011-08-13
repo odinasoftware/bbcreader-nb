@@ -12,7 +12,7 @@
 #import "FacebookConnect.h"
 
 static GeoSession	*sharedGeoSession = nil;
-static NSString		*kAppId = @"154444435409";
+static NSString		*kAppId = @"154801851879";
 
 @implementation GeoSession
 
