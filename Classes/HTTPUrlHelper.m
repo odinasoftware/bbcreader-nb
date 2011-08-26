@@ -194,7 +194,7 @@ repeat:
 				[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
 			} while (!done);
 			
-			if (isFailed == YES)
+			if (isFailed == YES && i<3)
 				goto repeat;
 			
 			
@@ -284,7 +284,7 @@ repeat:
 		NSLog(@"%s, offline mode, will use cache.", __func__);
 	}
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:theCacheEntry.cacheFile] == NO) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:getActualPath(theCacheEntry.cacheFile)] == NO) {
         isCached = NO;
     }
 	TRACE("%s, shouldIgnorCache: %d, isCached: %d\n", __func__, shouldIgnoreCache, isCached);
@@ -381,7 +381,7 @@ repeat:
 					
 				} while (!done);
 				
-				if (isFailed == YES) {
+				if (isFailed == YES && i<3) {
 					goto repeat;
 				}
 				
@@ -569,6 +569,7 @@ repeat:
 	
 	TRACE("%s, req: %p, res: %p, %s:\n", __func__, request, redirectResponse, [[[request URL] absoluteString] UTF8String]);
 
+#if 0
 	NSDictionary *responseDict = [request allHTTPHeaderFields];
 	
 	NSEnumerator *enumerator = [responseDict objectEnumerator];
@@ -578,7 +579,9 @@ repeat:
 	while (object = [enumerator nextObject]) {
 		TRACE("o: %s:", [object UTF8String]);
 	}
-	
+    TRACE("\n");
+#endif
+    
 	return request;
 }
 
