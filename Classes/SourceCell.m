@@ -72,7 +72,7 @@ NSString *kSourceCell_ID = @"SourceCell_ID";
 
 - (id)initWithFrame:(CGRect)aRect reuseIdentifier:(NSString *)identifier
 {
-	if (self = [super initWithFrame:aRect reuseIdentifier:identifier])
+	if (self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier])
 	{
 		// turn off selection use
 		self.selectionStyle = UITableViewCellSelectionStyleNone;

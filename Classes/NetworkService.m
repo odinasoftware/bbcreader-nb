@@ -250,7 +250,7 @@ static NetworkService *sharedNetworkService = nil;
 		NSString *tmpDir = (NSString*) NSHomeDirectory();
 		//NSError *parseError = nil;
 		if (tmpDir == nil) {
-			NSLog(@"%s, can't get the temporary directory.");
+			NSLog(@"%s, can't get the temporary directory.", __func__);
 			return;
 		}
 		//if ([self checkDiskSpace:tmpDir] == NO) {
@@ -573,7 +573,7 @@ clean:
 	thumb_nail_object_t *thumbnail = nil;
 	HTTPUrlHelper *helper = nil;
 	
-	if (thumbnail = [ThumbNailHolder getThumbnail]) {
+	if ((thumbnail = [ThumbNailHolder getThumbnail])) {
 		if ([cacheService hasThisFile:thumbnail.local_name atIndex:thumbnail.indexPath] == NO) {
 			// get a url and save to a file.
 			// and tell that to tableview.
@@ -792,8 +792,6 @@ clean:
 - (void)getArticlePageInParallel
 {
 	BOOL cont = NO;
-	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	BOOL thumbNailCacheLoaded = NO;
 	
 	if (thumbNailCacheLoaded == NO) {
@@ -926,8 +924,6 @@ clean:
 - (void)articleTask2
 {
 	BOOL cont = NO;
-	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 #ifdef RUN_REACHABILITY
 	if (reachabilityTestLater == YES) {
@@ -1016,8 +1012,7 @@ clean:
 - (void)articleTask3
 {
 	BOOL cont = NO;
-	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
 	
 	for (;;) {
 		[self checkDownloadStatus];
@@ -1087,8 +1082,7 @@ clean:
 - (void)articleTask4
 {
 	BOOL cont = NO;
-	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	
 	for (;;) {
 		[self checkDownloadStatus];
@@ -1155,8 +1149,7 @@ clean:
 - (void)articleTask5
 {
 	BOOL cont = NO;
-	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = nil;
+
 	
 	for (;;) {
 		[self checkDownloadStatus];
@@ -1222,9 +1215,7 @@ clean:
 - (void)articleTask6
 {
 	BOOL cont = NO;
-	BOOL isPoolCreated = NO;
-	NSAutoreleasePool *pool = nil;
-	
+
 	for (;;) {
 		[self checkDownloadStatus];
 		
@@ -1408,7 +1399,7 @@ clean:
 	if ([helper requestWithURLUseCache:mainURL delegate:xmlReader parserKind:MREADER_XML_PARSER feedIndex:indexPath shouldWait:NO] == YES) {
 		time_t after = time(nil);
 		
-		TRACE("%s, before: %d, after: %d\n", __func__, before, after);
+		TRACE("%s, before: %d, after: %d\n", __func__, (int)before, (int)after);
 		if (showedSlowWarning == NO && ((after - before) >= SLOW_NETWORK_INTERVAL)) {
 			// show slow network warning
 			[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(displaySlowNetworkWarning:) withObject:self	waitUntilDone:YES];	

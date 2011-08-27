@@ -11,7 +11,7 @@
 @class RSSParserState;
 @class RSSParser;
 
-@interface XMLReader : NSObject {
+@interface XMLReader : NSObject <NSXMLParserDelegate> {
 	RSSParser *rssParser;
 }
 

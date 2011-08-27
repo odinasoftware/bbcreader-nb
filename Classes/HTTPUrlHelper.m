@@ -507,7 +507,7 @@ repeat:
 	//NSLog(@"%s, %@", __func__, error);
 	NSLog(@"Connection failed! Error - %@: :%@:",
           [error localizedDescription],
-          [[error userInfo] objectForKey:NSErrorFailingURLStringKey]);
+          [[error userInfo] objectForKey:NSURLErrorFailingURLStringErrorKey]);
 	if ([[error localizedDescription] compare:@"no Internet connection"] != NSOrderedSame &&
 		[[error localizedDescription] compare:@"timed out"]) {
 		isFailed = YES;

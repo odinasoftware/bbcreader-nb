@@ -128,6 +128,7 @@ static LocalServerManager *sharedLocalServerManager = nil;
         } while (get_new_socket == NO);
         close(listenfd);
         NSLog(@"Close %d and restart socket.\n", listenfd);
+        get_new_socket = NO;
     }
 	
 }

@@ -10,7 +10,7 @@
 
 typedef enum {MAIN_ARTICLE_MODE, OTHER_ARTICLE_MODE} article_view_mode_t;
 
-@interface ArticleViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate> {
+@interface ArticleViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UIActionSheetDelegate, UIScrollViewDelegate> {
 	IBOutlet UITableView				*theTableView;
 	IBOutlet UIView						*statusView;
 	IBOutlet UIButton					*infoButton;
@@ -21,6 +21,8 @@ typedef enum {MAIN_ARTICLE_MODE, OTHER_ARTICLE_MODE} article_view_mode_t;
 	
 	//IBOutlet UINavigationBar	*theNavigationBar;
 	UIImage						*defaultBBCLogo;
+    //UIImage                     *arrow;
+    //UIImage                     *arrowReverse;
 	article_view_mode_t			viewMode;
 	
 	@private
@@ -34,6 +36,8 @@ typedef enum {MAIN_ARTICLE_MODE, OTHER_ARTICLE_MODE} article_view_mode_t;
 @property (nonatomic, retain) UITableView* theTableView;
 @property (nonatomic, assign) article_view_mode_t viewMode;
 @property (nonatomic, retain) NSTimer *timer;
+//@property (nonatomic, retain) UIImage *arrow;
+//@property (nonatomic, retain) UIImage *arrowReverse;
 //@property (nonatomic, retain) NSDate *lastUpdateDate;
 //@property (nonatomic, retain) UINavigationBar* theNavigationBar;
 

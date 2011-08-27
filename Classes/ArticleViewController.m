@@ -25,12 +25,16 @@
 @synthesize theTableView;
 @synthesize viewMode;
 @synthesize timer;
+//@synthesize arrow;
+//@synthesize arrowReverse;
 //@synthesize theNavigationBar;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
 	if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
 		// Initialization code
 		defaultBBCLogo = [UIImage imageNamed:@"new_logo.png"];
+        //arrow = [UIImage imageNamed:@"arrow-release.png"];
+        //arrowReverse = [UIImage imageNamed:@"arrow-reverse.png"];
 		viewMode = MAIN_ARTICLE_MODE;
 		/*
 		self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
@@ -121,9 +125,7 @@
 		lastUpdate.textColor = [UIColor whiteColor];
 		NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 		[formatter setDateFormat:@"EEE, MMM d hh:mm aaa"];
-		NSString *formattedDate = [[NSString alloc] initWithFormat:[formatter stringFromDate:config.lastUpdatedDate]];
-		lastUpdate.text = formattedDate;
-		[formattedDate release];
+		lastUpdate.text = [formatter stringFromDate:config.lastUpdatedDate];
 		[formatter release];
 	}
 	
@@ -198,9 +200,7 @@
 		if (config.lastUpdatedDate != nil) {
 			NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 			[formatter setDateFormat:@"EEE, MMM d hh:mm aaa"];
-			NSString *formattedDate = [[NSString alloc] initWithFormat:[formatter stringFromDate:config.lastUpdatedDate]];
-			lastUpdate.text = formattedDate;
-			[formattedDate release];
+			lastUpdate.text = [formatter stringFromDate:config.lastUpdatedDate];
 			[formatter release];
 			//lastUpdateDate = config.lastUpdatedDate;		
 		}
@@ -255,7 +255,7 @@
 	
 	if (cell == nil) {
 		TRACE("---> cell is created.\n");
-		cell = [[[UITableViewCell alloc] initWithFrame:CGRectZero reuseIdentifier:identity] autorelease];
+		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identity] autorelease];
 	}
 	else {
 		reusableCell = YES;
@@ -389,8 +389,12 @@
 		if (reusableCell == NO)
 			[cell.contentView addSubview:description];
 	}
-	
-	cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+	//cell.contentView.backgroundColor = [UIColor whiteColor];
+    //cell.accessoryView.alpha = 1.0;
+    //cell.accessoryView = nil; //.backgroundColor = [UIColor blackColor];
+	//cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    //cell.accessoryView.backgroundColor = [UIColor whiteColor];
+
 	return cell;
 }
 
@@ -562,7 +566,75 @@
 	return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+#pragma mark SCROLL EVENT
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+	TRACE("%s\n", __func__);
+}
 
+- (void)scrollViewDidScroll:(UIScrollView *)sender 
+{
+	TRACE_HERE;
+    
+    
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+#if 0
+    TRACE_HERE;
+    /*
+    UIImageView *arrowView = [[UIImageView alloc] initWithImage:arrowReverse];
+    arrowView.frame = CGRectMake(30, -60, 40, 60);
+    //arrowView.alpha = 0.0;
+    [scrollView addSubview:arrowView];
+    [arrowView release];
+     */
+    float angle = 90;
+    //NSString *path = [[NSBundle mainBundle] pathForResource:@"arrow" ofType:@"png"];
+    //UIImage *img = [UIImage imageWithContentsOfFile:path];
+    CGImageRef image = arrow.CGImage;
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSaveGState(context);
+    
+    CGContextTranslateCTM(context, 365.0, 305);
+    CGContextRotateCTM(context, angle);     
+    CGRect touchRect = CGRectMake(-10.0, -5.0, arrow.size.width, arrow.size.height); // (-10.0, -5.0) - arrow's rotation center
+    CGContextDrawImage(context, touchRect, image);  
+    
+    CGContextRestoreGState(context);
+#endif
+}
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+#if 0
+    TRACE("%s, x: %f, y: %f, %f\n", __func__, velocity.x, velocity.y, UIScrollViewDecelerationRateFast);
+    if (velocity.y < 0) {
+        /*
+        UILabel *text = [[UILabel alloc] init];
+        CGRect frame = CGRectMake(0, -50, 100, 50); 
+        text.text = @"test";
+        text.frame = frame;
+        [scrollView addSubview:text];
+        //[scrollView scrollRectToVisible:frame animated:YES];
+        //scrollView.decelerationRate = UIScrollViewDecelerationRateFast/1000;
+         */
+        /*
+        UIImageView *arrowView = [[UIImageView alloc] initWithImage:arrow];
+        arrowView.frame = CGRectMake(30, -60, 40, 60);
+        //arrowView.alpha = 0.0;
+        [scrollView addSubview:arrowView];
+        [arrowView release];
+         */
+    }
+#endif
+}
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
+{
+    TRACE_HERE;
+}
+#pragma -
 - (void)didReceiveMemoryWarning {
 	NSLog(@"%s", __func__);
 	[super didReceiveMemoryWarning]; // Releases the view if it doesn't have a superview
@@ -575,6 +647,8 @@
 	[message release];
 	[timer invalidate];
 	[timer release];
+    //[arrowReverse release];
+    //[arrow release];
 	[super dealloc];
 }
 

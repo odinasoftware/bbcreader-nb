@@ -199,7 +199,7 @@ BOOL canThisBeGarbage(NSString* file, time_t today, int interval)
 		return NO;
 	}
 		
-	TRACE("----> %s, %d, today: %d\n", [file UTF8String], sb.st_atime, today);
+	TRACE("----> %s, %d, today: %d\n", [file UTF8String], (int)sb.st_atime, (int)today);
 	
 	if (today > sb.st_atime + interval)
 		return YES;
@@ -524,7 +524,7 @@ int OPEN(NSString* name, int flag)
 	*/
 	//if (unknown == YES) {
 		NSDate *last_updated = [Configuration sharedConfigurationInstance].lastUpdatedDate;
-		NSDate *expired_date = [last_updated addTimeInterval:21600.0];
+		NSDate *expired_date = [last_updated dateByAddingTimeInterval:21600.0];
 		NSDate *date = [[NSDate date] init];
 		
 		if ([expired_date compare:date] == NSOrderedAscending) {
@@ -1046,62 +1046,99 @@ clean:
 	// TODO: make sure loading for the host only.
 	//       will have to unload if the host changes.
 	hostForCacheObjects = host;
+    NSError *error = nil;
 	
 	TRACE("host: %s\n", [host UTF8String]);
 	// check the folder exists or not
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSString *path = getActualPath(rootLocation);
 	if ([manager fileExistsAtPath:path] == NO) {
-		[manager createDirectoryAtPath:path attributes:nil];
+		[manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	
 	path = getActualPath(indexLocation);
 	if ([manager fileExistsAtPath:path] == NO) {
-		[manager createDirectoryAtPath:path attributes:nil];
+		[manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	
 	// Create index directory
 	NSString *indexdir = [getActualPath(indexLocation) stringByAppendingPathComponent:host];
 	if ([manager fileExistsAtPath:indexdir] == NO) {
-		[manager createDirectoryAtPath:indexdir	attributes:nil];
+		[manager createDirectoryAtPath:indexdir	withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	NSString *feeddir = [indexdir stringByAppendingPathComponent:FEED_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:feeddir] == NO) {
-		[manager createDirectoryAtPath:feeddir attributes:nil];
+		[manager createDirectoryAtPath:feeddir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	NSString *htmldir = [indexdir stringByAppendingPathComponent:HTML_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:htmldir] == NO) {
-		[manager createDirectoryAtPath:htmldir attributes:nil];
+		[manager createDirectoryAtPath:htmldir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	NSString *thumbdir = [indexdir stringByAppendingPathComponent:THUMB_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:thumbdir] == NO) {
-		[manager createDirectoryAtPath:thumbdir attributes:nil];
+		[manager createDirectoryAtPath:thumbdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	NSString *defaultdir = [indexdir stringByAppendingPathComponent:DEFAULT_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:defaultdir] == NO) {
-		[manager createDirectoryAtPath:defaultdir attributes:nil];
+		[manager createDirectoryAtPath:defaultdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	
 	// Create cache directory
 	NSString *cachedir = [getActualPath(rootLocation) stringByAppendingPathComponent:host];
 	if ([manager fileExistsAtPath:cachedir] == NO) {
-		[manager createDirectoryAtPath:cachedir attributes:nil];
+		[manager createDirectoryAtPath:cachedir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	feeddir = [cachedir stringByAppendingPathComponent:FEED_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:feeddir] == NO) {
-		[manager createDirectoryAtPath:feeddir attributes:nil];
+		[manager createDirectoryAtPath:feeddir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	htmldir = [cachedir stringByAppendingPathComponent:HTML_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:htmldir] == NO) {
-		[manager createDirectoryAtPath:htmldir attributes:nil];
+		[manager createDirectoryAtPath:htmldir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	thumbdir = [cachedir stringByAppendingPathComponent:THUMB_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:thumbdir] == NO) {
-		[manager createDirectoryAtPath:thumbdir attributes:nil];
+		[manager createDirectoryAtPath:thumbdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	defaultdir = [cachedir stringByAppendingPathComponent:DEFAULT_DIR_COMPONENT];
 	if ([manager fileExistsAtPath:defaultdir] == NO) {
-		[manager createDirectoryAtPath:defaultdir attributes:nil];
+		[manager createDirectoryAtPath:defaultdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
 	}
 	
 }
@@ -1112,10 +1149,10 @@ clean:
 	NSError *error = nil;
 	
 	if ([manager removeItemAtPath:getActualPath(indexLocation) error:(NSError **)error] == NO) {
-		NSLog(@"%s, error in emptying cache: %s", __func__, error);
+		NSLog(@"%s, error in emptying cache: %@", __func__, error);
 	}
 	if ([manager removeItemAtPath:getActualPath(rootLocation) error:(NSError **)error] == NO) {
-		NSLog(@"%s, error in emptying cache: %s", __func__, error);
+		NSLog(@"%s, error in emptying cache: %@", __func__, error);
 	}
 }
 
