@@ -193,6 +193,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 		theParser = parser;
 		foundStoryBody = NO;
 		previousIndex = -1;
+        thumbAdded = NO;
 	}
 	return self;
 }
@@ -213,7 +214,6 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 	else if ([(NSString*)key compare:@"content"] == 0) {
 		// We really see "content", which means that it is the thumbnail.
 		addToThumbnail = YES;
-		
 	}
 	else if (([(NSString*)key compare:@"class"] == 0) && 
 			 ([(NSString*)value compare:@"storybody"] == 0)) {
@@ -237,7 +237,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 		foundStoryBody = NO;
 	}
 	
-	if (addToThumbnail == YES && value != nil) {
+	if (thumbAdded == NO && addToThumbnail == YES && value != nil) {
 		ret = YES;
 		if (theIndexPath == nil) {
 			NSLog(@"%s, index path is null.", __func__);
@@ -253,6 +253,8 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 			[ThumbNailHolder addThumbnail:(NSString*)value withLocalName:[(NSString*)extra substringFromIndex:range.length] atIndexPath:theIndexPath withPrevIndex:previousIndex];
 		}
 		TRACE("Found thumbnail: %s, at: (%d, %d) on %d\n", [(NSString*) value UTF8String], theIndexPath.section, theIndexPath.row, previousIndex);
+        addToThumbnail = NO;
+        thumbAdded = YES;
 	}
 	
 	return ret;
@@ -284,6 +286,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 
 - (void)resetKnowledge
 {
+    thumbAdded = NO;
 	foundStoryBody = NO;
 	previousIndex = -1;
 }

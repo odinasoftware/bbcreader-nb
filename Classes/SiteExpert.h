@@ -41,8 +41,8 @@ typedef enum {SITE_EXPERT_NONE, SITE_EXPERT_BEGIN, SITE_EXPERT_DONE, SITE_EXPERT
 	@private
 	BOOL		foundStoryBody;
 	NSInteger	previousIndex;
+    BOOL        thumbAdded;
 }
-
 
 
 @end

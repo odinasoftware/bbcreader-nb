@@ -737,6 +737,7 @@ int OPEN(NSString* name, int flag)
 	
 	if (*available == YES && category == CACHE_HTML) {
 		// TODO: remove it from gabage entry so it can't be removed from the cache
+        TRACE("%s, file: %s\n", __func__, [file UTF8String]);
 		[garbageDictionary removeObjectForKey:file];
 	}
 	
@@ -1327,6 +1328,7 @@ cleanLast:
 
 -(void)removeThisFromGarbage:(NSString*)file
 {
+    TRACE("%s, file: %s\n", __func__, [file UTF8String]);
 	[thumbDictionary removeObjectForKey:file];
 }
 
@@ -1396,6 +1398,9 @@ cleanLast:
 
 - (BOOL)doGarbageCollectionForThumbnail
 {
+
+    return NO;
+    /*
 	if ([thumbDictionary count] == 0) 
 		return NO;
 	
@@ -1425,6 +1430,7 @@ cleanLast:
 		NSLog(@"%s, thumb garbage collected: %d", __func__, nThumbGarbage);
 		return NO;
 	}
+     */
 
 	return YES;
 }
