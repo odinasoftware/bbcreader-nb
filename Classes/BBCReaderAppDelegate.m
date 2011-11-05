@@ -135,7 +135,7 @@
 {
 	if ([viewController isKindOfClass:[ArticleNavigation class]]) {
 		// select article view controller
-		NSLog(@"Select article view controller\n");
+		TRACE("Select article view controller, reload: %d\n", reloadArticleData);
 		[[ArticleStorage sharedArticleStorageInstance] switchToArticleNavigation];
 		if (reloadArticleData == YES) {
 			[[(ArticleViewController*)[(UINavigationController*)viewController visibleViewController] theTableView] reloadData];
@@ -255,7 +255,7 @@
 {
     TRACE("%s, URL: %s\n", __func__, [[url absoluteString] UTF8String]);
 	[[GeoSession sharedGeoSessionInstance].facebook handleOpenURL:url];
-	[[GeoSession sharedGeoSessionInstance] getAuthorization:nil];
+	//[[GeoSession sharedGeoSessionInstance] getAuthorization:nil];
 	
 	return YES;
 }

@@ -331,7 +331,12 @@ extern BOOL localServerStarted;
             [self syncWithFacebook];
             break;
         case 2:
-            [self syncWithTweet];
+            if ([TWTweetComposeViewController class]) {
+                [self syncWithTweet];
+            }
+            else {
+                [self syncWithMail];
+            }
             break;
         case 3:
             [self syncWithMail];
@@ -347,11 +352,22 @@ extern BOOL localServerStarted;
 #pragma mark -
 - (void)chooseActions:(id)sender
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Sync Article" 
+    UIAlertView *alert = nil;
+    
+    if ([TWTweetComposeViewController class]) {
+        alert = [[UIAlertView alloc] initWithTitle:@"Sync Article" 
                                                     message:@""
                                                    delegate:self 
                                           cancelButtonTitle:@"Cancel" 
                                           otherButtonTitles:@"Facebook", @"Tweet", @"Send mail", nil];
+    }
+    else {
+        alert = [[UIAlertView alloc] initWithTitle:@"Sync Article" 
+                                           message:@""
+                                          delegate:self 
+                                 cancelButtonTitle:@"Cancel" 
+                                 otherButtonTitles:@"Facebook", @"Send mail", nil];
+    }
 	[alert show];
 	[alert release];
 

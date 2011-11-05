@@ -134,6 +134,7 @@
 	//[progressView release];
 	//[message release];
 	self.timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateDownloadStatus:) userInfo:nil repeats:YES];
+    TRACE_HERE;
 }
 
 - (void)updateDownloadStatus:(id)object 
@@ -395,18 +396,27 @@
 	//cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     //cell.accessoryView.backgroundColor = [UIColor whiteColor];
 
+    TRACE("%s, %s\n", __func__, [text UTF8String]);
 	return cell;
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-	
+	TRACE("%s, n: %d\n", __func__, [ArticleStorage sharedArticleStorageInstance].numberOfArticles);
+    //[self.theTableView reloadData];
+}
+
+- (void)viewDidUnload
+{
+    TRACE_HERE;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView 
 {
 	ArticleStorage* storage = [ArticleStorage sharedArticleStorageInstance];
-	return [storage countSection];
+    int c = [storage countSection]; 
+    TRACE("%s, c: %d\n", __func__, c);
+	return c;
 }
 
 - (void)setToSegmentControl:(id)sender
@@ -489,6 +499,7 @@
 		
 	}
 	
+    TRACE("%s, c: %d\n", __func__, c);
 	return c;
 }
 

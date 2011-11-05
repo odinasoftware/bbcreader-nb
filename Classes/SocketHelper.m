@@ -156,7 +156,7 @@ int findRelativeIndex(const char* url)
 		NSArray *dns_info = (NSArray*)CFHostGetAddressing(hostReference, &hasBeenResolved);
 		
 		if (hasBeenResolved == FALSE) {
-			NSLog(@"%s, has not been resolbed yet.");
+			NSLog(@"%s, has not been resolbed yet.", __func__);
 			return nil;
 		}
 		

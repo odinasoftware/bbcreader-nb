@@ -10,6 +10,7 @@
 #import "FBConnect.h"
 #import "MReader_Defs.h"
 #import "FacebookConnect.h"
+#import "BBCDefaults.h"
 
 static GeoSession	*sharedGeoSession = nil;
 static NSString		*kAppId = @"154801851879";
@@ -65,6 +66,8 @@ static NSString		*kAppId = @"154801851879";
 		fbConnectAgent = nil;
 		_gotExtendedPermission = NO;
 		_needToPublish = NO;
+        _permission =  [[NSArray arrayWithObjects:
+                          @"read_stream", @"publish_stream", @"offline_access",nil] retain];
 	}
 	
 	return self;
@@ -86,8 +89,13 @@ static NSString		*kAppId = @"154801851879";
 {
 	if (self.facebook == nil) {
 		_facebook = [[Facebook alloc] initWithAppId:kAppId];
-		self.facebook = _facebook;
-	}
+        if ([BBCDefaults sharedBBCDefaultsInstance].accessToken &&
+            [BBCDefaults sharedBBCDefaultsInstance].expirationDate) {
+            self.facebook.accessToken = [BBCDefaults sharedBBCDefaultsInstance].accessToken;
+            self.facebook.expirationDate = [BBCDefaults sharedBBCDefaultsInstance].expirationDate;
+        }
+		//self.facebook = _facebook;
+    }
 	
 	if (_gotExtendedPermission == NO) {
 		[self.facebook authorize:_permission delegate:self];
@@ -107,6 +115,7 @@ static NSString		*kAppId = @"154801851879";
 	TRACE_HERE;
 	_gotExtendedPermission = YES;
 	[self.facebook requestWithGraphPath:@"me" andDelegate:self];
+    [[BBCDefaults sharedBBCDefaultsInstance] fbSynchronize];
 	//if (_needToPublish) {
 	//	[self.fbConnectAgent publishPhotoToFacebook];
 	//}

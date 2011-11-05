@@ -32,11 +32,11 @@ extern int networkError;
 
 enum ControlTableSections
 {
-	kUISwitch_Section = 0,
+    kUIInformation_Section=0,
+	kUISwitch_Section,
 	kUITotalArticle_Section,
 	kUITotalObject_Section,
-	kUIDownloadedObject_Section,
-	kUIInformation_Section
+	kUIDownloadedObject_Section
 };
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -130,7 +130,7 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
-			title = @"Message (v.2.3):";
+			title = @"Verson (v.2.5.1):";
 			break;
 		}
 	}
@@ -184,11 +184,7 @@ enum ControlTableSections
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	CGFloat result;
-	
-	if (indexPath.section == kUIInformation_Section) {
-		return kUIRowLabelHeight * 2;
-	}
-	
+		
 	switch ([indexPath row])
 	{
 		case 0:
@@ -349,6 +345,8 @@ enum ControlTableSections
 		}
 		case kUIInformation_Section:
 		{
+            ((SourceCell*)cell).sourceLabel.text = @"Tap to checkout iGeoJournal";
+            /*
 			if (networkError > MAX_NETWORK_ERROR_TOR) {
 				//((SourceCell*)cell).sourceLabel.textColor = [UIColor redColor];
 				((SourceCell*)cell).sourceLabel.text = @"Due to the Internet condition or resuming from sleep, the downloading may have been interrupted. Please restart BBCReader to sync articles.";
@@ -362,12 +360,23 @@ enum ControlTableSections
 				}
 				
 			}
+             */
 			break;
 		}
 			
 	}
 	
 	return cell;
+}
+
+- (void)tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)newIndexPath
+{
+    if (newIndexPath.row == kUIInformation_Section) {
+        TRACE_HERE;
+        NSString *url = @"itms-apps://itunes.com/apps/igeojournal";
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:url]];
+        [tableView deselectRowAtIndexPath:newIndexPath animated:YES];
+    }
 }
 
 - (IBAction)cleanCache:(id)sender

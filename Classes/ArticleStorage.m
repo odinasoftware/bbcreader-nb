@@ -441,7 +441,7 @@ NSString *getTitle(NSString *str)
 		if (feed) {
 			count = [feed.rssFeeds count];
 			if (count > 60) {
-				NSLog(@"This is bug.");
+				//NSLog(@"This is bug.");
 			}
 		}
 	}
@@ -623,6 +623,7 @@ NSString *getTitle(NSString *str)
 - (void)setActiveFeed:(int)index
 {
 	theActiveFeed = index;
+    theActiveFeedOfSegmentControl = theActiveFeed;
 }
 
 - (NSString*)getHost 

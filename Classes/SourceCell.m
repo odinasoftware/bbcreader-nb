@@ -81,10 +81,10 @@ NSString *kSourceCell_ID = @"SourceCell_ID";
 		sourceLabel.backgroundColor = [UIColor clearColor];
 		sourceLabel.opaque = NO;
 		sourceLabel.textAlignment = UITextAlignmentCenter;
-		sourceLabel.textColor = [UIColor grayColor];
+		sourceLabel.textColor = [UIColor blackColor];
 		sourceLabel.highlightedTextColor = [UIColor blackColor];
-		sourceLabel.numberOfLines = 4;
-		sourceLabel.font = [UIFont systemFontOfSize:12];
+		sourceLabel.numberOfLines = 1;
+		sourceLabel.font = [UIFont boldSystemFontOfSize:18];
 		
 		[self.contentView addSubview:sourceLabel];
 	}
