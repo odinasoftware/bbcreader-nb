@@ -27,6 +27,7 @@
 #import "WebHistoryNavigation.h"
 #import "Configuration.h"
 #import "GeoSession.h"
+#import "WebCacheService.h"
 
 #include <sys/socket.h>
 #include <sys/select.h>
@@ -420,6 +421,7 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
 	TRACE("%s\n", __func__);
+    [[WebCacheService sharedWebCacheServiceInstance] checkCacheObjects];
 }
 
 

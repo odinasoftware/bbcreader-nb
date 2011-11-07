@@ -108,5 +108,6 @@
 - (void)emptyCache;
 - (BOOL)isCacheCreated;
 - (NSString*)getThumbPathWithHost:(NSString*)host;
+- (void)checkCacheObjects;
 
 @end

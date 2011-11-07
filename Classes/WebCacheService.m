@@ -1144,6 +1144,107 @@ clean:
 	
 }
 
+- (void)checkCacheObjects
+{
+	// TODO: make sure loading for the host only.
+	//       will have to unload if the host changes.
+    NSError *error = nil;
+	
+	TRACE("host: %s\n", [host UTF8String]);
+	// check the folder exists or not
+	NSFileManager *manager = [NSFileManager defaultManager];
+	NSString *path = getActualPath(rootLocation);
+	if ([manager fileExistsAtPath:path] == NO) {
+		[manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	
+	path = getActualPath(indexLocation);
+	if ([manager fileExistsAtPath:path] == NO) {
+		[manager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	
+	// Create index directory
+	NSString *indexdir = [getActualPath(indexLocation) stringByAppendingPathComponent:hostForCacheObjects];
+	if ([manager fileExistsAtPath:indexdir] == NO) {
+		[manager createDirectoryAtPath:indexdir	withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	NSString *feeddir = [indexdir stringByAppendingPathComponent:FEED_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:feeddir] == NO) {
+		[manager createDirectoryAtPath:feeddir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	NSString *htmldir = [indexdir stringByAppendingPathComponent:HTML_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:htmldir] == NO) {
+		[manager createDirectoryAtPath:htmldir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	NSString *thumbdir = [indexdir stringByAppendingPathComponent:THUMB_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:thumbdir] == NO) {
+		[manager createDirectoryAtPath:thumbdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	NSString *defaultdir = [indexdir stringByAppendingPathComponent:DEFAULT_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:defaultdir] == NO) {
+		[manager createDirectoryAtPath:defaultdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	
+	// Create cache directory
+	NSString *cachedir = [getActualPath(rootLocation) stringByAppendingPathComponent:hostForCacheObjects];
+	if ([manager fileExistsAtPath:cachedir] == NO) {
+		[manager createDirectoryAtPath:cachedir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	feeddir = [cachedir stringByAppendingPathComponent:FEED_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:feeddir] == NO) {
+		[manager createDirectoryAtPath:feeddir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	htmldir = [cachedir stringByAppendingPathComponent:HTML_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:htmldir] == NO) {
+		[manager createDirectoryAtPath:htmldir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	thumbdir = [cachedir stringByAppendingPathComponent:THUMB_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:thumbdir] == NO) {
+		[manager createDirectoryAtPath:thumbdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	defaultdir = [cachedir stringByAppendingPathComponent:DEFAULT_DIR_COMPONENT];
+	if ([manager fileExistsAtPath:defaultdir] == NO) {
+		[manager createDirectoryAtPath:defaultdir withIntermediateDirectories:YES attributes:nil error:&error];
+        if (error) {
+            NSLog(@"%s, error in creating directory: %@", __func__, [error description]);
+        }
+	}
+	
+}
+
 - (void)emptyCache
 {
 	NSFileManager *manager = [NSFileManager defaultManager];
