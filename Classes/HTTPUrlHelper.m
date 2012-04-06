@@ -125,7 +125,7 @@ NSMutableURLRequest *getRequest()
 	//Mozilla/5.0 (iPhone Simulator; U; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20
 	//[theRequest setHTTPMethod:@"GET"];
 	//[theRequest setURL:url];
-	[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 2_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
+	[theRequest setValue:@"Mozilla/5.0 (iPhone; BBCReader; CPU iPhone OS 5_0 like Mac OS X; en-us) AppleWebKit/525.18.1 (KHTML, like Gecko) Version/3.1.1 Mobile/5A345 Safari/525.20" forHTTPHeaderField:@"User-Agent"];
 	[theRequest setValue:@"text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" forHTTPHeaderField:@"Accept"];
 	[theRequest	setValue:@"gzip, deflate" forHTTPHeaderField:@"Accept-Encoding"];
 	//[theRequest setHTTPShouldHandleCookies:NO];

@@ -18,6 +18,7 @@
 #define BLANK								@" "
 
 extern NSString *getImageHrefForFacebook(float latitude, float longitude);
+extern NSString *kAppId;
 
 NSString *getJASONSafeString(NSString *string) {
 	/*
@@ -154,37 +155,21 @@ NSString *getJASONSafeString(NSString *string) {
 
 }
 
-- (FBRequest*)getRequest
-{
-	return [FBRequest requestWithDelegate:self];
-}
-
 - (void)publishPhotoToFacebook
 {
-#if 0
-    if (self.imageForLink) {
-		FBRequest *uploadPhotoRequest = [self getRequest];
-        
-		_fbCallType = FB_UPLOAD_PICTURE;
-		NSDictionary *params = nil;
-        
-		[uploadPhotoRequest call:@"facebook.photos.upload" params:params dataParam:(NSData*)self.imageForLink];
-	}
-	else {
-		NSLog(@"%s, image is not available.", __func__);
-		[self publishToFacebook:nil];
-	}
-#endif
     
-	if (self.imageForLink) {
+	//if (self.imageForLink) {
 		NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-									   self.imageForLink, @"picture",
+                                       kAppId, @"app_id",
+                                       self.webLink.url, @"link",
+                                       self.webLink.text, @"description",
+									   //self.imageForLink, @"picture",
 									   nil];
 		
-		[[GeoSession sharedGeoSessionInstance].facebook requestWithMethodName:@"photos.upload"
-                                                                    andParams:params
-																andHttpMethod:@"POST"
-																  andDelegate:self];
+		//[[GeoSession sharedGeoSessionInstance].facebook requestWithMethodName:@"photos.upload"
+        //                                                            andParams:params
+		//														andHttpMethod:@"POST"
+		//														  andDelegate:self];
 		//[[GeoSession sharedGeoSessionInstance].facebook requestWithGraphPath:@"me" 
 		//														   andParams:params
 		//													   andHttpMethod:@"POST"
@@ -196,15 +181,16 @@ NSString *getJASONSafeString(NSString *string) {
 		//[args setObject:self.imageForJournal forKey:@"image"];    // 'images' is an array of 'UIImage' objects
 		//FBRequest *uploadPhotoRequest = [self getRequest];
 		//_fbCallType = FB_UPLOAD_PICTURE;
+        [[GeoSession sharedGeoSessionInstance].facebook dialog:@"feed" andParams:params andDelegate:self];
 		[params release];
 		
 		//[uploadPhotoRequest call:@"facebook.photos.upload" params:params dataParam:(NSData*)self.imageForJournal];
-	}
-	else {
-		NSLog(@"%s, image is not available.", __func__);
-		[self publishToFacebook:nil];
-	}
-	self.imageForLink = nil;
+	//}
+	//else {
+	//	NSLog(@"%s, image is not available.", __func__);
+	//	[self publishToFacebook:nil];
+	//}
+	//self.imageForLink = nil;
 }
 
 - (void)performDismiss:(NSTimer*)timer 
@@ -212,73 +198,16 @@ NSString *getJASONSafeString(NSString *string) {
 	[self._alertView dismissWithClickedButtonIndex:0 animated:NO];
 }
 
-- (void)showProgress
-{
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Publish" message:@"Syncing with Facebook. Please wait..." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-	self._alertView = alert;
-	[alert release];
-	[NSTimer scheduledTimerWithTimeInterval:3.0f target:self selector:@selector(performDismiss:) userInfo:nil repeats:NO];
-	[alert show];
-}
-
-- (void)loginToFacebookWithNotification:(BOOL)notify
-{
-	_notifySuccess = notify;
-    
-	FBLoginDialog* dialog = [[FBLoginDialog alloc] initWithSession:[GeoSession getFBSession:self]];
-	_fbCallType = FB_REQUEST_LOGIN;
-	dialog.delegate = self;
-	[dialog show];
-	[dialog release];	
-}
-
 - (void)publishToFacebookForWebLink:(WebLink*)w
 {
 	TRACE_HERE;
-#if 0	
-	self.webLink = w;
-	self.imageForLink = [[UIImage alloc] initWithContentsOfFile:getActualPath(w.imageLink)];
-	
-	TRACE("%s, image size: w: %f, h: %f\n", __func__, self.imageForLink.size.width, self.imageForLink.size.height);
-	if ([GeoSession sharedGeoSessionInstance].fbUID == 0) {
-		[self loginToFacebookWithNotification:NO];
-	}
-	else if ([GeoSession sharedGeoSessionInstance].gotExtendedPermission == NO) {
-		_fbCallType = FB_REQUEST_PERMISSION;
-		[[GeoSession sharedGeoSessionInstance] getExtendedPermission:self];
-		//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(getFBExtendedPermission:) withObject:self waitUntilDone:NO];
-	} 
-	else {
-		[self showProgress];
-		[self publishPhotoToFacebook];
-	}
-#endif
     
-    self.imageForLink = [[UIImage alloc] initWithContentsOfFile:getActualPath(w.imageLink)];
+    //self.imageForLink = [[UIImage alloc] initWithContentsOfFile:getActualPath(w.imageLink)];
 	self.webLink = w;
 	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(getFBExtendedPermission:) withObject:self waitUntilDone:NO];
 	[[GeoSession sharedGeoSessionInstance] publishPhotoToFacebook];
 	
 }
-
-#pragma mark FBSession delegate
-#if 0
-- (void)session:(FBSession*)session didLogin:(FBUID)uid {
-	NSLog(@"%s, user with id %lld logged in.", __func__, uid);
-	[GeoSession sharedGeoSessionInstance].fbUID = uid;
-	//[self getUserName];
-	
-	if (_fbCallType == FB_REQUEST_LOGIN) {
-		//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(getFBUserName:) withObject:nil waitUntilDone:NO];	
-		_fbCallType = FB_REQUEST_PERMISSION;
-		[[GeoSession sharedGeoSessionInstance] getExtendedPermission:self];
-		//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(getFBExtendedPermission:) withObject:self waitUntilDone:YES];
-		// Wait for the permission is granted.
-	}
-}
-#endif
-#pragma mark -
-#pragma mark FBRequest delegate
 
 - (void)request:(FBRequest*)request didLoad:(id)result 
 {
@@ -311,7 +240,7 @@ NSString *getJASONSafeString(NSString *string) {
 {
 	TRACE_HERE;
 	if (_fbCallType == FB_REQUEST_PERMISSION) {
-		// has to be abel to differentiate between FB 
+		// has to be able to differentiate between FB 
 		// Permission for uploading picture succeeded, now upload the picture.
 		//[GeoSession sharedGeoSessionInstance].gotExtendedPermission = YES;
 		if (_notifySuccess) {

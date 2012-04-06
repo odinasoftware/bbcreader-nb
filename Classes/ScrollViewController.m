@@ -264,7 +264,7 @@
 	//self.navigationController.navigationBarHidden = NO;
 	NSNumber *tapCount = (NSNumber*)object;
 	
-	if (isSlideShowRunning == NO && [tapCount intValue] == 2) {
+	if (isSlideShowRunning == NO && [tapCount intValue] == 1) {
 		//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(openWebViewWithLink:) withObject:(id)currentWebLink waitUntilDone:YES];
 		WebViewController *myWebViewController = [[WebViewController alloc] init];
 		//WebViewController *myWebViewController = [WebViewControllerHolder getWebViewController:&needLoad];

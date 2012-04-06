@@ -13,7 +13,7 @@
 #import "BBCDefaults.h"
 
 static GeoSession	*sharedGeoSession = nil;
-static NSString		*kAppId = @"154801851879";
+NSString            *kAppId = @"154801851879";
 
 @implementation GeoSession
 
@@ -76,8 +76,9 @@ static NSString		*kAppId = @"154801851879";
 - (void)publishPhotoToFacebook
 {
 	if (_gotExtendedPermission) {
-		[self.fbConnectAgent publishPhotoToFacebook];
-		_needToPublish = NO;
+        [self.facebook requestWithGraphPath:@"me" andDelegate:self];
+		//[self.fbConnectAgent publishPhotoToFacebook];
+		_needToPublish = YES;
 	}
 	else {
 		_needToPublish = YES;
@@ -88,7 +89,7 @@ static NSString		*kAppId = @"154801851879";
 - (void)getExtendedPermission:(id)object 
 {
 	if (self.facebook == nil) {
-		_facebook = [[Facebook alloc] initWithAppId:kAppId];
+		_facebook = [[Facebook alloc] initWithAppId:kAppId andDelegate:self];
         if ([BBCDefaults sharedBBCDefaultsInstance].accessToken &&
             [BBCDefaults sharedBBCDefaultsInstance].expirationDate) {
             self.facebook.accessToken = [BBCDefaults sharedBBCDefaultsInstance].accessToken;
@@ -98,7 +99,7 @@ static NSString		*kAppId = @"154801851879";
     }
 	
 	if (_gotExtendedPermission == NO) {
-		[self.facebook authorize:_permission delegate:self];
+		[self.facebook authorize:_permission];
 	}
 
 	TRACE("%s, %d\n", __func__, [self.facebook isSessionValid]);
@@ -107,7 +108,7 @@ static NSString		*kAppId = @"154801851879";
 #pragma mark FBSessionDelegate
 - (void)getAuthorization:(id)object
 {
-	[self.facebook authorize:_permission delegate:self];
+	[self.facebook authorize:_permission];
 }
 
 - (void)fbDidLogin
@@ -148,44 +149,12 @@ static NSString		*kAppId = @"154801851879";
 	// Show user name
 	TRACE("%s, Query returned id: %s, name: %s\n", __func__, [self.fbUID UTF8String], [self.fbUserName UTF8String]);
 	
-	[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(notifyLoggedin:) withObject:nil waitUntilDone:NO];	
+	//[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(notifyLoggedin:) withObject:nil waitUntilDone:NO];	
 	
 	if (_needToPublish) {
 		[self.fbConnectAgent publishPhotoToFacebook];
 	}
 }
-#pragma mark -
-
-- (void)logoutFBSessionWithNotification:(BOOL)notify
-{
-	GeoSession *session = [GeoSession sharedGeoSessionInstance];
-	
-	[session.facebook logout:self];
-	//fbUID = 0;
-	_gotExtendedPermission = NO;
-	
-	self.fbUID = nil;
-	self.fbUserName = nil;
-	if (notify == YES) {
-		[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(notifyLoggedin:) withObject:nil waitUntilDone:NO];	
-	}
-}
-
-#if 0
-- (void)dialogDidSucceed:(FBDialog*)dialog 
-{
-	TRACE("%s, got the extended permission.\n", __func__);
-	gotExtendedPermission = YES;
-}
-
-- (void)dialogDidCancel:(FBDialog*)dialog 
-{
-	TRACE("%s, user declines the extended permission.\n", __func__);
-	gotExtendedPermission = NO;
-}
-
-#endif
-
 #pragma mark -
 
 - (void)dealloc

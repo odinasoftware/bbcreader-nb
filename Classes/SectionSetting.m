@@ -14,7 +14,7 @@
 #define kSegmentCtrlBoxYOrigin	5.0
 #define kSegmentCtrlBoxHeight	30.0
 
-
+#define NEWS_COMPONENT          1
 
 @implementation SectionSetting
 
@@ -66,7 +66,7 @@
 	manual.text = @"First choose a segment you would like to change, then pick your section.";
 	
 	selectedFeed = 0;
-	selectedSegment = 0;
+	selectedSegment = storage.theActiveFeed;
 
 	for (i=0; i<3; ++i) {
 		segmentIndexes[i] = [storage getFeedIndexForSegment:i];
@@ -124,19 +124,21 @@
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
 {
-	TRACE("%s, row:%d, component:%d\n", __func__, row, component);
+    NSInteger index = [pickerView selectedRowInComponent:NEWS_COMPONENT];
+	TRACE("%s, segment: %d, row:%d, component:%d, index: %d\n", __func__, selectedSegment, row, component, index);
+    
 	if (component == 0) {
 		if (selectedFeed != row) {
 			selectedFeed = row;
 			[pickerView reloadComponent:1];
 		}
 	}
-	else {
-		ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
-		NSString *t = [storage getSectionTitle:row withComponent:component bySelection:selectedFeed];
-		[segmentedControl setTitle:t forSegmentAtIndex:selectedSegment];
-		segmentIndexes[selectedSegment] = [storage getArticleIndexWith:row andSelection:selectedFeed];
-	}
+	
+    ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
+    NSString *t = [storage getSectionTitle:index withComponent:NEWS_COMPONENT bySelection:selectedFeed];
+    [segmentedControl setTitle:t forSegmentAtIndex:selectedSegment];
+    segmentIndexes[selectedSegment] = [storage getArticleIndexWith:index andSelection:selectedFeed];
+	
 }
 
 - (CGFloat)pickerView:(UIPickerView *)pickerView rowHeightForComponent:(NSInteger)component

@@ -675,6 +675,7 @@ public void OnPageAction() {
 			
 			NSString *stripped_href = [theParser stripUrl:theParser.charBuffer];
 			
+            printf("-> href: %s\n", [stripped_href UTF8String]);
 			//if (stripped_href.startsWith(HTTP_PREFIX) == false)
 			if ([stripped_href hasPrefix:HTTP_PREFIX] == NO) {	
 				//stripped_href = combineUrl(theParser.hostUrl, stripped_href);

@@ -109,5 +109,6 @@
 - (BOOL)isCacheCreated;
 - (NSString*)getThumbPathWithHost:(NSString*)host;
 - (void)checkCacheObjects;
+- (NSData*)readUrlFromFileDescriptor:(int)fd withBlockSize:(int)block_size;
 
 @end

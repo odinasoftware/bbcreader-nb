@@ -380,15 +380,15 @@ clean:
 			*header = theNotFoundResHeader;
 			return nil;
 		}
-		NSData* urlData = [theCacheService readFromFileDescriptor:fd withBlockSize:512];//[handle readDataToEndOfFile];
+		NSData* urlData = [theCacheService readUrlFromFileDescriptor:fd withBlockSize:512];//[handle readDataToEndOfFile];
 		if (urlData == nil) {
 			*body = theNotFoundBody;
 			*header = theNotFoundResHeader;
 			return nil;
 		}
 		
-		// Because the orig url is written with 0x0a at the end of the url.
-		NSString *url = [[NSString alloc] initWithBytes:[urlData bytes] length:[urlData length]-1 encoding:NSUTF8StringEncoding];
+		// Because the orig url is written with 0x0a at the end of the url. --> this is invalid in this version as of 4/6/2012
+		NSString *url = [[NSString alloc] initWithBytes:[urlData bytes] length:[urlData length] encoding:NSUTF8StringEncoding];
 		[urlData release];
 
 		if ((helper = [self requestWithURL:url fileToSave:file responseHeader:header responseBody:body toReleaseHeader:release]) == nil) {
@@ -437,7 +437,7 @@ clean:
 	
 	NSURL* url = [[NSURL alloc] initWithString:orig_url];
 	if (url == nil) {
-		NSLog(@"%s, url is nil for %@", __func__, orig_url);
+		NSLog(@"%s, url is nil for [%@]", __func__, orig_url);
 		return nil;
 	}
 	helper = [[HTTPUrlHelper alloc] init];

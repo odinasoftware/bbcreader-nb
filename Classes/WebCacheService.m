@@ -32,6 +32,7 @@ typedef enum {SEARCH_PROTOCOL_TYPE, SEARCH_GET_RESULT, BEGIN_NEW_LINE, SEARCH_FI
 
 static const unsigned char BLANK = ' ';
 static const unsigned char NEWLINE = '\n';
+static const unsigned char CR = '\r';
 static NSString *EMBEDDED_FILE_EXT = @".emb.txt";
 static WebCacheService* sharedWebCacheService = nil;
 static unsigned char temp_storage[MAX_LINE_LEN];
@@ -95,6 +96,20 @@ static int scanTwoStrings(unsigned char *buffer, int read, NSString **first, NSS
 		}		
 	}
 	return i;
+}
+
+int scan_string(unsigned char *data, int size) 
+{
+    int string_size = size;
+    
+    int i = 0;
+    
+    for (i=0; i<size; ++i) {
+        if (data[i] == NEWLINE || data[i] == CR) {
+            return i;
+        }
+    }
+    return string_size;
 }
 
 unichar* getExtensionFromURL(NSString *url) {
@@ -998,6 +1013,44 @@ clean:
 	return data;
 }
 
+- (NSData*)readUrlFromFileDescriptor:(int)fd withBlockSize:(int)block_size
+{
+	int size = 0;
+	int totalLength = 0;
+	NSMutableData *data = nil;
+	
+	if (fd == -1) {
+		NSLog(@"%s: %s", __func__, strerror(errno));
+		return nil;
+	}
+	
+	@synchronized (self) {
+		
+		//NSMutableData *data = [[NSMutableData alloc] initWithCapacity:block_size];
+		data = (NSMutableData*) [self getNextFileBuffer];
+		[data retain];
+		[data setLength:0];
+		
+		do {
+			size = read(fd, temp_file_storage, block_size);
+			if (size > 0) {
+				[data appendBytes:temp_file_storage length:scan_string(temp_file_storage, size)];
+                break;
+			}
+			else if (size < 0) {
+				NSLog(@"%s: fd: %d, %s", __func__, fd, strerror(errno));
+				//[data release];
+				close(fd);
+				return nil;
+			}
+			totalLength += size;
+		} while (size > 0);
+		
+		close(fd);
+	}
+	return data;
+}
+
 - (BOOL)hasThisFile:(NSString*)file atIndex:(NSIndexPath*)indexPath
 {
 	BOOL ret = NO;
@@ -1150,7 +1203,6 @@ clean:
 	//       will have to unload if the host changes.
     NSError *error = nil;
 	
-	TRACE("host: %s\n", [host UTF8String]);
 	// check the folder exists or not
 	NSFileManager *manager = [NSFileManager defaultManager];
 	NSString *path = getActualPath(rootLocation);

@@ -187,6 +187,30 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
  <img src="http://newsimg.bbc.co.uk/media/images/45971000/jpg/_45971561_002320645-1.jpg" width="66" height="49" alt=""> 
  */
 
+/*
+ ---- one way -----
+ <div class="story-inner">
+ <h1>Michael Gove calls for faith pupil limit in Twickenham school</h1>
+ <div class="byline">
+ <p>
+ <span class="name">
+ By Angela  Harrison                         </span>
+ <span class="bbc-role">
+ Education correspondent, BBC News                         </span>
+ </p>
+ <p class="date" data-seconds="1333132546"><strong>30 March 2012</strong> Last updated at 18:35</p>
+ </div>
+ 
+ 
+ <figure><img src="http://localhost:9000/cache/newsrss.bbc.co.uk/default/3070882802.jpg" alt="classroom scene" class="lead"><figcaption><span class="cap">Most new schools will be free schools and academies</span></figcaption></figure><p class="introduction">Education Secretary Michael Gove has suggested a proposed new Catholic school should limit Catholic pupils to 50% of its intake.</p><p>Business Secretary Vince Cable wrote to Mr Gove about the proposed school, which is in his Twickenham constituency.</p><p>Mr Gove said the proposal for a cap was "very sensible".</p><p>But a Catholic Education Service official said turning Catholics away and admitting others just because they were not Catholic would be "odd".</p><p>A few years ago, the Roman Catholic Church fought attempts by Labour to open up new Church schools in England to the wider population.</p><p>Letters between the two ministers have been leaked and copies seen by the BBC.</p><p>New laws mean that new free schools and academies, if they are faith-based, have to limit their "faith intake" to 50% of the total, if they are over-subscribed.</p><p>But such legislation does not apply to the school being proposed by the Diocese of Westminster for a site in Clifden Road in Twickenham, south-west London.</p><p>That plan is for a voluntary-aided school.</p><p>Generally, the Church says its schools in London are oversubscribed by Catholics, while others elsewhere have a more mixed intake.</p><p class="crosshead">'Very sensible'</p><p>In a reply to Mr Cable, Mr Gove wrote: "The school will be able to admit pupils on the grounds of faith, but the 50% non-faith provision for the schools admissions will not apply.</p><p>"The suggestion that the school takes on a similar position voluntarily seems very sensible to me, and I would welcome such a move."</p><p>The deputy director of the Catholic Education Service, Greg Pope, said Catholic parents in the area had been asking for the school.</p><p>"We would not seek to open a new voluntary-aided school unless there was demand to fill it," he said.</p><p>"Given that there is [demand], that means you would be in the odd position where you build a Catholic school and turn Catholics away and offer others places simply on the grounds that they are not Catholic.</p><p>"That would be extraordinary."</p><p>Richmond Council has consulted on the proposals for the school, which is earmarked for the former site of an adult education college.</p><p>The plan, if approved, would mean the 1,000-pupil mixed school would open in September 2013.</p><p>There are also plans for a Catholic primary school at the same site. There are no Catholic secondaries in the borough and the council says every year 200 children start at Catholic secondary schools in other boroughs.</p><p>The council will vote on the plans in late May.</p><p>It says alternative proposals have been put forward for four free schools for the area and decisions on those are not expected until the summer.</p><p>The Richmond Inclusive Schools Campaign has collected more than 3,000 signatures on a petition asking the council to ensure that every state-funded school opening in the borough from now on is open to all.</p><p class="crosshead">'Discriminate'</p><p>The group is supported by the Accord Coalition, which aims to promote "inclusive schools".</p><p>Chairman of the group Rabbi Jonathan Romain said he was encouraged by Mr Gove's comments.</p><p>"The freedom that faith schools have to discriminate in the selection of pupils on religious grounds has long passed its sell-by date," he said.</p><p>Mr Pope, from the Catholic Education Service, said he was not concerned about Mr Gove's comments, because the Church had received assurances from the Department for Education and the law was clear.</p><p>The 50% limit could not be applied to voluntary-aided faith schools which became academies, he added.</p><p>Dozens of Catholic schools in England are currently switching to academy status, together with other community schools. There are now 68 Catholic academies and Mr Pope estimates there will be "hundreds" by the end of the year.</p>
+ 
+ </div>
+ 
+ ---- other way ------
+ <figure>
+ <img src="http://localhost:9000/cache/newsrss.bbc.co.uk/default/3070882802.jpg" alt="classroom scene" class="lead"><figcaption><span class="cap">Most new schools will be free schools and academies</span></figcaption></figure>
+ */
+
 - (id)initWithParser:(HTMLParser*)parser 
 {
 	if ((self = [super init])) {
@@ -206,6 +230,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 	if (theIndexPath == nil)
 		return ret;
 	
+    TRACE("%s, key: %s, v: %s\n", __func__, [key UTF8String], [value UTF8String]);
 	if (([(NSString*)key compare:@"name"] == 0) && 
 		([(NSString*)value compare:@"THUMBNAIL_URL"] == 0)) {
 		// Just pass, we may see "content" next time.
@@ -221,7 +246,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 		foundStoryBody = YES;
 	}
 	else if (([(NSString*)key compare:@"class"] == 0) && 
-			 ([(NSString*)value compare:@"downlink"] == 0)) {
+			 ([(NSString*)value compare:@"story-inner"] == 0)) {
 		// found image block for mobil page.
 		foundStoryBody = YES;
 	}
