@@ -72,7 +72,6 @@
 		191DF3270ED20F8A00C712E7 /* news.png in Resources */ = {isa = PBXBuildFile; fileRef = 191DF2260ED206E100C712E7 /* news.png */; };
 		192BC6B40F5C92A800795C5C /* SettingsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 192BC6B20F5C92A800795C5C /* SettingsView.m */; };
 		1935E7F81528FEB6008A8791 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 1935E7EB1528FEB6008A8791 /* FBDialog.bundle */; };
-		1935E7F91528FEB6008A8791 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1935E7F11528FEB6008A8791 /* libfacebook_ios_sdk.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		198D21F60F217113004116A5 /* SectionSetting.xib in Resources */ = {isa = PBXBuildFile; fileRef = 198D21F50F217113004116A5 /* SectionSetting.xib */; };
 		198D22190F217E2A004116A5 /* SectionSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = 198D22180F217E2A004116A5 /* SectionSetting.m */; };
 		198D22570F2255AD004116A5 /* InternationalFeeds.plist in Resources */ = {isa = PBXBuildFile; fileRef = 198D22560F2255AD004116A5 /* InternationalFeeds.plist */; };
@@ -91,6 +90,7 @@
 		19D941B710D8FEDF00F252B4 /* mobile.plist in Resources */ = {isa = PBXBuildFile; fileRef = 19D941B610D8FEDF00F252B4 /* mobile.plist */; };
 		19DA3E15143FF5B200BDFB10 /* icon-high.png in Resources */ = {isa = PBXBuildFile; fileRef = 19DA3E14143FF5B100BDFB10 /* icon-high.png */; };
 		19DA3E17143FF5BA00BDFB10 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 19DA3E16143FF5BA00BDFB10 /* Default@2x.png */; };
+		19F21C09153BC32400A9920D /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F21C08153BC32400A9920D /* libfacebook_ios_sdk.a */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
@@ -218,7 +218,6 @@
 		1935E7EE1528FEB6008A8791 /* FBLoginDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBLoginDialog.h; sourceTree = "<group>"; };
 		1935E7EF1528FEB6008A8791 /* FBRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBRequest.h; sourceTree = "<group>"; };
 		1935E7F01528FEB6008A8791 /* JSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSON.h; sourceTree = "<group>"; };
-		1935E7F11528FEB6008A8791 /* libfacebook_ios_sdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfacebook_ios_sdk.a; sourceTree = "<group>"; };
 		1935E7F21528FEB6008A8791 /* NSObject+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJSON.h"; sourceTree = "<group>"; };
 		1935E7F31528FEB6008A8791 /* NSString+SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SBJSON.h"; sourceTree = "<group>"; };
 		1935E7F41528FEB6008A8791 /* SBJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJSON.h; sourceTree = "<group>"; };
@@ -248,6 +247,7 @@
 		19D941B610D8FEDF00F252B4 /* mobile.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = mobile.plist; sourceTree = "<group>"; };
 		19DA3E14143FF5B100BDFB10 /* icon-high.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-high.png"; sourceTree = "<group>"; };
 		19DA3E16143FF5BA00BDFB10 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		19F21C08153BC32400A9920D /* libfacebook_ios_sdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfacebook_ios_sdk.a; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* BBCReader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BBCReader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -268,7 +268,7 @@
 				191DF2B60ED20B8B00C712E7 /* CFNetwork.framework in Frameworks */,
 				19B3A9AD0EE719AB00501B7F /* SystemConfiguration.framework in Frameworks */,
 				1999B3D910801827002443E9 /* MessageUI.framework in Frameworks */,
-				1935E7F91528FEB6008A8791 /* libfacebook_ios_sdk.a in Frameworks */,
+				19F21C09153BC32400A9920D /* libfacebook_ios_sdk.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,7 +461,7 @@
 				1935E7EE1528FEB6008A8791 /* FBLoginDialog.h */,
 				1935E7EF1528FEB6008A8791 /* FBRequest.h */,
 				1935E7F01528FEB6008A8791 /* JSON.h */,
-				1935E7F11528FEB6008A8791 /* libfacebook_ios_sdk.a */,
+				19F21C08153BC32400A9920D /* libfacebook_ios_sdk.a */,
 				1935E7F21528FEB6008A8791 /* NSObject+SBJSON.h */,
 				1935E7F31528FEB6008A8791 /* NSString+SBJSON.h */,
 				1935E7F41528FEB6008A8791 /* SBJSON.h */,
@@ -717,8 +717,14 @@
 		191DF3470ED2101C00C712E7 /* Distribution */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"ARCHS[sdk=*]" = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv6,
+					armv7,
+				);
+				"ARCHS[sdk=*]" = (
+					armv6,
+					armv7,
+				);
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Odina Software, LLC";
 				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Distribution: Odina Software, LLC";
 				CODE_SIGN_RESOURCE_RULES_PATH = "";
@@ -727,7 +733,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "../facebook-ios-sdk/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PROVISIONING_PROFILE = "E6185526-3D80-4993-9B60-2C1DF33D4BBC";
 				"PROVISIONING_PROFILE[sdk=*]" = "E6185526-3D80-4993-9B60-2C1DF33D4BBC";
 				SDKROOT = iphoneos;
@@ -738,8 +744,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"ARCHS[sdk=*]" = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					armv7,
+					armv6,
+				);
+				"ARCHS[sdk=*]" = (
+					armv6,
+					armv7,
+				);
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -748,14 +760,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BBCReader_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/facebook-ios-sdk\"",
 				);
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = BBCReader;
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Distribution;
@@ -774,13 +786,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BBCReader_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/facebook-ios-sdk\"",
 				);
 				PRODUCT_NAME = BBCReader;
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -797,13 +809,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BBCReader_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/facebook-ios-sdk\"",
 				);
 				PRODUCT_NAME = BBCReader;
-				SDKROOT = iphoneos;
+				SDKROOT = iphoneos5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -821,7 +833,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "../facebook-ios-sdk/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PROVISIONING_PROFILE = "7B523E78-F196-470B-86E8-9E165E7474E2";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B523E78-F196-470B-86E8-9E165E7474E2";
 				SDKROOT = iphoneos;
@@ -840,7 +852,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "../facebook-ios-sdk/src";
 				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PROVISIONING_PROFILE = "7B523E78-F196-470B-86E8-9E165E7474E2";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "7B523E78-F196-470B-86E8-9E165E7474E2";
 				SDKROOT = iphoneos;
@@ -858,7 +870,7 @@
 				191DF3480ED2101C00C712E7 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Distribution;
+			defaultConfigurationName = Release;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "BBCReader" */ = {
 			isa = XCConfigurationList;
@@ -868,7 +880,7 @@
 				191DF3470ED2101C00C712E7 /* Distribution */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Distribution;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
