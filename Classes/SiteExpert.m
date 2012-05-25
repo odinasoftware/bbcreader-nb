@@ -230,7 +230,7 @@ static const NSString *local_host_prefix = @"http://localhost:9000";
 	if (theIndexPath == nil)
 		return ret;
 	
-    TRACE("%s, key: %s, v: %s\n", __func__, [key UTF8String], [value UTF8String]);
+    //TRACE("%s, key: %s, v: %s\n", __func__, [key UTF8String], [value UTF8String]);
 	if (([(NSString*)key compare:@"name"] == 0) && 
 		([(NSString*)value compare:@"THUMBNAIL_URL"] == 0)) {
 		// Just pass, we may see "content" next time.

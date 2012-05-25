@@ -557,7 +557,7 @@ repeat:
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-	TRACE("%s, %d\n", __func__, [data length]);
+	TRACE("%s, %p, %d\n", __func__, connection, [data length]);
 	if (theConnection.receivedData == nil) {
 		theConnection.receivedData = [[NSMutableData alloc] init];
 	}
@@ -567,7 +567,7 @@ repeat:
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)redirectResponse
 {
 	
-	TRACE("%s, req: %p, res: %p, %s:\n", __func__, request, redirectResponse, [[[request URL] absoluteString] UTF8String]);
+	TRACE("%s, connection: %p, req: %p, res: %p, %s:\n", __func__, request, connection, redirectResponse, [[[request URL] absoluteString] UTF8String]);
 
 #if 0
 	NSDictionary *responseDict = [request allHTTPHeaderFields];

@@ -150,6 +150,18 @@ unichar* getExtensionFromURL(NSString *url) {
 	return extension;
 }
 
+NSString *getUrlPart(NSString *url) {
+    NSArray *strings = [url componentsSeparatedByString:@"#"];
+    NSString *str;
+    if ([strings count]>1) {
+        str = [strings objectAtIndex:0];
+    }
+    else
+        str = url;
+    
+    return str;
+}
+
 BOOL isPicture(NSString* file)
 {
 	BOOL ret = NO;
@@ -374,7 +386,7 @@ int OPEN(NSString* name, int flag)
 			//[str retain];
 			if ([str length] > 1) {
 				anObject = [[CacheObject alloc] init];
-				anObject.url = str;
+				anObject.url = getUrlPart(str);
 				anObject.category = category;
 				[objects addObject:anObject];
 			}
@@ -583,20 +595,24 @@ int OPEN(NSString* name, int flag)
  *         A local name will be created from the local file name and the category. 
  *
  */
-- (NSString*)checkCacheAndRegister:(NSString*)url withFile:(NSString**)localFile forIndexFile:(NSString**)indexName fromCategory:(cache_category_t)category isAvailable:(BOOL*)available isCollide:(BOOL*)collision
+- (NSString*)checkCacheAndRegister:(NSString*)url_param withFile:(NSString**)localFile forIndexFile:(NSString**)indexName fromCategory:(cache_category_t)category isAvailable:(BOOL*)available isCollide:(BOOL*)collision
 {
 	NSString* cachedFile = nil;
-	unichar *extension = getExtensionFromURL(url);
+	unichar *extension = getExtensionFromURL(url_param);
 	NSString *category_component = getCategoryComponent(category);
+    NSString *url;
 	
 	@synchronized(self) {
 		NSString* file = nil;
 		if (extension) {
-			file = [NSString stringWithFormat:@"%u%S", [url hash], extension];
+            url = url_param;
+			file = [NSString stringWithFormat:@"%u%S", [url_param hash], extension];
 			free(extension);
 		}
 		else {
-			file = [NSString stringWithFormat:@"%u", [url hash]];
+            NSString *url_part = getUrlPart(url_param);
+			file = [NSString stringWithFormat:@"%u", [url_part hash]];
+            url = url_part;
 		}
 		
 		//NSLog(@"%s, url: %@, file: %@", __func__, url, file);	
@@ -815,7 +831,7 @@ int OPEN(NSString* name, int flag)
 	if ([fileManager createFileAtPath:getActualPath(entry.indexFile) contents:[url dataUsingEncoding:NSUTF8StringEncoding] attributes:nil] == NO) {
 		NSLog(@"%s, fail to create file: %@", __func__, entry.indexFile);
 	}
-	TRACE("%s, %s\n", __func__, [entry.indexFile UTF8String]);
+	TRACE("%s, %s, url: %s\n", __func__, [entry.indexFile UTF8String], [[entry.origURL absoluteString] UTF8String]);
 	[entry release];
 }
 
