@@ -325,6 +325,7 @@ static NetworkService *sharedNetworkService = nil;
 		if (theArticleStorage.numberOfArticles == 0) {
 			if (offlineMode == YES) {
 				[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(showOfflineModeWarning:) withObject:nil waitUntilDone:YES];
+                networkNotWorking = YES;
 			}
 			else {
 				[(id)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(showNetworkError:) withObject:nil waitUntilDone:YES];
@@ -332,11 +333,14 @@ static NetworkService *sharedNetworkService = nil;
 		}
 		else {
 			numberOfDownloadedObjects = 1;
+        }
 		
-			// Now we want to get individual page. 
-			//[self getArticlePage];
-			[self getArticlePageInParallel];
-		}
+		// Now we want to get individual page. 
+		//[self getArticlePage];
+        // 5/26/2012: found the case the feed can be empty, then it can think errorly that it does not have intenet. 
+        // When user press reload, we should try again.
+		[self getArticlePageInParallel];
+		
 		
 	}
 	@catch (NSException *exception) {

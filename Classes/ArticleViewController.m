@@ -467,16 +467,19 @@
 										 UIViewAutoresizingFlexibleRightMargin |
 										 UIViewAutoresizingFlexibleTopMargin |
 										 UIViewAutoresizingFlexibleBottomMargin);
-		[theTableView addSubview:progressView];
 		
-		message = [[[UILabel alloc] initWithFrame:CGRectMake((TABLE_WIDTH)/2.0-10, TABLE_HEIGHT/2-20, 190.0, 30.0)] autorelease]; 
+		
+		//message = [[[UILabel alloc] initWithFrame:CGRectMake((TABLE_WIDTH)/2.0-10, TABLE_HEIGHT/2-20, 190.0, 30.0)] autorelease]; 
+        message = [[[UILabel alloc] initWithFrame:CGRectMake(80, TABLE_HEIGHT/2-20.0, 190.0, 30.0)] autorelease]; 
 		message.font = [UIFont systemFontOfSize:13.0]; 
 		message.textColor = [UIColor blackColor]; 
 		message.lineBreakMode = UILineBreakModeWordWrap; 
 		message.numberOfLines = 2;
-		message.text = @"Loading ...";
+        //message.text = @"Download failed and the offline contents are not available.";
+		message.text = @"                  Loading ...                                ";
 		[theTableView addSubview:message];
 		
+        [theTableView addSubview:progressView];
 		[progressView startAnimating];
 		
 	}
@@ -490,6 +493,9 @@
 		}
 		
 		progressView = nil;
+        
+        [message removeFromSuperview];
+        [progressView removeFromSuperview];
 		message = nil;
 		if (isThisOtherView == YES) {
 			

@@ -782,6 +782,9 @@ NSString *getTitle(NSString *str)
 				}
 			}
 			else {
+                if ([NetworkService sharedNetworkServiceInstance].networkNotWorking == YES) {
+                    return nil;
+                }
 				NSLog(@"%s, feed is null.", __func__);
 				theCurrentArticleIndex = -1;
 			}
