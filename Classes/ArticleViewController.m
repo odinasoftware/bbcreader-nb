@@ -559,6 +559,12 @@
 
 - (IBAction)reloadArticles:(id)sender
 {
+    if ([NetworkService sharedNetworkServiceInstance].offlineMode == YES) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning" message:@"Reload will not be allowed in offline mode! Please turn off offline mode to reload articles." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+        return;
+    }
 	ArticleStorage *storage = [ArticleStorage sharedArticleStorageInstance];
 	WebCacheService *cacheService = [WebCacheService sharedWebCacheServiceInstance];
 	NetworkService *networkService = [NetworkService sharedNetworkServiceInstance];
